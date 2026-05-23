@@ -11,29 +11,50 @@ export function ResetPasswordForm() {
   const [status, setStatus] = useState<'checking' | 'idle' | 'updating' | 'success'>('checking')
   const [error, setError] = useState<string | null>(null)
 
-  // Wacht tot Supabase de hash heeft verwerkt en een sessie heeft
+  // Handelt zowel het oude hash-recovery flow als het nieuwe PKCE flow
+  // (?code=...) af.
   useEffect(() => {
     const supabase = createClient()
-    const check = async () => {
+    const init = async () => {
+      // 1) PKCE: ?code=... → ruil voor sessie
+      const url = new URL(window.location.href)
+      const code = url.searchParams.get('code')
+      if (code) {
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+        if (exchangeError) {
+          setStatus('idle')
+          setError(
+            `Recovery-link ongeldig of verlopen: ${exchangeError.message}. Vraag opnieuw een herstel-link.`,
+          )
+          return
+        }
+        // Code uit URL halen zodat hij niet hergebruikt wordt op refresh
+        url.searchParams.delete('code')
+        window.history.replaceState({}, '', url.toString())
+        setStatus('idle')
+        return
+      }
+
+      // 2) Hash-recovery flow: sessie zou al gezet moeten zijn
       const { data } = await supabase.auth.getSession()
       if (data.session) {
         setStatus('idle')
-      } else {
-        // Geef het 800ms om de hash te verwerken, daarna geven we het op
-        setTimeout(async () => {
-          const { data: retry } = await supabase.auth.getSession()
-          if (retry.session) {
-            setStatus('idle')
-          } else {
-            setStatus('idle')
-            setError(
-              'Geen geldige recovery-sessie gevonden. De link is mogelijk verlopen — vraag opnieuw een wachtwoord-herstel via je login-pagina.',
-            )
-          }
-        }, 800)
+        return
       }
+      // Geef het 800ms om de hash te verwerken
+      setTimeout(async () => {
+        const { data: retry } = await supabase.auth.getSession()
+        if (retry.session) {
+          setStatus('idle')
+        } else {
+          setStatus('idle')
+          setError(
+            'Geen geldige recovery-sessie gevonden. De link is mogelijk verlopen — vraag opnieuw een wachtwoord-herstel via je login-pagina.',
+          )
+        }
+      }, 800)
     }
-    check()
+    init()
   }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {

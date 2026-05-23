@@ -18,11 +18,20 @@ export function HashRecoveryRedirector() {
     // Niet redirecten als we al op de reset-pagina staan
     if (pathname.startsWith('/wachtwoord-reset')) return
     if (typeof window === 'undefined') return
-    const hash = window.location.hash
-    if (!hash || !hash.includes('type=recovery')) return
 
-    // Redirect met behoud van de hash (essentieel voor Supabase auth-detect)
-    router.replace(`/wachtwoord-reset${hash}`)
+    // PKCE flow: ?code=... op de root-URL → naar /wachtwoord-reset met code
+    const url = new URL(window.location.href)
+    const code = url.searchParams.get('code')
+    if (code) {
+      router.replace(`/wachtwoord-reset?code=${encodeURIComponent(code)}`)
+      return
+    }
+
+    // Hash-recovery flow (oude implicit): #access_token=...&type=recovery
+    const hash = window.location.hash
+    if (hash && hash.includes('type=recovery')) {
+      router.replace(`/wachtwoord-reset${hash}`)
+    }
   }, [pathname, router])
 
   return null
