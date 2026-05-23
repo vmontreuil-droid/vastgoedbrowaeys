@@ -1,8 +1,19 @@
 import Link from 'next/link'
 import { ArrowRight, Users, FolderOpen, Calendar, MessageSquare, Plus, Home, FileText, BellRing } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
 
 export const metadata = {
   title: 'Admin · Overzicht',
+}
+
+function deriveDisplayName(firstName: string | undefined, email: string | null) {
+  const first = firstName?.trim()
+  if (first) return first
+  if (email) {
+    const local = email.split('@')[0]
+    return local.charAt(0).toUpperCase() + local.slice(1)
+  }
+  return 'Beheerder'
 }
 
 // Voor nu placeholder-data — wordt later uit Supabase gehaald
@@ -27,7 +38,12 @@ const QUICK_ACTIONS = [
   { label: 'Afspraak plannen', href: '/admin/afspraken/nieuw', icon: Calendar },
 ]
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const firstName = user?.user_metadata?.first_name as string | undefined
+  const displayName = deriveDisplayName(firstName, user?.email ?? null)
+
   return (
     <div className="container-px mx-auto max-w-screen-2xl py-10 md:py-14">
       {/* === Welkom === */}
@@ -37,7 +53,7 @@ export default function AdminDashboardPage() {
           <h1 className="text-3xl md:text-5xl">
             Welkom terug,{' '}
             <span className="italic" style={{ color: 'var(--color-accent)' }}>
-              Stefanie.
+              {displayName}.
             </span>
           </h1>
           <p className="mt-3 text-[var(--color-mute)] max-w-2xl">
