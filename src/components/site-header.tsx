@@ -125,120 +125,91 @@ export function SiteHeader() {
         }}
       />
 
-      {/* === Mobile drawer === */}
+      {/* === Mobile menu — fullscreen overlay, simpele document-flow === */}
       {menuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50">
-          {/* Backdrop */}
-          <button
-            type="button"
-            aria-label="Sluit menu"
-            onClick={() => setMenuOpen(false)}
-            className="absolute inset-0"
-            style={{
-              background: 'color-mix(in srgb, #1a1a1a 50%, transparent)',
-              backdropFilter: 'blur(4px)',
-            }}
-          />
-
-          {/* Panel — één scrollable container, geen flex-1 (was bug op iOS Safari) */}
+        <div
+          className="lg:hidden fixed inset-0 z-50 overflow-y-auto"
+          style={{ background: 'var(--color-paper)' }}
+        >
+          {/* Header */}
           <div
-            className="absolute right-0 top-0 bottom-0 w-[88%] max-w-sm overflow-y-auto overscroll-contain"
-            style={{
-              background: 'var(--color-paper)',
-              boxShadow: '-12px 0 32px -8px rgba(0,0,0,0.25)',
-              animation: 'vb-drawer-in 280ms cubic-bezier(0.22, 0.61, 0.36, 1)',
-            }}
+            className="flex items-center justify-between px-6 h-20"
+            style={{ borderBottom: '1px solid var(--color-line)' }}
           >
-            <style>{`
-              @keyframes vb-drawer-in {
-                from { transform: translateX(100%); }
-                to { transform: translateX(0); }
-              }
-            `}</style>
-
-            {/* Sticky header binnen scrollable container */}
-            <div
-              className="sticky top-0 z-10 flex items-center justify-between px-6 h-20"
-              style={{
-                background: 'var(--color-paper)',
-                borderBottom: '1px solid var(--color-line)',
-              }}
+            <BrandLogo height={36} />
+            <button
+              type="button"
+              onClick={() => setMenuOpen(false)}
+              aria-label="Sluit menu"
+              className="grid place-items-center size-11"
+              style={{ color: 'var(--color-ink)' }}
             >
-              <BrandLogo height={36} />
-              <button
-                type="button"
-                onClick={() => setMenuOpen(false)}
-                aria-label="Sluit menu"
-                className="grid place-items-center size-10"
-                style={{ color: 'var(--color-ink)' }}
-              >
-                <X className="size-5" />
-              </button>
-            </div>
+              <X className="size-6" />
+            </button>
+          </div>
 
-            {/* Nav */}
-            <nav className="px-6 py-6">
-              <ul>
-                {NAV.map((item) => {
-                  const Icon = item.icon
-                  const active = item.match(pathname)
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className="flex items-center gap-3 py-4 text-xl transition-colors"
-                        style={{
-                          color: active ? 'var(--color-accent)' : 'var(--color-ink)',
-                          fontFamily: 'var(--font-display)',
-                          borderBottom: '1px solid var(--color-line)',
-                        }}
-                      >
-                        <Icon className="size-4 opacity-60" />
-                        {item.label}
-                      </Link>
-                    </li>
-                  )
-                })}
-                <li>
-                  <Link
-                    href="/portaal/login"
-                    className="flex items-center gap-3 py-4 text-xl"
-                    style={{
-                      color: pathname.startsWith('/portaal') ? 'var(--color-accent)' : 'var(--color-ink)',
-                      fontFamily: 'var(--font-display)',
-                      borderBottom: '1px solid var(--color-line)',
-                    }}
-                  >
-                    <Lock className="size-4 opacity-60" />
-                    Klantenportaal
-                  </Link>
-                </li>
-              </ul>
-            </nav>
+          {/* Nav */}
+          <nav className="px-6 py-4">
+            <ul>
+              {NAV.map((item) => {
+                const Icon = item.icon
+                const active = item.match(pathname)
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="flex items-center gap-3 py-4 text-xl"
+                      style={{
+                        color: active ? 'var(--color-accent)' : 'var(--color-ink)',
+                        fontFamily: 'var(--font-display)',
+                        borderBottom: '1px solid var(--color-line)',
+                      }}
+                    >
+                      <Icon className="size-4 opacity-60" />
+                      {item.label}
+                    </Link>
+                  </li>
+                )
+              })}
+              <li>
+                <Link
+                  href="/portaal/login"
+                  className="flex items-center gap-3 py-4 text-xl"
+                  style={{
+                    color: pathname.startsWith('/portaal') ? 'var(--color-accent)' : 'var(--color-ink)',
+                    fontFamily: 'var(--font-display)',
+                    borderBottom: '1px solid var(--color-line)',
+                  }}
+                >
+                  <Lock className="size-4 opacity-60" />
+                  Klantenportaal
+                </Link>
+              </li>
+            </ul>
+          </nav>
 
-            {/* CTA + contact onderaan, in dezelfde scroll-flow */}
-            <div
-              className="px-6 py-8 mt-2"
-              style={{ borderTop: '1px solid var(--color-line)', background: 'var(--color-paper-2)' }}
+          {/* CTA + contact */}
+          <div
+            className="px-6 py-8 mt-2"
+            style={{ borderTop: '1px solid var(--color-line)', background: 'var(--color-paper-2)' }}
+          >
+            <Link
+              href="/gratis-schatting"
+              className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-medium"
+              style={{ background: 'var(--color-accent)', color: 'var(--color-paper)' }}
             >
-              <Link
-                href="/gratis-schatting"
-                className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-medium"
-                style={{ background: 'var(--color-accent)', color: 'var(--color-paper)' }}
-              >
-                Gratis schatting aanvragen
-                <ArrowRight className="size-4" />
-              </Link>
-              <div className="mt-6 flex flex-col gap-3 text-sm" style={{ color: 'var(--color-mute)' }}>
-                <a href="tel:+3255595010" className="inline-flex items-center gap-2">
-                  <Phone className="size-3.5" />
-                  +32 (0)55 59 50 10
-                </a>
-                <a href="mailto:info@vastgoedbrowaeys.be" className="inline-flex items-center gap-2">
-                  <Mail className="size-3.5" />
-                  info@vastgoedbrowaeys.be
-                </a>
-              </div>
+              Gratis schatting aanvragen
+              <ArrowRight className="size-4" />
+            </Link>
+            <div className="mt-6 flex flex-col gap-3 text-sm" style={{ color: 'var(--color-mute)' }}>
+              <a href="tel:+3255595010" className="inline-flex items-center gap-2">
+                <Phone className="size-3.5" />
+                +32 (0)55 59 50 10
+              </a>
+              <a href="mailto:info@vastgoedbrowaeys.be" className="inline-flex items-center gap-2">
+                <Mail className="size-3.5" />
+                info@vastgoedbrowaeys.be
+              </a>
             </div>
           </div>
         </div>
