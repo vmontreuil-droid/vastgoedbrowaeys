@@ -140,9 +140,9 @@ export function SiteHeader() {
             }}
           />
 
-          {/* Panel */}
+          {/* Panel — één scrollable container, geen flex-1 (was bug op iOS Safari) */}
           <div
-            className="absolute right-0 top-0 bottom-0 w-[88%] max-w-sm flex flex-col"
+            className="absolute right-0 top-0 bottom-0 w-[88%] max-w-sm overflow-y-auto overscroll-contain"
             style={{
               background: 'var(--color-paper)',
               boxShadow: '-12px 0 32px -8px rgba(0,0,0,0.25)',
@@ -156,10 +156,13 @@ export function SiteHeader() {
               }
             `}</style>
 
-            {/* Header */}
+            {/* Sticky header binnen scrollable container */}
             <div
-              className="flex items-center justify-between px-6 h-20"
-              style={{ borderBottom: '1px solid var(--color-line)' }}
+              className="sticky top-0 z-10 flex items-center justify-between px-6 h-20"
+              style={{
+                background: 'var(--color-paper)',
+                borderBottom: '1px solid var(--color-line)',
+              }}
             >
               <BrandLogo height={36} />
               <button
@@ -174,8 +177,8 @@ export function SiteHeader() {
             </div>
 
             {/* Nav */}
-            <nav className="flex-1 overflow-y-auto px-6 py-6">
-              <ul className="space-y-1">
+            <nav className="px-6 py-6">
+              <ul>
                 {NAV.map((item) => {
                   const Icon = item.icon
                   const active = item.match(pathname)
@@ -183,7 +186,7 @@ export function SiteHeader() {
                     <li key={item.href}>
                       <Link
                         href={item.href}
-                        className="flex items-center gap-3 py-3 text-lg transition-colors"
+                        className="flex items-center gap-3 py-4 text-xl transition-colors"
                         style={{
                           color: active ? 'var(--color-accent)' : 'var(--color-ink)',
                           fontFamily: 'var(--font-display)',
@@ -199,7 +202,7 @@ export function SiteHeader() {
                 <li>
                   <Link
                     href="/portaal/login"
-                    className="flex items-center gap-3 py-3 text-lg"
+                    className="flex items-center gap-3 py-4 text-xl"
                     style={{
                       color: pathname.startsWith('/portaal') ? 'var(--color-accent)' : 'var(--color-ink)',
                       fontFamily: 'var(--font-display)',
@@ -213,8 +216,11 @@ export function SiteHeader() {
               </ul>
             </nav>
 
-            {/* Footer met CTA */}
-            <div className="px-6 py-6" style={{ borderTop: '1px solid var(--color-line)' }}>
+            {/* CTA + contact onderaan, in dezelfde scroll-flow */}
+            <div
+              className="px-6 py-8 mt-2"
+              style={{ borderTop: '1px solid var(--color-line)', background: 'var(--color-paper-2)' }}
+            >
               <Link
                 href="/gratis-schatting"
                 className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-medium"
@@ -223,7 +229,7 @@ export function SiteHeader() {
                 Gratis schatting aanvragen
                 <ArrowRight className="size-4" />
               </Link>
-              <div className="mt-5 flex flex-col gap-2 text-sm" style={{ color: 'var(--color-mute)' }}>
+              <div className="mt-6 flex flex-col gap-3 text-sm" style={{ color: 'var(--color-mute)' }}>
                 <a href="tel:+3255595010" className="inline-flex items-center gap-2">
                   <Phone className="size-3.5" />
                   +32 (0)55 59 50 10
