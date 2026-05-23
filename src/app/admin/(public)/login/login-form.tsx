@@ -38,16 +38,30 @@ export function AdminLoginForm() {
     }
 
     // Rol-check: alleen agents mogen door
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', authData.user.id)
       .single()
 
-    if (!profile || profile.role !== 'agent') {
+    if (profileError) {
       await supabase.auth.signOut()
       setStatus('idle')
-      setError('Dit account heeft geen admin-toegang.')
+      setError(`Profile-query mislukt: ${profileError.message} (code: ${profileError.code || 'n/a'})`)
+      return
+    }
+
+    if (!profile) {
+      await supabase.auth.signOut()
+      setStatus('idle')
+      setError(`Geen profile-rij gevonden voor user ${authData.user.id}.`)
+      return
+    }
+
+    if (profile.role !== 'agent') {
+      await supabase.auth.signOut()
+      setStatus('idle')
+      setError(`Profile-rol = "${profile.role}" — moet "agent" zijn voor admin-toegang.`)
       return
     }
 
