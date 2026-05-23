@@ -40,7 +40,8 @@ export async function middleware(request: NextRequest) {
 
   const isPortalPath = path.startsWith('/portaal')
   const isPortalLogin = path.startsWith('/portaal/login') || path.startsWith('/portaal/wachtwoord-vergeten')
-  const isAdminPath = path.startsWith('/admin')
+  // /admin-setup is een tijdelijke publieke setup-tool, GEEN beschermd admin-pad
+  const isAdminPath = path === '/admin' || path.startsWith('/admin/')
   const isAdminLogin = path.startsWith('/admin/login') || path.startsWith('/admin/wachtwoord-vergeten')
 
   // Klantenportaal: niet ingelogd → naar /portaal/login
