@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { LogOut, LayoutDashboard, FolderOpen, BellRing, Calendar, FileText } from 'lucide-react'
 import { BrandLogo } from './brand-logo'
+import { signOutAction } from '@/lib/auth/actions'
 
 const NAV = [
   { href: '/portaal',            label: 'Overzicht',    icon: LayoutDashboard },
@@ -44,13 +45,15 @@ export function PortalShell({
               <span className="text-sm">{user.name}</span>
               <span className="text-xs text-[var(--color-mute)]">{user.email}</span>
             </div>
-            <Link
-              href="/portaal/login?action=logout"
-              className="inline-flex items-center gap-1.5 text-sm link-underline text-[var(--color-mute)]"
-            >
-              <LogOut className="size-4" />
-              <span className="hidden sm:inline">Afmelden</span>
-            </Link>
+            <form action={signOutAction}>
+              <button
+                type="submit"
+                className="inline-flex items-center gap-1.5 text-sm link-underline text-[var(--color-mute)] cursor-pointer"
+              >
+                <LogOut className="size-4" />
+                <span className="hidden sm:inline">Afmelden</span>
+              </button>
+            </form>
           </div>
         </div>
 
