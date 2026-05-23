@@ -125,11 +125,13 @@ export function SiteHeader() {
         }}
       />
 
-      {/* === Mobile menu — fullscreen overlay, simpele document-flow === */}
+      {/* === Mobile menu — fullscreen overlay, hardcoded paper bg ===
+          Directe hex + z-[100] omdat var(--color-paper) op fixed overlay
+          inconsistent rendered op iOS Safari (background bleef transparant). */}
       {menuOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-50 overflow-y-auto"
-          style={{ background: 'var(--color-paper)' }}
+          className="lg:hidden fixed inset-0 z-[100] overflow-y-auto"
+          style={{ backgroundColor: '#faf8f4' }}
         >
           {/* Header */}
           <div
