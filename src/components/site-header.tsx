@@ -10,7 +10,7 @@ import { BrandLogo } from './brand-logo'
 type NavItem = {
   href: string
   label: string
-  icon: React.ComponentType<{ className?: string }>
+  icon: React.ComponentType<{ className?: string; size?: number | string; style?: React.CSSProperties }>
   match: (pathname: string) => boolean
 }
 
@@ -125,34 +125,61 @@ export function SiteHeader() {
         }}
       />
 
-      {/* === Mobile menu — fullscreen overlay, hardcoded paper bg ===
-          Directe hex + z-[100] omdat var(--color-paper) op fixed overlay
-          inconsistent rendered op iOS Safari (background bleef transparant). */}
+      {/* === Mobile menu — alles inline-styles, geen Tailwind/CSS-vars ===
+          iOS Safari was inconsistent met var()-bg op fixed overlays. */}
       {menuOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-[100] overflow-y-auto"
-          style={{ backgroundColor: '#faf8f4' }}
+          role="dialog"
+          aria-modal="true"
+          className="lg:hidden"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: '#faf8f4',
+            zIndex: 9999,
+            overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch',
+          }}
         >
           {/* Header */}
           <div
-            className="flex items-center justify-between px-6 h-20"
-            style={{ borderBottom: '1px solid var(--color-line)' }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '0 24px',
+              height: '80px',
+              borderBottom: '1px solid #e6e1d7',
+            }}
           >
             <BrandLogo height={36} />
             <button
               type="button"
               onClick={() => setMenuOpen(false)}
               aria-label="Sluit menu"
-              className="grid place-items-center size-11"
-              style={{ color: 'var(--color-ink)' }}
+              style={{
+                width: '44px',
+                height: '44px',
+                display: 'grid',
+                placeItems: 'center',
+                color: '#1a1a1a',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+              }}
             >
-              <X className="size-6" />
+              <X size={24} />
             </button>
           </div>
 
           {/* Nav */}
-          <nav className="px-6 py-4">
-            <ul>
+          <nav style={{ padding: '16px 24px' }}>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {NAV.map((item) => {
                 const Icon = item.icon
                 const active = item.match(pathname)
@@ -160,14 +187,19 @@ export function SiteHeader() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="flex items-center gap-3 py-4 text-xl"
                       style={{
-                        color: active ? 'var(--color-accent)' : 'var(--color-ink)',
-                        fontFamily: 'var(--font-display)',
-                        borderBottom: '1px solid var(--color-line)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '16px 0',
+                        fontSize: '20px',
+                        color: active ? '#0b4f58' : '#1a1a1a',
+                        fontFamily: "'Fraunces', Georgia, serif",
+                        borderBottom: '1px solid #e6e1d7',
+                        textDecoration: 'none',
                       }}
                     >
-                      <Icon className="size-4 opacity-60" />
+                      <Icon size={16} style={{ opacity: 0.6 }} />
                       {item.label}
                     </Link>
                   </li>
@@ -176,14 +208,19 @@ export function SiteHeader() {
               <li>
                 <Link
                   href="/portaal/login"
-                  className="flex items-center gap-3 py-4 text-xl"
                   style={{
-                    color: pathname.startsWith('/portaal') ? 'var(--color-accent)' : 'var(--color-ink)',
-                    fontFamily: 'var(--font-display)',
-                    borderBottom: '1px solid var(--color-line)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '16px 0',
+                    fontSize: '20px',
+                    color: pathname.startsWith('/portaal') ? '#0b4f58' : '#1a1a1a',
+                    fontFamily: "'Fraunces', Georgia, serif",
+                    borderBottom: '1px solid #e6e1d7',
+                    textDecoration: 'none',
                   }}
                 >
-                  <Lock className="size-4 opacity-60" />
+                  <Lock size={16} style={{ opacity: 0.6 }} />
                   Klantenportaal
                 </Link>
               </li>
@@ -192,24 +229,45 @@ export function SiteHeader() {
 
           {/* CTA + contact */}
           <div
-            className="px-6 py-8 mt-2"
-            style={{ borderTop: '1px solid var(--color-line)', background: 'var(--color-paper-2)' }}
+            style={{
+              padding: '32px 24px',
+              marginTop: '8px',
+              borderTop: '1px solid #e6e1d7',
+              backgroundColor: '#f3efe7',
+            }}
           >
             <Link
               href="/gratis-schatting"
-              className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-medium"
-              style={{ background: 'var(--color-accent)', color: 'var(--color-paper)' }}
+              style={{
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                padding: '14px 24px',
+                fontSize: '14px',
+                fontWeight: 500,
+                backgroundColor: '#0b4f58',
+                color: '#faf8f4',
+                textDecoration: 'none',
+              }}
             >
               Gratis schatting aanvragen
-              <ArrowRight className="size-4" />
+              <ArrowRight size={16} />
             </Link>
-            <div className="mt-6 flex flex-col gap-3 text-sm" style={{ color: 'var(--color-mute)' }}>
-              <a href="tel:+3255595010" className="inline-flex items-center gap-2">
-                <Phone className="size-3.5" />
+            <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '14px', color: '#6b6b6b' }}>
+              <a
+                href="tel:+3255595010"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'inherit', textDecoration: 'none' }}
+              >
+                <Phone size={14} />
                 +32 (0)55 59 50 10
               </a>
-              <a href="mailto:info@vastgoedbrowaeys.be" className="inline-flex items-center gap-2">
-                <Mail className="size-3.5" />
+              <a
+                href="mailto:info@vastgoedbrowaeys.be"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'inherit', textDecoration: 'none' }}
+              >
+                <Mail size={14} />
                 info@vastgoedbrowaeys.be
               </a>
             </div>
