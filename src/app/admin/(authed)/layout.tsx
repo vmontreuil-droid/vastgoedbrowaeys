@@ -1,5 +1,10 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+
+// Geen cache op admin-pagina's — altijd verse DB-data
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 import { AdminShell, type AdminNavBadges } from '@/components/admin-shell'
 import { getListings } from '@/lib/listings'
 import { getAdminClients, getAdminDossiers, getAdminAppointments, getAdminLeads } from '@/lib/admin-db'

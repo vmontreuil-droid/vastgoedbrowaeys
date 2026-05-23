@@ -2,6 +2,7 @@
 // Server-side queries via service_role (bypassed RLS) voor /admin pagina's.
 // Vangen errors zelf op zodat de UI niet kapot gaat als PostgREST cache nog stale is.
 
+import 'server-only'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 export type AdminClient = {
