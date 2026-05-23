@@ -23,34 +23,19 @@ export function LoginForm() {
     const password = String(formData.get('password') ?? '')
 
     const supabase = createClient()
-    const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
 
-    if (signInError || !authData.user) {
+    if (signInError) {
       setStatus('error')
       setError(
-        signInError?.message === 'Invalid login credentials'
+        signInError.message === 'Invalid login credentials'
           ? 'E-mail of wachtwoord onjuist.'
-          : signInError?.message || 'Inloggen mislukt.',
+          : signInError.message,
       )
       return
     }
 
-    // Rol-check: agents horen op /admin, niet op klantenportaal
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', authData.user.id)
-      .single()
-
-    if (profile?.role === 'agent') {
-      await supabase.auth.signOut()
-      setStatus('error')
-      setError('Beheerders loggen in via het admin-portaal.')
-      setTimeout(() => router.push('/admin/login'), 1500)
-      return
-    }
-
-    // Succes — klant naar zijn dashboard
+    // Agent mag ook hier inloggen — zien als klant of switchen via banner
     const redirectTo = params.get('redirect') || '/portaal'
     router.push(redirectTo)
     router.refresh()
