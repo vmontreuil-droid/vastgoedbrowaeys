@@ -112,10 +112,13 @@ export function AdminShell({
     if (!b) return null
     return (
       <span
-        className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[1rem] h-4 px-1 text-[0.55rem] font-medium leading-none"
+        className="absolute -top-1.5 -right-2 inline-flex items-center justify-center text-[0.55rem] font-medium leading-none rounded-full"
         style={{
           background: b.urgent ? '#b91c1c' : 'var(--color-accent)',
           color: '#fff',
+          minWidth: 14,
+          height: 14,
+          padding: '0 4px',
         }}
       >
         {b.count}
@@ -136,34 +139,23 @@ export function AdminShell({
       >
         {/* Logo */}
         <div
-          className="px-3 py-4 flex items-center gap-2"
+          className="px-3 py-4 flex items-center justify-between"
           style={{ borderBottom: '1px solid var(--color-line)' }}
         >
           <Link
             href="/admin"
-            className="flex items-center gap-2 flex-1 min-w-0"
+            className="flex items-center min-w-0"
             onClick={() => setMobileOpen(false)}
             title="Vastgoed Browaeys — Admin"
           >
             {isCollapsed ? (
               <BrandLogo height={26} textHeight={0} />
             ) : (
-              <>
-                <BrandLogo height={26} textHeight={26} />
-                <span
-                  className="px-1.5 py-0.5 text-[0.55rem] uppercase tracking-[0.18em] shrink-0"
-                  style={{
-                    border: '1px solid var(--color-line)',
-                    color: 'var(--color-mute)',
-                  }}
-                >
-                  Admin
-                </span>
-              </>
+              <BrandLogo height={26} textHeight={26} />
             )}
           </Link>
 
-          {forMobile ? (
+          {forMobile && (
             <button
               type="button"
               className="text-[var(--color-mute)] hover:text-[var(--color-ink)] shrink-0"
@@ -171,16 +163,6 @@ export function AdminShell({
               aria-label="Sluit menu"
             >
               <X className="size-5" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="text-[var(--color-mute)] hover:text-[var(--color-ink)] shrink-0"
-              onClick={toggleCollapsed}
-              aria-label={isCollapsed ? 'Klap sidebar uit' : 'Klap sidebar in'}
-              title={isCollapsed ? 'Klap uit' : 'Klap in'}
-            >
-              {isCollapsed ? <ChevronsRight className="size-4" /> : <ChevronsLeft className="size-4" />}
             </button>
           )}
         </div>
@@ -229,6 +211,24 @@ export function AdminShell({
             })}
           </ul>
         </nav>
+
+        {/* Collapse toggle (desktop only, onderaan boven user-info) */}
+        {!forMobile && (
+          <div
+            className={isCollapsed ? 'flex justify-center py-2' : 'flex justify-end px-3 py-2'}
+            style={{ borderTop: '1px solid var(--color-line)' }}
+          >
+            <button
+              type="button"
+              className="p-1.5 text-[var(--color-mute)] hover:text-[var(--color-ink)] transition-colors"
+              onClick={toggleCollapsed}
+              aria-label={isCollapsed ? 'Klap sidebar uit' : 'Klap sidebar in'}
+              title={isCollapsed ? 'Klap uit' : 'Klap in'}
+            >
+              {isCollapsed ? <ChevronsRight className="size-4" /> : <ChevronsLeft className="size-4" />}
+            </button>
+          </div>
+        )}
 
         {/* User + logout */}
         <div
