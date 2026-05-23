@@ -1,8 +1,9 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ArrowRight, Home, KeyRound, Briefcase, Users, MessageCircle, Lock, Info } from 'lucide-react'
+import { ArrowRight, Home, KeyRound, Briefcase, Users, MessageCircle, Lock, Info, Menu, X, Phone, Mail } from 'lucide-react'
 import { SiteTopbar } from './site-topbar'
 import { BrandLogo } from './brand-logo'
 
@@ -24,6 +25,24 @@ const NAV: NavItem[] = [
 
 export function SiteHeader() {
   const pathname = usePathname()
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  // Sluit menu wanneer route verandert
+  useEffect(() => {
+    setMenuOpen(false)
+  }, [pathname])
+
+  // Voorkom body-scroll wanneer drawer open is
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [menuOpen])
 
   return (
     <div
@@ -66,22 +85,33 @@ export function SiteHeader() {
             })}
           </nav>
 
-          {/* === Rechtse CTA + portaal === */}
-          <div className="flex items-center gap-3">
+          {/* === Rechtse acties — desktop === */}
+          <div className="hidden lg:flex items-center gap-3">
             <Link
               href="/portaal/login"
               data-active={pathname.startsWith('/portaal') || undefined}
-              className="hidden md:inline-flex items-center gap-2 px-3 py-2 text-xs font-medium uppercase tracking-[0.14em] transition-colors data-[active=true]:bg-[var(--color-paper-2)]"
+              className="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium uppercase tracking-[0.14em] transition-colors data-[active=true]:bg-[var(--color-paper-2)]"
               style={{ color: 'var(--color-mute)', border: '1px solid var(--color-line)' }}
             >
               <Lock className="size-3.5" />
-              <span className="hidden lg:inline">Klantenportaal</span>
+              <span>Klantenportaal</span>
             </Link>
             <Link href="/gratis-schatting" className="pill-cta">
               Gratis schatting
               <ArrowRight className="size-3.5" />
             </Link>
           </div>
+
+          {/* === Hamburger — mobile === */}
+          <button
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
+            className="lg:hidden grid place-items-center size-11"
+            style={{ color: 'var(--color-ink)' }}
+          >
+            <Menu className="size-6" />
+          </button>
         </div>
       </header>
 
@@ -94,6 +124,119 @@ export function SiteHeader() {
             'linear-gradient(to right, transparent 0%, color-mix(in srgb, var(--color-clay-dark) 55%, transparent) 25%, color-mix(in srgb, var(--color-clay-dark) 55%, transparent) 75%, transparent 100%)',
         }}
       />
+
+      {/* === Mobile drawer === */}
+      {menuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          {/* Backdrop */}
+          <button
+            type="button"
+            aria-label="Sluit menu"
+            onClick={() => setMenuOpen(false)}
+            className="absolute inset-0"
+            style={{
+              background: 'color-mix(in srgb, #1a1a1a 50%, transparent)',
+              backdropFilter: 'blur(4px)',
+            }}
+          />
+
+          {/* Panel */}
+          <div
+            className="absolute right-0 top-0 bottom-0 w-[88%] max-w-sm flex flex-col"
+            style={{
+              background: 'var(--color-paper)',
+              boxShadow: '-12px 0 32px -8px rgba(0,0,0,0.25)',
+              animation: 'vb-drawer-in 280ms cubic-bezier(0.22, 0.61, 0.36, 1)',
+            }}
+          >
+            <style>{`
+              @keyframes vb-drawer-in {
+                from { transform: translateX(100%); }
+                to { transform: translateX(0); }
+              }
+            `}</style>
+
+            {/* Header */}
+            <div
+              className="flex items-center justify-between px-6 h-20"
+              style={{ borderBottom: '1px solid var(--color-line)' }}
+            >
+              <BrandLogo height={36} />
+              <button
+                type="button"
+                onClick={() => setMenuOpen(false)}
+                aria-label="Sluit menu"
+                className="grid place-items-center size-10"
+                style={{ color: 'var(--color-ink)' }}
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            {/* Nav */}
+            <nav className="flex-1 overflow-y-auto px-6 py-6">
+              <ul className="space-y-1">
+                {NAV.map((item) => {
+                  const Icon = item.icon
+                  const active = item.match(pathname)
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className="flex items-center gap-3 py-3 text-lg transition-colors"
+                        style={{
+                          color: active ? 'var(--color-accent)' : 'var(--color-ink)',
+                          fontFamily: 'var(--font-display)',
+                          borderBottom: '1px solid var(--color-line)',
+                        }}
+                      >
+                        <Icon className="size-4 opacity-60" />
+                        {item.label}
+                      </Link>
+                    </li>
+                  )
+                })}
+                <li>
+                  <Link
+                    href="/portaal/login"
+                    className="flex items-center gap-3 py-3 text-lg"
+                    style={{
+                      color: pathname.startsWith('/portaal') ? 'var(--color-accent)' : 'var(--color-ink)',
+                      fontFamily: 'var(--font-display)',
+                      borderBottom: '1px solid var(--color-line)',
+                    }}
+                  >
+                    <Lock className="size-4 opacity-60" />
+                    Klantenportaal
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+
+            {/* Footer met CTA */}
+            <div className="px-6 py-6" style={{ borderTop: '1px solid var(--color-line)' }}>
+              <Link
+                href="/gratis-schatting"
+                className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-medium"
+                style={{ background: 'var(--color-accent)', color: 'var(--color-paper)' }}
+              >
+                Gratis schatting aanvragen
+                <ArrowRight className="size-4" />
+              </Link>
+              <div className="mt-5 flex flex-col gap-2 text-sm" style={{ color: 'var(--color-mute)' }}>
+                <a href="tel:+3255595010" className="inline-flex items-center gap-2">
+                  <Phone className="size-3.5" />
+                  +32 (0)55 59 50 10
+                </a>
+                <a href="mailto:info@vastgoedbrowaeys.be" className="inline-flex items-center gap-2">
+                  <Mail className="size-3.5" />
+                  info@vastgoedbrowaeys.be
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
