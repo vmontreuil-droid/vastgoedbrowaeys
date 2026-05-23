@@ -1,18 +1,13 @@
 import Link from 'next/link'
 import {
-  ArrowRight,
-  Users,
-  FolderOpen,
-  Calendar,
-  MessageSquare,
-  Plus,
-  Home,
-  ArrowUpRight,
-  TrendingUp,
+  ArrowRight, Users, FolderOpen, Calendar, MessageSquare, Plus, Home,
+  ArrowUpRight, TrendingUp,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { CLIENTS, DOSSIERS, APPOINTMENTS, MESSAGES, formatRelative } from '@/data/admin-mock'
-import { getListings, formatPrice } from '@/lib/listings'
+import {
+  getAdminClients, getAdminDossiers, getAdminAppointments, getAdminLeads, getAdminTrends,
+} from '@/lib/admin-db'
+import { getListings } from '@/lib/listings'
 import { DonutChart, TrendArea, StackedBars } from '@/components/admin/charts'
 
 export const metadata = {
@@ -36,69 +31,74 @@ const QUICK_ACTIONS = [
   { label: 'Afspraak plannen', href: '/admin/afspraken/nieuw',icon: Calendar },
 ]
 
+function formatRelative(iso: string, now = new Date()) {
+  const diffMs = now.getTime() - new Date(iso).getTime()
+  const minutes = Math.floor(diffMs / 60000)
+  if (minutes < 60) return `${minutes} min`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours} u`
+  const days = Math.floor(hours / 24)
+  return `${days}d`
+}
+
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const firstName = user?.user_metadata?.first_name as string | undefined
   const displayName = deriveDisplayName(firstName, user?.email ?? null)
 
-  // ===== Stats =====
-  const openDossiers = DOSSIERS.filter((d) => ['open', 'in_behandeling', 'onder_optie'].includes(d.status))
-  const activeClients = CLIENTS.filter((c) => c.status === 'actief' || c.status === 'lead')
+  const [
+    { items: allClients },
+    { items: allDossiers },
+    { items: allAppointments },
+    { items: allLeads },
+    trends,
+  ] = await Promise.all([
+    getAdminClients(),
+    getAdminDossiers(),
+    getAdminAppointments(),
+    getAdminLeads(),
+    getAdminTrends(),
+  ])
+
+  const openDossiers = allDossiers.filter((d) => ['open', 'in_behandeling', 'onder_optie'].includes(d.status))
   const onlineListings = getListings({ status: ['te-koop', 'te-huur', 'optie'] })
+  const allListings = getListings()
   const now = Date.now()
-  const upcomingThisWeek = APPOINTMENTS.filter((a) => {
+  const upcomingThisWeek = allAppointments.filter((a) => {
     const t = new Date(a.start).getTime()
     return t >= now && t < now + 7 * 24 * 3600 * 1000 && a.status !== 'cancelled'
   })
-  const unreadMessages = MESSAGES.filter((m) => !m.readAt)
+  const unreadLeads = allLeads.filter((l) => !l.readAt)
 
-  // ===== Donut: dossiers per type =====
+  // Dossiers per type (donut)
   const dossierByType = [
-    { name: 'Verkoop',     value: DOSSIERS.filter((d) => d.type === 'verkoop').length,     color: '#0b4f58' },
-    { name: 'Verhuur',     value: DOSSIERS.filter((d) => d.type === 'verhuur').length,     color: '#8c6b2e' },
-    { name: 'Koop-zoeker', value: DOSSIERS.filter((d) => d.type === 'koop_zoeker').length, color: '#a25b3a' },
-    { name: 'Huur-zoeker', value: DOSSIERS.filter((d) => d.type === 'huur_zoeker').length, color: '#5a7a48' },
+    { name: 'Verkoop',     value: allDossiers.filter((d) => d.type === 'verkoop').length,     color: '#0b4f58' },
+    { name: 'Verhuur',     value: allDossiers.filter((d) => d.type === 'verhuur').length,     color: '#8c6b2e' },
+    { name: 'Koop-zoeker', value: allDossiers.filter((d) => d.type === 'koop_zoeker').length, color: '#a25b3a' },
+    { name: 'Huur-zoeker', value: allDossiers.filter((d) => d.type === 'huur_zoeker').length, color: '#5a7a48' },
   ].filter((d) => d.value > 0)
 
-  // ===== Donut: aanbod per status =====
-  const allListings = getListings()
   const listingByStatus = [
-    { name: 'Te koop',  value: allListings.filter((l) => l.status === 'te-koop').length,  color: '#0b4f58' },
-    { name: 'Te huur',  value: allListings.filter((l) => l.status === 'te-huur').length,  color: '#5a7a48' },
-    { name: 'Onder optie', value: allListings.filter((l) => l.status === 'optie').length, color: '#c98c4f' },
-    { name: 'Verkocht', value: allListings.filter((l) => l.status === 'verkocht').length, color: '#9b6e7b' },
+    { name: 'Te koop',     value: allListings.filter((l) => l.status === 'te-koop').length,  color: '#0b4f58' },
+    { name: 'Te huur',     value: allListings.filter((l) => l.status === 'te-huur').length,  color: '#5a7a48' },
+    { name: 'Onder optie', value: allListings.filter((l) => l.status === 'optie').length,    color: '#c98c4f' },
+    { name: 'Verkocht',    value: allListings.filter((l) => l.status === 'verkocht').length, color: '#9b6e7b' },
   ].filter((d) => d.value > 0)
 
-  // ===== Trend: leads + bezichtigingen per week (laatste 8) =====
-  const weeks = ['W14', 'W15', 'W16', 'W17', 'W18', 'W19', 'W20', 'W21']
-  const trendData = weeks.map((w, i) => ({
-    x: w,
-    Leads: [4, 6, 5, 8, 7, 9, 11, 10][i],
-    Bezichtigingen: [3, 5, 4, 6, 8, 7, 9, 12][i],
-  }))
-
-  // ===== Bar: omzet per maand (gerealiseerd vs in-onderhandeling) =====
-  const months = ['Jan', 'Feb', 'Mrt', 'Apr', 'Mei']
-  const revenueData = months.map((m, i) => ({
-    x: m,
-    Gerealiseerd: [0, 18500, 22000, 0, 0][i],
-    'In behandeling': [4500, 8000, 12000, 19000, 24000][i],
-  }))
-
-  // ===== Recent activity feed =====
-  const recentActions = MESSAGES.slice(0, 6).map((m) => ({
-    id: m.id,
-    when: m.receivedAt,
-    title: m.subject,
-    who: m.fromName,
-    href: `/admin/berichten/${m.id}`,
-    type: m.type,
+  // Recente activiteit = recentste 6 leads
+  const recentActions = allLeads.slice(0, 6).map((l) => ({
+    id: l.id,
+    when: l.receivedAt,
+    title: l.subject,
+    who: l.fromName,
+    href: `/admin/berichten/${l.id}`,
+    type: l.type,
+    isUnread: !l.readAt,
   }))
 
   return (
     <div className="container-px mx-auto max-w-screen-2xl py-8 md:py-10">
-      {/* === Welkom === */}
       <section className="mb-10 flex flex-wrap items-end justify-between gap-6">
         <div>
           <p className="eyebrow mb-3">Admin · Dashboard</p>
@@ -132,36 +132,43 @@ export default async function AdminDashboardPage() {
         </div>
       </section>
 
-      {/* === KPI cards === */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        <KpiCard icon={<FolderOpen className="size-4" />} label="Lopende dossiers" value={openDossiers.length} hint={`${DOSSIERS.filter((d) => d.status === 'onder_optie').length} onder optie`} href="/admin/dossiers" trend="+2" />
-        <KpiCard icon={<Users className="size-4" />}      label="Actieve klanten"  value={activeClients.length}  hint={`${CLIENTS.filter((c) => c.status === 'lead').length} nieuwe leads`} href="/admin/klanten" trend="+3" />
-        <KpiCard icon={<Home className="size-4" />}       label="Panden online"    value={onlineListings.length} hint={`${allListings.filter((l) => l.status === 'optie').length} onder optie`} href="/admin/aanbod" />
-        <KpiCard icon={<Calendar className="size-4" />}   label="Afspraken (7 dgn)" value={upcomingThisWeek.length} hint={`${APPOINTMENTS.filter((a) => a.type === 'bezichtiging' && new Date(a.start).getTime() > now).length} bezichtigingen`} href="/admin/afspraken" />
+        <KpiCard icon={<FolderOpen className="size-4" />} label="Lopende dossiers" value={openDossiers.length}
+          hint={`${allDossiers.filter((d) => d.status === 'onder_optie').length} onder optie`} href="/admin/dossiers" />
+        <KpiCard icon={<Users className="size-4" />} label="Klanten" value={allClients.length}
+          hint={`${allClients.filter((c) => c.status === 'lead').length} leads`} href="/admin/klanten" />
+        <KpiCard icon={<Home className="size-4" />} label="Panden online" value={onlineListings.length}
+          hint={`${allListings.filter((l) => l.status === 'optie').length} onder optie`} href="/admin/aanbod" />
+        <KpiCard icon={<Calendar className="size-4" />} label="Afspraken (7 dgn)" value={upcomingThisWeek.length}
+          hint={`${allAppointments.filter((a) => a.status === 'completed').length} voltooid totaal`} href="/admin/afspraken" />
       </section>
 
-      {/* === Grafiekenrij === */}
       <section className="grid lg:grid-cols-3 gap-6 mb-10">
-        <ChartCard title="Dossiers per type" subtitle="Verdeling van alle lopende dossiers">
-          <DonutChart data={dossierByType} total={DOSSIERS.length} centerLabel="totaal" />
+        <ChartCard title="Dossiers per type" subtitle="Verdeling van alle dossiers">
+          {dossierByType.length > 0 ? (
+            <DonutChart data={dossierByType} total={allDossiers.length} centerLabel="totaal" />
+          ) : (
+            <EmptyChart text="Nog geen dossiers" />
+          )}
         </ChartCard>
 
         <ChartCard title="Aanbod per status" subtitle="Live panden + recent verkocht/verhuurd">
-          <DonutChart data={listingByStatus} total={allListings.length} centerLabel="panden" />
+          {listingByStatus.length > 0 ? (
+            <DonutChart data={listingByStatus} total={allListings.length} centerLabel="panden" />
+          ) : (
+            <EmptyChart text="Nog geen panden" />
+          )}
         </ChartCard>
 
-        <ChartCard title="Berichten" subtitle="Inkomende vragen + onbehandeld">
+        <ChartCard title="Berichten" subtitle="Inbox onbehandeld + totaal">
           <div className="flex flex-col items-center justify-center h-64">
             <p className="text-5xl mb-1" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-accent)' }}>
-              {unreadMessages.length}
+              {unreadLeads.length}
             </p>
             <p className="text-xs text-[var(--color-mute)] uppercase tracking-[0.16em]">onbehandeld</p>
-            <p className="text-sm text-[var(--color-mute)] mt-4">van {MESSAGES.length} berichten</p>
-            <Link
-              href="/admin/berichten"
-              className="mt-4 inline-flex items-center gap-1 text-sm link-underline"
-              style={{ color: 'var(--color-accent)' }}
-            >
+            <p className="text-sm text-[var(--color-mute)] mt-4">van {allLeads.length} berichten</p>
+            <Link href="/admin/berichten" className="mt-4 inline-flex items-center gap-1 text-sm link-underline"
+              style={{ color: 'var(--color-accent)' }}>
               <MessageSquare className="size-3.5" />
               Naar inbox
             </Link>
@@ -169,35 +176,41 @@ export default async function AdminDashboardPage() {
         </ChartCard>
       </section>
 
-      {/* === Trends rij === */}
       <section className="grid lg:grid-cols-2 gap-6 mb-10">
         <ChartCard title="Leads & bezichtigingen" subtitle="Per week — laatste 8 weken">
-          <TrendArea data={trendData} dataKeys={[
-            { key: 'Leads',          label: 'Leads',          color: '#0b4f58' },
-            { key: 'Bezichtigingen', label: 'Bezichtigingen', color: '#8c6b2e' },
-          ]} />
+          {trends.weekTrend.some((w) => w.Leads > 0 || w.Bezichtigingen > 0) ? (
+            <TrendArea data={trends.weekTrend} dataKeys={[
+              { key: 'Leads',          label: 'Leads',          color: '#0b4f58' },
+              { key: 'Bezichtigingen', label: 'Bezichtigingen', color: '#8c6b2e' },
+            ]} />
+          ) : (
+            <EmptyChart text="Nog geen data — leads en afspraken verschijnen hier zodra ze binnenkomen" />
+          )}
         </ChartCard>
 
-        <ChartCard title="Omzet-pijplijn" subtitle="Commissies per maand (in €1.000)">
-          <StackedBars data={revenueData} dataKeys={[
-            { key: 'Gerealiseerd',    label: 'Gerealiseerd',    color: '#0b4f58' },
-            { key: 'In behandeling',  label: 'In behandeling',  color: '#c98c4f' },
-          ]} />
+        <ChartCard title="Dossiers per maand" subtitle="Geopend dossiers — laatste 6 maanden">
+          {trends.dossierMonthly.some((m) => m.Verkoop + m.Verhuur + m['Koop-zoeker'] + m['Huur-zoeker'] > 0) ? (
+            <StackedBars data={trends.dossierMonthly} dataKeys={[
+              { key: 'Verkoop',       label: 'Verkoop',      color: '#0b4f58' },
+              { key: 'Verhuur',       label: 'Verhuur',      color: '#8c6b2e' },
+              { key: 'Koop-zoeker',   label: 'Koop-zoeker',  color: '#a25b3a' },
+              { key: 'Huur-zoeker',   label: 'Huur-zoeker',  color: '#5a7a48' },
+            ]} />
+          ) : (
+            <EmptyChart text="Nog geen dossiers in de laatste 6 maanden" />
+          )}
         </ChartCard>
       </section>
 
-      {/* === Onderaan: agenda + activity === */}
       <section className="grid lg:grid-cols-2 gap-6">
         <ChartCard title="Eerstvolgende afspraken" subtitle="Komende 7 dagen" actionHref="/admin/afspraken" actionLabel="Volledige agenda">
           <div className="space-y-3">
             {upcomingThisWeek.slice(0, 5).map((a) => {
               const dt = new Date(a.start)
               return (
-                <Link key={a.id} href="/admin/afspraken" className="flex items-start gap-3 group">
-                  <div
-                    className="flex flex-col items-center justify-center py-2 px-3 shrink-0"
-                    style={{ background: 'var(--color-paper-2)', minWidth: 56 }}
-                  >
+                <Link key={a.id} href={`/admin/afspraken/${a.id}`} className="flex items-start gap-3 group">
+                  <div className="flex flex-col items-center justify-center py-2 px-3 shrink-0"
+                    style={{ background: 'var(--color-paper-2)', minWidth: 56 }}>
                     <span className="text-[0.6rem] uppercase tracking-[0.12em]" style={{ color: 'var(--color-accent)' }}>
                       {dt.toLocaleDateString('nl-BE', { month: 'short' })}
                     </span>
@@ -209,10 +222,9 @@ export default async function AdminDashboardPage() {
                     <p className="text-sm group-hover:underline">{a.title}</p>
                     <p className="text-xs text-[var(--color-mute)] mt-0.5">
                       {dt.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}
+                      {a.location && <> · {a.location}</>}
                       {' · '}
-                      {a.location}
-                      {' · '}
-                      <span className="italic">{a.agent}</span>
+                      <span className="italic">{a.clientName}</span>
                     </p>
                   </div>
                 </Link>
@@ -224,29 +236,33 @@ export default async function AdminDashboardPage() {
           </div>
         </ChartCard>
 
-        <ChartCard title="Recente activiteit" subtitle="Berichten & contacten" actionHref="/admin/berichten" actionLabel="Alle berichten">
+        <ChartCard title="Recente berichten" subtitle="Laatste binnenkomende vragen" actionHref="/admin/berichten" actionLabel="Alle berichten">
           <div className="space-y-3">
             {recentActions.map((a) => (
               <Link key={a.id} href={a.href} className="flex items-start gap-3 group">
-                <span
-                  className="size-2 rounded-full mt-2 shrink-0"
+                <span className="size-2 rounded-full mt-2 shrink-0"
                   style={{
                     background:
                       a.type === 'lead' ? '#16a34a' :
                       a.type === 'schatting' ? '#c98c4f' :
-                      a.type === 'visit_request' ? '#0b4f58' :
+                      a.type === 'visit_request' ? '#a25b3a' :
+                      a.type === 'vraag' ? '#0b4f58' :
                       '#737373',
-                  }}
-                />
+                  }} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm truncate group-hover:underline">{a.title}</p>
+                  <p className={`text-sm truncate group-hover:underline ${a.isUnread ? 'font-medium' : ''}`}>
+                    {a.title}
+                  </p>
                   <p className="text-xs text-[var(--color-mute)] mt-0.5">
-                    <span className="italic">{a.who}</span> · {formatRelative(a.when)}
+                    <span className="italic">{a.who}</span> · {formatRelative(a.when)} geleden
                   </p>
                 </div>
                 <ArrowUpRight className="size-3.5 text-[var(--color-mute)] opacity-0 group-hover:opacity-100 transition-opacity" />
               </Link>
             ))}
+            {recentActions.length === 0 && (
+              <p className="text-sm text-[var(--color-mute)] italic">Nog geen berichten ontvangen.</p>
+            )}
           </div>
         </ChartCard>
       </section>
@@ -255,36 +271,22 @@ export default async function AdminDashboardPage() {
 }
 
 function KpiCard({
-  icon, label, value, hint, href, trend,
+  icon, label, value, hint, href,
 }: {
   icon: React.ReactNode
   label: string
   value: number | string
   hint?: string
   href?: string
-  trend?: string
 }) {
   const inner = (
-    <div
-      className="p-5 transition-all hover:shadow-sm h-full"
-      style={{
-        background: 'var(--color-paper)',
-        border: '1px solid var(--color-line)',
-      }}
-    >
+    <div className="p-5 transition-all hover:shadow-sm h-full"
+      style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
       <div className="flex items-center justify-between mb-3">
         <span className="eyebrow text-[0.55rem]">{label}</span>
         <span style={{ color: 'var(--color-accent)' }}>{icon}</span>
       </div>
-      <div className="flex items-end justify-between">
-        <p className="text-3xl md:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>{value}</p>
-        {trend && (
-          <span className="inline-flex items-center gap-1 text-xs" style={{ color: '#166534' }}>
-            <TrendingUp className="size-3" />
-            {trend}
-          </span>
-        )}
-      </div>
+      <p className="text-3xl md:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>{value}</p>
       {hint && <p className="mt-1 text-xs text-[var(--color-mute)]">{hint}</p>}
     </div>
   )
@@ -301,20 +303,15 @@ function ChartCard({
   actionLabel?: string
 }) {
   return (
-    <section
-      className="p-5 md:p-6 h-full"
-      style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
-    >
+    <section className="p-5 md:p-6 h-full"
+      style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
       <header className="flex items-end justify-between mb-4">
         <div>
           <h2 className="text-lg" style={{ fontFamily: 'var(--font-display)' }}>{title}</h2>
           {subtitle && <p className="text-xs text-[var(--color-mute)] mt-0.5">{subtitle}</p>}
         </div>
         {actionHref && actionLabel && (
-          <Link
-            href={actionHref}
-            className="inline-flex items-center gap-1 text-xs link-underline"
-          >
+          <Link href={actionHref} className="inline-flex items-center gap-1 text-xs link-underline">
             {actionLabel}
             <ArrowRight className="size-3" />
           </Link>
@@ -322,5 +319,13 @@ function ChartCard({
       </header>
       {children}
     </section>
+  )
+}
+
+function EmptyChart({ text }: { text: string }) {
+  return (
+    <div className="h-56 flex items-center justify-center">
+      <p className="text-sm text-[var(--color-mute)] italic text-center max-w-xs">{text}</p>
+    </div>
   )
 }

@@ -1,9 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AdminShell, type AdminNavBadges } from '@/components/admin-shell'
-import { MESSAGES } from '@/data/admin-mock'
 import { getListings } from '@/lib/listings'
-import { getAdminClients, getAdminDossiers, getAdminAppointments } from '@/lib/admin-db'
+import { getAdminClients, getAdminDossiers, getAdminAppointments, getAdminLeads } from '@/lib/admin-db'
 
 const DEMO_AGENT = {
   name: 'Stefanie Browaeys',
@@ -14,10 +13,16 @@ async function computeBadges(): Promise<AdminNavBadges> {
   const now = Date.now()
   const weekMs = 7 * 24 * 3600 * 1000
 
-  const [{ items: clients }, { items: dossiers }, { items: appointments }] = await Promise.all([
+  const [
+    { items: clients },
+    { items: dossiers },
+    { items: appointments },
+    { items: leads },
+  ] = await Promise.all([
     getAdminClients(),
     getAdminDossiers(),
     getAdminAppointments(),
+    getAdminLeads(),
   ])
 
   const openDossiers = dossiers.filter((d) =>
@@ -31,15 +36,14 @@ async function computeBadges(): Promise<AdminNavBadges> {
     return t >= now && t < now + weekMs && a.status !== 'cancelled'
   }).length
 
-  const total = MESSAGES.length
-  const unread = MESSAGES.filter((m) => !m.readAt).length
+  const unread = leads.filter((l) => !l.readAt).length
 
   return {
     klanten: clients.length,
     dossiers: openDossiers,
     aanbod: onlineListings,
     afspraken: upcomingThisWeek,
-    berichten: { total, unread },
+    berichten: { total: leads.length, unread },
   }
 }
 

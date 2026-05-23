@@ -255,6 +255,59 @@ export async function getAdminAppointment(id: string): Promise<AdminAppointment 
   return list.items.find((a) => a.id === id) ?? null
 }
 
+export type AdminLead = {
+  id: string
+  fromName: string
+  fromEmail: string
+  fromPhone: string | null
+  subject: string
+  body: string
+  type: 'lead' | 'schatting' | 'vraag' | 'visit_request' | 'algemeen'
+  relatedListing: string | null
+  source: string | null
+  receivedAt: string
+  readAt: string | null
+  assignedTo: string | null
+  archived: boolean
+}
+
+export async function getAdminLeads(): Promise<FetchResult<AdminLead>> {
+  const admin = createAdminClient()
+  const { data, error } = await admin
+    .from('leads')
+    .select('*')
+    .eq('archived', false)
+    .order('received_at', { ascending: false })
+  if (error) return { items: [], error: error.message }
+
+  const items = ((data ?? []) as Array<{
+    id: string; from_name: string; from_email: string; from_phone: string | null;
+    subject: string; body: string; type: AdminLead['type']; related_listing: string | null;
+    source: string | null; received_at: string; read_at: string | null; assigned_to: string | null;
+    archived: boolean;
+  }>).map((r) => ({
+    id: r.id,
+    fromName: r.from_name,
+    fromEmail: r.from_email,
+    fromPhone: r.from_phone,
+    subject: r.subject,
+    body: r.body,
+    type: r.type,
+    relatedListing: r.related_listing,
+    source: r.source,
+    receivedAt: r.received_at,
+    readAt: r.read_at,
+    assignedTo: r.assigned_to,
+    archived: r.archived,
+  }))
+  return { items }
+}
+
+export async function getAdminLead(id: string): Promise<AdminLead | null> {
+  const list = await getAdminLeads()
+  return list.items.find((l) => l.id === id) ?? null
+}
+
 export type AdminMetrics = {
   clientsTotal: number
   clientsActive: number
@@ -262,13 +315,16 @@ export type AdminMetrics = {
   dossiersOpen: number
   dossiersUnderOption: number
   appointmentsThisWeek: number
+  leadsUnread: number
+  leadsTotal: number
 }
 
 export async function getAdminMetrics(): Promise<AdminMetrics> {
-  const [clients, dossiers, appointments] = await Promise.all([
+  const [clients, dossiers, appointments, leads] = await Promise.all([
     getAdminClients(),
     getAdminDossiers(),
     getAdminAppointments(),
+    getAdminLeads(),
   ])
 
   const now = Date.now()
@@ -284,5 +340,81 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
       const t = new Date(a.start).getTime()
       return t >= now && t < now + weekMs && a.status !== 'cancelled'
     }).length,
+    leadsUnread: leads.items.filter((l) => !l.readAt).length,
+    leadsTotal: leads.items.length,
   }
+}
+
+/**
+ * Trend-data afgeleid uit DB-timestamps: leads per week + dossiers per maand,
+ * etc. Voor grafieken op het overzicht.
+ */
+export async function getAdminTrends() {
+  const [leadsRes, dossiers, appointments] = await Promise.all([
+    getAdminLeads(),
+    getAdminDossiers(),
+    getAdminAppointments(),
+  ])
+
+  // Laatste 8 weken: leads + bezichtigingen
+  const now = new Date()
+  const weekStarts: Date[] = []
+  for (let i = 7; i >= 0; i--) {
+    const d = new Date(now)
+    d.setDate(d.getDate() - i * 7)
+    d.setHours(0, 0, 0, 0)
+    weekStarts.push(d)
+  }
+  const weekTrend = weekStarts.map((start, idx) => {
+    const end = idx < weekStarts.length - 1 ? weekStarts[idx + 1] : new Date(start.getTime() + 7 * 24 * 3600 * 1000)
+    const leadsInWeek = leadsRes.items.filter((l) => {
+      const t = new Date(l.receivedAt).getTime()
+      return t >= start.getTime() && t < end.getTime()
+    }).length
+    const apptsInWeek = appointments.items.filter((a) => {
+      const t = new Date(a.start).getTime()
+      return t >= start.getTime() && t < end.getTime() && a.status !== 'cancelled'
+    }).length
+    return {
+      x: `W${getWeekNumber(start)}`,
+      Leads: leadsInWeek,
+      Bezichtigingen: apptsInWeek,
+    }
+  })
+
+  // Laatste 6 maanden: dossiers geopend per maand, per type
+  const monthStarts: Date[] = []
+  const monthLabels = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec']
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    monthStarts.push(d)
+  }
+  const dossierMonthly = monthStarts.map((start, idx) => {
+    const end = idx < monthStarts.length - 1 ? monthStarts[idx + 1] : new Date(start.getFullYear(), start.getMonth() + 1, 1)
+    const inRange = (t: string) => {
+      const tm = new Date(t).getTime()
+      return tm >= start.getTime() && tm < end.getTime()
+    }
+    return {
+      x: monthLabels[start.getMonth()],
+      Verkoop:       dossiers.items.filter((d) => d.type === 'verkoop'     && inRange(d.openedAt)).length,
+      Verhuur:       dossiers.items.filter((d) => d.type === 'verhuur'     && inRange(d.openedAt)).length,
+      'Koop-zoeker': dossiers.items.filter((d) => d.type === 'koop_zoeker' && inRange(d.openedAt)).length,
+      'Huur-zoeker': dossiers.items.filter((d) => d.type === 'huur_zoeker' && inRange(d.openedAt)).length,
+    }
+  })
+
+  return { weekTrend, dossierMonthly }
+}
+
+function getWeekNumber(d: Date): number {
+  const target = new Date(d.valueOf())
+  const dayNr = (d.getDay() + 6) % 7
+  target.setDate(target.getDate() - dayNr + 3)
+  const firstThursday = target.valueOf()
+  target.setMonth(0, 1)
+  if (target.getDay() !== 4) {
+    target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7)
+  }
+  return 1 + Math.ceil((firstThursday - target.valueOf()) / 604800000)
 }
