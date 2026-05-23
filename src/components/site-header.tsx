@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ArrowRight, Home, KeyRound, Briefcase, Users, MessageCircle, Lock, Info, Menu, X, Phone, Mail } from 'lucide-react'
+import { ArrowRight, Home, KeyRound, Briefcase, Users, MessageCircle, Lock, Info, Menu, X, Phone, Mail, Settings } from 'lucide-react'
 import { SiteTopbar } from './site-topbar'
 import { BrandLogo } from './brand-logo'
 
@@ -95,6 +95,15 @@ export function SiteHeader() {
             >
               <Lock className="size-3.5" />
               <span>Klantenportaal</span>
+            </Link>
+            <Link
+              href="/admin"
+              data-active={pathname.startsWith('/admin') || undefined}
+              className="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium uppercase tracking-[0.14em] transition-colors data-[active=true]:bg-[var(--color-paper-2)]"
+              style={{ color: 'var(--color-mute)', border: '1px solid var(--color-line)' }}
+            >
+              <Settings className="size-3.5" />
+              <span>Admin</span>
             </Link>
             <Link href="/gratis-schatting" className="pill-cta">
               Gratis schatting
