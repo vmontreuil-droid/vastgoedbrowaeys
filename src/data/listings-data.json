@@ -1,0 +1,2704 @@
+{
+    "4078690":  {
+                    "id":  "4078690",
+                    "ref":  "SB2025062333",
+                    "title":  "Te renoveren handelspand",
+                    "type":  "Handelspand",
+                    "price":  145000,
+                    "priceLabel":  "Handelspand voor € 145.000",
+                    "street":  "Oude Steenweg 11",
+                    "zip":  "9500",
+                    "city":  "Geraardsbergen",
+                    "description":  "Dit te renoveren handelspand is gekend ver weg buiten Geraardsbergen en uitgebaat als horecapand. Het biedt tal van mogelijkheden voor ondernemers of projectontwikkelaars met een visie. Gelegen op een centrale locatie met goede bereikbaarheid en mogelijkheid tot functiewijziging. Voor meer informatie of een bezoek ter plaatse bel Stefanie op het nummer 055/59 50 10 of email [email protected]",
+                    "fields":  [
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Naam",
+                                       "value":  "Stefanie Browaeys"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "GSM",
+                                       "value":  "+32 478 72 13 00"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "E-mail",
+                                       "value":  "[email protected]"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Prijs",
+                                       "value":  "€ 145.000"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "KI (niet geïndexeerd)",
+                                       "value":  "€ 877"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "EPC ref.",
+                                       "value":  "202503220003559799-knr-1"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Totale opp. grond",
+                                       "value":  "193 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Elektriciteit",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Internet",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Riolering",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Stadswater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Telefoon",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Beglazing",
+                                       "value":  "Enkele"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Raamwerk",
+                                       "value":  "Hout"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Verwarming",
+                                       "value":  "Gaskachels"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Bouwjaar",
+                                       "value":  "1850"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Algemene staat",
+                                       "value":  "Te renoveren"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Beschikbaar",
+                                       "value":  "Bij authentieke akte"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Huisdieren toegestaan",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Elektriciteitscertificaat",
+                                       "value":  "Ja, Niet conform"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Lift",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Asbest - attest",
+                                       "value":  "Niet-destructieve asbestinventaris"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Overstromingsgevoeligheid",
+                                       "value":  "Niet overstromingsgevoelig"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Afgebakende zone",
+                                       "value":  "Niet van toepassing"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "G(ebouw)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "P(erceel)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Stedenbouwkundige bestemming",
+                                       "value":  "Woongebied"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Dagvaarding voor stedenbouwkundige overtreding",
+                                       "value":  "Geen rechterlijke herstelmaatregel of bestuurlijke maatregel opgelegd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Bouwvergunning",
+                                       "value":  "Niet ingegeven"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Verkavelingsvergunning",
+                                       "value":  "Niet ingegeven"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Voorkooprecht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Beschermd erfgoed",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Geïnventariseerd erfgoed",
+                                       "value":  "Inventaris van archeologische zones"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Renovatieplicht",
+                                       "value":  "Ja"
+                                   }
+                               ]
+                },
+    "4210796":  {
+                    "id":  "4210796",
+                    "ref":  "JVDV3122025",
+                    "title":  "Handelspand met woonst te koop in het centrum van Zwalm",
+                    "type":  "Handelspand",
+                    "price":  380000,
+                    "priceLabel":  "Handelspand voor € 380.000",
+                    "street":  "Zuidlaan 38",
+                    "zip":  "9630",
+                    "city":  "Zwalm",
+                    "description":  "Op zoek naar een commercieel interessant pand met goede zichtbaarheid én woongelegenheid? Dit voormalige slagerijpand in het hart van Zwalm biedt tal van mogelijkheden en is ideaal voor de kleine zelfstandige of vrije beroeper. Een belangrijke troef is de toegankelijkheid langs twee straten: zowel via de Zuidlaan als de Decoenestraat is het perceel bereikbaar. Dit zorgt voor een vlotte bereikbaarheid voor klanten, leveringen en eventueel aparte privé- en handelsingang. De bovengelegen woonst omvat: een leefruimte met uitzicht op groen een badkamer twee slaapkamers een vaste trap naar de zolderverdieping, die nog verder kan afgewerkt worden tot extra slaap- of werkruimtes Dit pand is bijzonder geschikt voor: -detailhandel of buurtwinkel -vrije beroepen (zoals kinesist, therapeut, boekhouder, …) -zelfstandigen die wonen en werken willen combineren Voor meer informatie of een bezoek, contacteer Stefanie op het nummer 055/59 50 10 of via e-mail op [email protected] .",
+                    "fields":  [
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Badkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Keuken",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "3x Slaapkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Woonkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Berging",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Zolder",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Toonzaal",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC ref.",
+                                       "value":  "20250711-0003645331-KNR-1"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Label",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Totale opp. grond",
+                                       "value":  "768 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bewoonbare opp.",
+                                       "value":  "498 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Distributie",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteit",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Internet",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Regenwater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Riolering",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Septische put",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stadswater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stookolie",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Telefoon",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beglazing",
+                                       "value":  "Dubbele"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Dak",
+                                       "value":  "Zadeldak"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteit",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Keuken",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Raamwerk",
+                                       "value":  "Hout"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Sanitair",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verwarming",
+                                       "value":  "Stookolie"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verdieping",
+                                       "value":  "3"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Algemene staat",
+                                       "value":  "Te renoveren"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bemeubeld",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Oriëntatie tuin",
+                                       "value":  "West"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteitscertificaat",
+                                       "value":  "Ja, Niet conform"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Lift",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Asbest - attest",
+                                       "value":  "Niet-destructieve asbestinventaris"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Overstromingsgevoeligheid",
+                                       "value":  "Mogelijk overstromingsgevoelig"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "G(ebouw)-score",
+                                       "value":  "D"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "P(erceel)-score",
+                                       "value":  "D"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stedenbouwkundige bestemming",
+                                       "value":  "Woongebied"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Dagvaarding voor stedenbouwkundige overtreding",
+                                       "value":  "Geen rechterlijke herstelmaatregel of bestuurlijke maatregel opgelegd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwvergunning",
+                                       "value":  "Gebouwd voor 1962"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verkavelingsvergunning",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Voorkooprecht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "As-built attest",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschermd erfgoed",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Renovatieplicht",
+                                       "value":  "Ja"
+                                   }
+                               ]
+                },
+    "4211572":  {
+                    "id":  "4211572",
+                    "ref":  "FV20251204",
+                    "title":  "Bouwgrond te koop voor halfopen bebouwing",
+                    "type":  "Bouwgrond",
+                    "price":  149000,
+                    "priceLabel":  "Bouwgrond voor € 149.000",
+                    "street":  "Geraardsbergsestraat 143/B",
+                    "zip":  "9660",
+                    "city":  "Brakel",
+                    "description":  "Ontdek deze halfopen bebouwing waar de hoofdfunctie wonen is, maar waar tegelijk ruimte is voor een nevenactiviteit zoals een vrij beroep. Op het gelijkvloers kan er gebouwd worden tot 18 meter diepte, wat heel wat mogelijkheden biedt voor extra leefruimte of professionele invulling. Op de verdiepingen kan tot 12 meter diepte worden gebouwd. Zowel een plat dak als hellend dak behoort tot de opties. Daarbovenop is deze bouwgrond gunstig gelegen nabij het centrum van Nederbrakel, waardoor winkels, scholen en voorzieningen steeds binnen handbereik zijn. Voor meer informatie, contacteer Stefanie op het nummer 055/59 50 10 of email [email protected]",
+                    "fields":  [
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Naam",
+                                       "value":  "Stefanie Browaeys"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "GSM",
+                                       "value":  "+32 478 72 13 00"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "E-mail",
+                                       "value":  "[email protected]"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Prijs",
+                                       "value":  "€ 149.000"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Totale opp. grond",
+                                       "value":  "1.057 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Beschikbaar",
+                                       "value":  "Bij akte"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Oriëntatie tuin",
+                                       "value":  "Noordoost"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "G(ebouw)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "P(erceel)-score",
+                                       "value":  "B"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Stedenbouwkundige bestemming",
+                                       "value":  "Woongebied"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Dagvaarding voor stedenbouwkundige overtreding",
+                                       "value":  "Geen rechterlijke herstelmaatregel of bestuurlijke maatregel opgelegd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Bouwvergunning",
+                                       "value":  "Niet ingegeven"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Verkavelingsvergunning",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Voorkooprecht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Beschermd erfgoed",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Renovatieplicht",
+                                       "value":  "Niet ingegeven"
+                                   }
+                               ]
+                },
+    "4280579":  {
+                    "id":  "4280579",
+                    "ref":  "SB20260122",
+                    "title":  "Bouwgrond (527m²) voor HOB in Overboelare",
+                    "type":  "Bouwgrond",
+                    "price":  110000,
+                    "priceLabel":  "Bouwgrond voor € 110.000",
+                    "street":  "Gaverstraat 81",
+                    "zip":  "9500",
+                    "city":  "Geraardsbergen",
+                    "description":  "Deze grond gelegen in de Gaverstraat in Overboelare is ideaal geschikt voor diegene die op zoek zijn naar een betaalbaar stuk bouwgrond. De bouwdiepte bedraagt 11,85m² op een gevelbreedte van een gemiddelde van 7m. Kroonlijsthoogte bedraagt 5,49m. Er is reeds een positief stedenbouwkundige attest voorhanden met bovenvermelde voorschriften. Voor meer info bel Stefanie op het nummer 0478/72 13 00 of email [email protected]",
+                    "fields":  [
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Naam",
+                                       "value":  "Stefanie Browaeys"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "GSM",
+                                       "value":  "+32 478 72 13 00"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "E-mail",
+                                       "value":  "[email protected]"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Prijs",
+                                       "value":  "€ 110.000"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Totale opp. grond",
+                                       "value":  "527 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Bewoonbare opp.",
+                                       "value":  "165 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Breedte huis",
+                                       "value":  "7 m"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Diepte huis",
+                                       "value":  "11 m"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Beschikbaar",
+                                       "value":  "Bij authentieke akte"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Oriëntatie tuin",
+                                       "value":  "Noord"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Overstromingsgevoeligheid",
+                                       "value":  "Mogelijk overstromingsgevoelig"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Afgebakende zone",
+                                       "value":  "Niet van toepassing"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "P(erceel)-score",
+                                       "value":  "D"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Stedenbouwkundige bestemming",
+                                       "value":  "Woongebied met landelijk karakter"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Dagvaarding voor stedenbouwkundige overtreding",
+                                       "value":  "Geen rechterlijke herstelmaatregel of bestuurlijke maatregel opgelegd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Bouwvergunning",
+                                       "value":  "Geen bouwvergunning"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Verkavelingsvergunning",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Voorkooprecht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Beschermd erfgoed",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Renovatieplicht",
+                                       "value":  "Niet ingegeven"
+                                   }
+                               ]
+                },
+    "4288662":  {
+                    "id":  "4288662",
+                    "ref":  "SB2025062333C",
+                    "title":  "Te renoveren tweewoonst met twee huisnummers",
+                    "type":  "Woning",
+                    "price":  110000,
+                    "priceLabel":  "Woning voor € 110.000",
+                    "street":  "Oude Steenweg 11",
+                    "zip":  "9500",
+                    "city":  "Geraardsbergen",
+                    "description":  "Dit te renoveren voormalige handelspand is gekend ver weg buiten Geraardsbergen en werd uitgebaat als horeca met bovenaan woonst. Het biedt tal van mogelijkheden voor handige doe-het-zelvers of aannemers die op zoek zijn naar een pand voor renovatie. Gelegen op een centrale locatie met goede bereikbaarheid. Voor meer informatie omtrent de mogelijkheden aarzel niet en contacteer ons. Voor meer informatie of een bezoek ter plaatse bel Stefanie op het nummer 055/59 50 10 of email [email protected]",
+                    "fields":  [
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Badkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Berging",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Kelder",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Keuken",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "4x Slaapkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "3x Toilet",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Garage",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC ref.",
+                                       "value":  "202503220003559799-knr-1"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Totale opp. grond",
+                                       "value":  "193 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bewoonbare opp.",
+                                       "value":  "250 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bebouwbare opp.",
+                                       "value":  "180 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Aardgas",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteit",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Internet",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Riolering",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stadswater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Telefoon",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beglazing",
+                                       "value":  "Enkele"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Raamwerk",
+                                       "value":  "Hout"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verwarming",
+                                       "value":  "Gaskachels"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwjaar",
+                                       "value":  "1850"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bebouwing",
+                                       "value":  "Gesloten"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Algemene staat",
+                                       "value":  "Te renoveren"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschikbaar",
+                                       "value":  "Bij authentieke akte"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Huisdieren toegestaan",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteitscertificaat",
+                                       "value":  "Ja, Niet conform"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Lift",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Asbest - attest",
+                                       "value":  "Niet-destructieve asbestinventaris"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Overstromingsgevoeligheid",
+                                       "value":  "Niet overstromingsgevoelig"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Afgebakende zone",
+                                       "value":  "Niet van toepassing"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "G(ebouw)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "P(erceel)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stedenbouwkundige bestemming",
+                                       "value":  "Woongebied"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Dagvaarding voor stedenbouwkundige overtreding",
+                                       "value":  "Geen rechterlijke herstelmaatregel of bestuurlijke maatregel opgelegd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwvergunning",
+                                       "value":  "Niet ingegeven"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verkavelingsvergunning",
+                                       "value":  "Niet ingegeven"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Voorkooprecht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschermd erfgoed",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Geïnventariseerd erfgoed",
+                                       "value":  "Inventaris van archeologische zones"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Renovatieplicht",
+                                       "value":  "Ja"
+                                   }
+                               ]
+                },
+    "4293093":  {
+                    "id":  "4293093",
+                    "ref":  "FV20260211",
+                    "title":  "Te renoveren bungalow met polyvalente ruimte en aanpalende weide",
+                    "type":  "Woning",
+                    "price":  395000,
+                    "priceLabel":  "Woning voor € 395.000",
+                    "street":  "Heerweg 28",
+                    "zip":  "9667",
+                    "city":  "Horebeke",
+                    "description":  "Kom deze eigendom bezoeken op 21 maart zonder afspraak! Ben je een kleine zelfstandige op zoek naar extra ruimte voor je activiteit? Of heb je nood aan heel wat opslagplaats? Dan is deze veelzijdige bungalow precies wat je zoekt! Deze eigendom geniet van een strategische ligging langs een vlotte verbindingsweg tussen Brakel en Oudenaarde. Je profiteert hier van een uitstekende bereikbaarheid én van een groene, rustige omgeving achteraan het perceel – de perfecte combinatie van werken en wonen. De woning biedt een praktische en doordachte indeling met een dubbele garage, inkomhal, drie volwaardige slaapkamers, een lichtrijke en ruime woonkamer, keuken, badkamer, veranda, kelder en extra bergruimte. Via een vaste trap bereik je de zolder, die momenteel ingericht is als stockageplaats. U kan makkelijk deze woning naar een D label brengen door de vloer die grenst aan de kelder te isoleren, de aanwezige isolatie op de zoldervloer te verdikken naar 18cm isolatie en plaatsen van zonnepanelen. Een absolute troef is de polyvalente ruimte achteraan, die zowel bereikbaar is via de garage als via een aparte toegang langs achter. Ideaal voor zelfstandige activiteit, atelier, opslag of hobbyruimte. Benieuwd naar de mogelijkheden? Ontdek zelf het potentieel van deze eigendom! Interesse? Neem vandaag nog contact met ons op voor meer informatie of een bezoek. 📞 055 59 50 10 📧 [email protected]",
+                    "fields":  [
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Keuken",
+                                       "value":  "14 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "3x Slaapkamer",
+                                       "value":  "14 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Badkamer",
+                                       "value":  "4,6 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Kelder",
+                                       "value":  "9,8 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Zolder",
+                                       "value":  "156 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Veranda",
+                                       "value":  "13,13 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Garage",
+                                       "value":  "48,16 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Berging",
+                                       "value":  "13,74 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Berging",
+                                       "value":  "7,75 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Woonkamer",
+                                       "value":  "28 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC",
+                                       "value":  "446 kWh/m 2 /jaar"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC ref.",
+                                       "value":  "20260213-0003802618-res-2"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Label",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Totale opp. grond",
+                                       "value":  "2.937 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bewoonbare opp.",
+                                       "value":  "294 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Breedte grond",
+                                       "value":  "24 m"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Aardgas",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Distributie",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteit",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Internet",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Regenwater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Riolering",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Septische put",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stadswater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beglazing",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteit",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Keuken",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Raamwerk",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verwarming",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwjaar",
+                                       "value":  "1971"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bebouwing",
+                                       "value":  "Open"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Algemene staat",
+                                       "value":  "Te renoveren"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschikbaar",
+                                       "value":  "Bij authentieke akte"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bemeubeld",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Huisdieren toegestaan",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Oriëntatie tuin",
+                                       "value":  "Zuidwest"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteitscertificaat",
+                                       "value":  "Ja, Niet conform"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Lift",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Asbest - attest",
+                                       "value":  "Niet-destructieve asbestinventaris"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Overstromingsgevoeligheid",
+                                       "value":  "Niet overstromingsgevoelig"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Afgebakende zone",
+                                       "value":  "Niet van toepassing"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "G(ebouw)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "P(erceel)-score",
+                                       "value":  "B"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stedenbouwkundige bestemming",
+                                       "value":  "Woongebied met landelijk karakter"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Dagvaarding voor stedenbouwkundige overtreding",
+                                       "value":  "Geen rechterlijke herstelmaatregel of bestuurlijke maatregel opgelegd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwvergunning",
+                                       "value":  "Bouw vergund"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verkavelingsvergunning",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Voorkooprecht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "As-built attest",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschermd erfgoed",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Renovatieplicht",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Maatregelenregister",
+                                       "value":  "Neen"
+                                   }
+                               ]
+                },
+    "4305961":  {
+                    "id":  "4305961",
+                    "ref":  "20260306",
+                    "title":  "Authentieke hoeve met bijgebouwen en aangename tuin midden in een oase van groen",
+                    "type":  "Woning",
+                    "price":  420000,
+                    "priceLabel":  "Woning voor € 420.000",
+                    "street":  "Sint-Annastraat 3",
+                    "zip":  "9630",
+                    "city":  "Zwalm",
+                    "description":  "Deze ruime en karaktervolle hoeve biedt een unieke kans voor wie op zoek is naar een eigendom met uitstraling en toekomstmogelijkheden. De bestaande gebouwen en de flexibele indeling maken het pand bijzonder geschikt voor cohousing, een gedeeld atelier of creatieve en ambachtelijke activiteiten. Pluspunten: - Rustige ligging in een landelijke dorpskern met historisch karakter - Meerdere bijgebouwen en ruime binnen- en buitenoppervlakte - Tal van mogelijkheden voor wonen, werken of een combinatie van beide De hoeve vraagt renovatie, maar vormt een ideale basis om een hedendaags project te ontwikkelen met respect voor haar authentieke charme. Door de bijzondere structuur en de ruime opzet leent dit pand zich perfect voor cohousing, een kunstatelier, een artisanaal project of een inspirerende woon-werkplek. De erfgoedstatus vraagt een respectvolle aanpak, maar zorgt tegelijk voor een unieke sfeer en historische meerwaarde. Kom deze site vrijblijvend bezoeken op zaterdag 21 maart 2026 tussen 9u en 10u. Past deze datum niet? Contacteer Stefanie op 055/59 50 10 of via [email protected] voor meer info of een bezoek op een ander moment.",
+                    "fields":  [
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Badkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Berging",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Kelder",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Keuken",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "4x Slaapkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Tuin",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Woonkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC",
+                                       "value":  "1.099 kWh/m 2 /jaar"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC ref.",
+                                       "value":  "20240926-0003386135-res-2"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Label",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Totale opp. grond",
+                                       "value":  "2.250 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bewoonbare opp.",
+                                       "value":  "176 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Distributie",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteit",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Riolering",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Septische put",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stadswater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Telefoon",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beglazing",
+                                       "value":  "Enkele"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwjaar",
+                                       "value":  "1919"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Renovatiejaar",
+                                       "value":  "1945"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bebouwing",
+                                       "value":  "Open"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Algemene staat",
+                                       "value":  "Totale verbouwing"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschikbaar",
+                                       "value":  "Bij authentieke akte"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bemeubeld",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Huisdieren toegestaan",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteitscertificaat",
+                                       "value":  "Ja, Niet conform"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Lift",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Asbest - attest",
+                                       "value":  "Niet-destructieve asbestinventaris"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Overstromingsgevoeligheid",
+                                       "value":  "Niet overstromingsgevoelig"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Afgebakende zone",
+                                       "value":  "Niet van toepassing"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "G(ebouw)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "P(erceel)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stedenbouwkundige bestemming",
+                                       "value":  "Woongebied met landelijk karakter"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Dagvaarding voor stedenbouwkundige overtreding",
+                                       "value":  "Geen rechterlijke herstelmaatregel of bestuurlijke maatregel opgelegd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwvergunning",
+                                       "value":  "Gebouwd voor 1962"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verkavelingsvergunning",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Voorkooprecht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "As-built attest",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschermd erfgoed",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Geïnventariseerd erfgoed",
+                                       "value":  "Beschermd dorpsgezicht"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Renovatieplicht",
+                                       "value":  "Ja"
+                                   }
+                               ]
+                },
+    "4332707":  {
+                    "id":  "4332707",
+                    "ref":  "TL20260312",
+                    "title":  "Gelijkvloers appartement met terras en tuin",
+                    "type":  "Appartement",
+                    "price":  320000,
+                    "priceLabel":  "Appartement voor € 320.000",
+                    "street":  "Tweekerkenstraat 102/1",
+                    "zip":  "9620",
+                    "city":  "Zottegem",
+                    "description":  "Ontdek dit gelijkvloers appartement in Zottegem, met een uitzonderlijke ligging vlakbij het ziekenhuis, winkels, openbaar vervoer en alle dagelijkse voorzieningen. Het appartement bevindt zich in een recent en kwalitatief residentieel gebouw uit 2017. Dankzij de uitstekende energieprestatie geniet u van een energiezuinige woning met lagere verbruikskosten. Het appartement wordt verwarmd door vloerverwarming, aangedreven door een condenserend gaswandtekel. Verse en zuivere lucht wordt gegarandeerd door een vraag gestuurd ventilatiesysteem C+. Binnen treft u een lichtrijke leefruimte met aansluitend een volledig ingerichte keuken, voorzien van oven, keramische kookplaat en vaatwasser. Het appartement beschikt over twee ruime slaapkamers, badkamer met inloopdouche en bad, afzonderlijke gastentoilet. Extra troef is het gezellige ruime terras. Bij het appartement behoort privatieve parkeergelegenheid, rechtstreeks toegankelijk aan het appartement, wat zorgt voor extra comfort en praktische bereikbaarheid. Dankzij de recente bouw, de uitstekende energieprestaties en de sterke ligging is dit appartement uitermate geschikt als investering met aantrekkelijk verhuurpotentieel, maar eveneens perfect als eigen woonst. Kom dit pand bezoeken op zaterdag 21 maart zonder afspraak. Interesse? Neem gerust contact op met Thomas op 055/59.50.10 of [email protected] voor meer informatie of een bezoek ter plaatse.",
+                    "fields":  [
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Leefruimte met open keuken",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Badkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Berging",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "2x Slaapkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Terras",
+                                       "value":  "12 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Toilet",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Tuin",
+                                       "value":  "74 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC",
+                                       "value":  "72 kWh/m 2 /jaar"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC ref.",
+                                       "value":  "41081-G-2016_69/EP15702/A001/D01/SD001"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Label",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "E peil",
+                                       "value":  "39"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Totale opp. grond",
+                                       "value":  "189 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bewoonbare opp.",
+                                       "value":  "102 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Aardgas",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Distributie",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteit",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Internet",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Regenwater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Riolering",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Septische put",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stadswater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Videofoon",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Vloerverwarming",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beglazing",
+                                       "value":  "Dubbele"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteit",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Isolatie",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Keuken",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Loodgieter",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Raamwerk",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Sanitair",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verwarming",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwjaar",
+                                       "value":  "2017"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bebouwing",
+                                       "value":  "Gesloten"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Algemene staat",
+                                       "value":  "Instapklaar"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschikbaar",
+                                       "value":  "Bij authentieke akte"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bemeubeld",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Huisdieren toegestaan",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteitscertificaat",
+                                       "value":  "Ja, Conform"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Lift",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Grondplan",
+                                       "value":  "Niet overstromingsgevoelig"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Afgebakende zone",
+                                       "value":  "Niet van toepassing"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stedenbouwkundige bestemming",
+                                       "value":  "Woongebied"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Dagvaarding voor stedenbouwkundige overtreding",
+                                       "value":  "Geen rechterlijke herstelmaatregel of bestuurlijke maatregel opgelegd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwvergunning",
+                                       "value":  "Bouw vergund"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verkavelingsvergunning",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Voorkooprecht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschermd erfgoed",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Renovatieplicht",
+                                       "value":  "Niet ingegeven"
+                                   }
+                               ]
+                },
+    "4334037":  {
+                    "id":  "4334037",
+                    "ref":  "SB20260313",
+                    "title":  "Te renoveren starterswoning met ruime tuin",
+                    "type":  "Woning",
+                    "price":  175000,
+                    "priceLabel":  "Woning voor € 175.000",
+                    "street":  "Oudendries 7",
+                    "zip":  "9550",
+                    "city":  "Herzele",
+                    "description":  "Deze woning is gunstig gelegen nabij het centrum van Herzele, in de buurt van winkels, scholen en openbaar vervoer. Bij het binnenkomen bevindt zich lichtrijke woonkamer met aansluitende eetruimte en open uitgeruste keuken – de ideale plek om samen te koken en te genieten. De ingerichte badkamer beschikt over een ligbad en lavabo en mogelijkheid voor het plaatsen van een wasmachine. Een groot pluspunt is de praktische doorgang naar de achtergelegen tuin en bergingen, zodat u vuilnis, fietsen of tuinmateriaal gemakkelijk buitenom kunt verplaatsen zonder door het huis te moeten. De tuin biedt bovendien een fijne buitenruimte om te ontspannen. Op de verdieping bevinden zich twee ruime, ingerichte slaapkamers, en via een vaste trap bereikt u de ruime zolderverdieping, die nog verder kan worden afgewerkt tot extra slaapkamer, bureau of hobbyruimte. Momenteel is de woning verhuurd en zijn er geen verdere foto\u0027s beschikbaar van de binnenkant. Voor meer info of een bezoek bel Stefanie op het nummer 055/59 50 10 of email [email protected]",
+                    "fields":  [
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Badkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Berging",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Eetkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Keuken",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "2x Slaapkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Tuin",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC",
+                                       "value":  "379 kWh/m 2 /jaar"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC ref.",
+                                       "value":  "20251016-0003711246-RES-1"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Label",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Totale opp. grond",
+                                       "value":  "278 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bewoonbare opp.",
+                                       "value":  "143 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Breedte huis",
+                                       "value":  "5 m"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Breedte grond",
+                                       "value":  "5 m"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Diepte huis",
+                                       "value":  "20 m"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Aardgas",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Distributie",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteit",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Internet",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Riolering",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stadswater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Telefoon",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beglazing",
+                                       "value":  "Dubbele"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Dak",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteit",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Isolatie",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Keuken",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Raamwerk",
+                                       "value":  "PVC"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Sanitair",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verwarming",
+                                       "value":  "Aardgas"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwjaar",
+                                       "value":  "1875"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Renovatiejaar",
+                                       "value":  "2010"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bebouwing",
+                                       "value":  "Gesloten"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Algemene staat",
+                                       "value":  "Te renoveren"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschikbaar",
+                                       "value":  "Momenteel verhuurd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bemeubeld",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Huisdieren toegestaan",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Oriëntatie tuin",
+                                       "value":  "Noordoost"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteitscertificaat",
+                                       "value":  "Ja, Niet conform"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Lift",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Asbest - attest",
+                                       "value":  "Niet-destructieve asbestinventaris"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Overstromingsgevoeligheid",
+                                       "value":  "Mogelijk overstromingsgevoelig"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "G(ebouw)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "P(erceel)-score",
+                                       "value":  "D"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stedenbouwkundige bestemming",
+                                       "value":  "Woongebied"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Dagvaarding voor stedenbouwkundige overtreding",
+                                       "value":  "Geen rechterlijke herstelmaatregel of bestuurlijke maatregel opgelegd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwvergunning",
+                                       "value":  "Gebouwd voor 1962"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verkavelingsvergunning",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Voorkooprecht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "As-built attest",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschermd erfgoed",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Renovatieplicht",
+                                       "value":  "Neen"
+                                   }
+                               ]
+                },
+    "4335011":  {
+                    "id":  "4335011",
+                    "ref":  "SB20260316",
+                    "title":  "Ideale starterswoning met ruime aangename tuin",
+                    "type":  "Woning",
+                    "price":  260000,
+                    "priceLabel":  "Woning voor € 260.000",
+                    "street":  "Hugo Verrieststraat 60",
+                    "zip":  "9470",
+                    "city":  "Denderleeuw",
+                    "description":  "Op zoek naar een betaalbare en gezellige woning met potentieel? De woning beschikt over een praktische indeling en biedt alle basiscomfort . Op het gelijkvloers bevindt zich de leefruimte met aansluitend de keuken, de badkamer en toegang tot het aangename, ruime terras en de tuin. Dankzij de extra passagegang is de tuin ook vlot bereikbaar zonder door de woning te moeten gaan – een grote troef voor fietsen, vuilnis of tuinonderhoud. Op de bovenverdieping vindt u vier volwaardige slaapkamers , ideaal als slaap-, werk- of hobbyruimte. Verder biedt de woning nog mogelijkheden om naar eigen smaak te moderniseren en in te richten. Deze woning combineert een goede ligging met een mooie buitenruimte en tal van mogelijkheden. Met de juiste aanpak maakt u hier een warme thuis van! Voor meer informatie of een bezoek bel Stefanie op het nummer 055/59 50 10 of email [email protected]",
+                    "fields":  [
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Badkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "2x Berging",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Eetkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Keuken",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "4x Slaapkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Terras",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Tuin",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC",
+                                       "value":  "505 kWh/m 2 /jaar"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC ref.",
+                                       "value":  "20260320-003829060-RES-1"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Label",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Totale opp. grond",
+                                       "value":  "230 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bewoonbare opp.",
+                                       "value":  "195 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Distributie",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteit",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Riolering",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beglazing",
+                                       "value":  "Dubbele"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Dak",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Raamwerk",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verwarming",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwjaar",
+                                       "value":  "1932"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bebouwing",
+                                       "value":  "Gesloten"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Algemene staat",
+                                       "value":  "Licht op te frissen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Oriëntatie tuin",
+                                       "value":  "Zuidoost"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteitscertificaat",
+                                       "value":  "Ja, Niet conform"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Lift",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Asbest - attest",
+                                       "value":  "Niet-destructieve asbestinventaris"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Overstromingsgevoeligheid",
+                                       "value":  "Mogelijk overstromingsgevoelig"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Afgebakende zone",
+                                       "value":  "Niet van toepassing"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "G(ebouw)-score",
+                                       "value":  "B"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "P(erceel)-score",
+                                       "value":  "B"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stedenbouwkundige bestemming",
+                                       "value":  "Woongebied"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Dagvaarding voor stedenbouwkundige overtreding",
+                                       "value":  "Geen rechterlijke herstelmaatregel of bestuurlijke maatregel opgelegd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwvergunning",
+                                       "value":  "Gebouwd voor 1962"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verkavelingsvergunning",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Voorkooprecht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschermd erfgoed",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Renovatieplicht",
+                                       "value":  "Niet ingegeven"
+                                   }
+                               ]
+                },
+    "4340985":  {
+                    "id":  "4340985",
+                    "ref":  "FV20260326",
+                    "title":  "Karaktervolle rijwoning met een gezellige tuin",
+                    "type":  "Woning",
+                    "price":  265000,
+                    "priceLabel":  "Woning voor € 265.000",
+                    "street":  "Dorpsstraat 36",
+                    "zip":  "9667",
+                    "city":  "Horebeke",
+                    "description":  "In de charmante dorpskern van Horebeke bevindt zich deze statige, goed onderhouden rijwoning met garage, veranda, terras en tuin . Deze karaktervolle woning biedt een praktische indeling, mooie volumes en vormt de ideale basis voor wie op zoek is naar een woning met veel potentieel, die nog verder naar eigen smaak kan worden opgefrist. Bij het betreden van de woning komt u binnen in een ruime inkomhal, die meteen de statige uitstraling van deze eigendom benadrukt. Aansluitend bevindt zich de lichtrijke leefruimte, gevolgd door een aparte keuken en een veranda met zicht op de buitenruimte. Verder beschikt de woning op het gelijkvloers over een garage, een terras en een aangename tuin, wat zorgt voor extra comfort en gebruiksgemak. Op de bovenverdieping bevinden zich drie volwaardige slaapkamers en een badkamerruimte. Mits een opfrissing of renovatie kan deze eigendom uitgroeien tot een bijzonder aangename en stijlvolle thuis. Voor meer informatie of een bezoek ter plaatse bel Stefanie op het nummer 055/59 50 10 of email [email protected]",
+                    "fields":  [
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Garage",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Woonkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Veranda",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Keuken",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Kelder",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "3x Slaapkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Badkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Zolder",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC",
+                                       "value":  "304 kWh/m 2 /jaar"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "EPC ref.",
+                                       "value":  "20260324--000383160-8"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Label",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Totale opp. grond",
+                                       "value":  "226 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bewoonbare opp.",
+                                       "value":  "162 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Aardgas",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Distributie",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteit",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Internet",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Regenwater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Riolering",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stadswater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beglazing",
+                                       "value":  "Dubbele"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Dak",
+                                       "value":  "Zadeldak"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteit",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Raamwerk",
+                                       "value":  "Hout"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verwarming",
+                                       "value":  "Aardgas"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bebouwing",
+                                       "value":  "Gesloten"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Algemene staat",
+                                       "value":  "Te renoveren"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschikbaar",
+                                       "value":  "Bij authentieke akte"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bemeubeld",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Oriëntatie tuin",
+                                       "value":  "Noordwest"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Elektriciteitscertificaat",
+                                       "value":  "Ja, Niet conform"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Lift",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Asbest - attest",
+                                       "value":  "Niet-destructieve asbestinventaris"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Overstromingsgevoeligheid",
+                                       "value":  "Niet overstromingsgevoelig"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "G(ebouw)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "P(erceel)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Stedenbouwkundige bestemming",
+                                       "value":  "Woongebied met landelijk karakter"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Dagvaarding voor stedenbouwkundige overtreding",
+                                       "value":  "Geen rechterlijke herstelmaatregel of bestuurlijke maatregel opgelegd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Bouwvergunning",
+                                       "value":  "Gebouwd voor 1962"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Verkavelingsvergunning",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Voorkooprecht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "As-built attest",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Beschermd erfgoed",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Renovatieplicht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Maatregelenregister",
+                                       "value":  "Neen"
+                                   }
+                               ]
+                },
+    "4365674":  {
+                    "id":  "4365674",
+                    "ref":  "SB20260505",
+                    "title":  "Instapklare woning zonder renovatieverplichting",
+                    "type":  "Woning",
+                    "price":  260000,
+                    "priceLabel":  "Woning voor € 260.000",
+                    "street":  "Stationsstraat 85",
+                    "zip":  "9690",
+                    "city":  "Kluisbergen",
+                    "description":  "Bent u op zoek naar een instapklare woning zonder renovatieverplichting in het charmante Kluisbergen? In de Stationsstraat bevindt zich deze verzorgde woning waar reeds renovatiewerken werden uitgevoerd, waardoor u hier zonder zorgen uw intrek kunt nemen. Met een EPC-label C voldoet de woning aan de huidige energienormen en biedt ze een mooie balans om te starten. Bij het betreden van de woning komt u terecht in een gezellige leefruimte die aansluit op de aparte keuken met eethoek. Verder beschikt het gelijkvloers over een praktische kelder, meerdere bergruimtes en een onderhoudsvriendelijke koer waar u in alle rust kan genieten van een buitenmoment. Op de bovenverdieping bevinden zich drie volwaardige slaapkamers, aangevuld met een extra ruimte die perfect dienst kan doen als bureau of strijkkamer. De ingerichte en vernieuwde badkamer zorgt voor hedendaags comfort. Via een vaste trap bereikt u de zolderverdieping, ideaal als extra stockageruimte. Kom deze woning zonder afspraak bezoeken op zaterdag 21 maart of contacteer ons vandaag nog voor meer informatie of een bezoek ter plaatse en bel Stefanie op het nummer 055/59 50 10 of email [email protected]",
+                    "fields":  [
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "2x Berging",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Eetkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Garage",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "Kelder",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "2x Parkeerplaats",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Gelijkvloers",
+                                       "label":  "2x Toilet",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 1",
+                                       "label":  "Badkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 1",
+                                       "label":  "3x Slaapkamer",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 1",
+                                       "label":  "Bureau",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Zolder",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "EPC",
+                                       "value":  "259 kWh/m 2 /jaar"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "EPC ref.",
+                                       "value":  "20260218-0003805930-res-1"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Label",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Totale opp. grond",
+                                       "value":  "250 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Bewoonbare opp.",
+                                       "value":  "180 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Aardgas",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Distributie",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Elektriciteit",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Internet",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Regenwater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Riolering",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Septische put",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Stadswater",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Telefoon",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Zonneboiler",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Beglazing",
+                                       "value":  "Dubbele"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Dak",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Elektriciteit",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Isolatie",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Keuken",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Raamwerk",
+                                       "value":  "PVC"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Sanitair",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Verwarming",
+                                       "value":  ""
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Bouwjaar",
+                                       "value":  "1925"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Renovatiejaar",
+                                       "value":  "2015"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Algemene staat",
+                                       "value":  "Licht op te frissen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Beschikbaar",
+                                       "value":  "Bij authentieke akte"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Bemeubeld",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Huisdieren toegestaan",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Oriëntatie tuin",
+                                       "value":  "Noordoost"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Elektriciteitscertificaat",
+                                       "value":  "Ja, Conform"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Lift",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Asbest - attest",
+                                       "value":  "Niet-destructieve asbestinventaris"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Overstromingsgevoeligheid",
+                                       "value":  "Niet overstromingsgevoelig"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Afgebakende zone",
+                                       "value":  "Niet van toepassing"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "G(ebouw)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "P(erceel)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Stedenbouwkundige bestemming",
+                                       "value":  "Woongebied met landelijk karakter"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Dagvaarding voor stedenbouwkundige overtreding",
+                                       "value":  "Geen rechterlijke herstelmaatregel of bestuurlijke maatregel opgelegd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Bouwvergunning",
+                                       "value":  "Gebouwd voor 1962"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Verkavelingsvergunning",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Voorkooprecht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "As-built attest",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Beschermd erfgoed",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving - Verdieping 2",
+                                       "label":  "Renovatieplicht",
+                                       "value":  "Neen"
+                                   }
+                               ]
+                },
+    "4368771":  {
+                    "id":  "4368771",
+                    "ref":  "SB20260511",
+                    "title":  "Twee percelen bouwgrond",
+                    "type":  "Bouwgrond",
+                    "price":  260000,
+                    "priceLabel":  "Bouwgrond voor € 260.000",
+                    "street":  "Kouteren 18",
+                    "zip":  "9630",
+                    "city":  "Zwalm",
+                    "description":  "Dit aanbod betreft 2 percelen in het rustige landelijke Zwalm, ideaal voor verschillende doeleinden zoals investeringen of cohousing, waarbij toch voldoende privacy behouden blijft. De half open bebouwing heeft een grondoppervlakte van 414m² en de open bebouwing een oppervlakte van 515m². Daarnaast is er een klein stuk grond achteraan van 540m², dat geschikt is als weide. Voor meer informatie over de stedenbouwkundige voorschriften kunt u telefonisch contact opnemen op het nummer 055/59 50 10 of uw gegevens per e-mail sturen naar [email protected] .",
+                    "fields":  [
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Naam",
+                                       "value":  "Stefanie Browaeys"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "GSM",
+                                       "value":  "+32 478 72 13 00"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "E-mail",
+                                       "value":  "[email protected]"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Prijs",
+                                       "value":  "€ 260.000"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Totale opp. grond",
+                                       "value":  "1.469 m²"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Beschikbaar",
+                                       "value":  "Bij authentieke akte"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Oriëntatie tuin",
+                                       "value":  "Oost"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Elektriciteitscertificaat",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Overstromingsgevoeligheid",
+                                       "value":  "Niet overstromingsgevoelig"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Afgebakende zone",
+                                       "value":  "Niet van toepassing"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "G(ebouw)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "P(erceel)-score",
+                                       "value":  "A"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Stedenbouwkundige bestemming",
+                                       "value":  "Woongebied met landelijk karakter"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Dagvaarding voor stedenbouwkundige overtreding",
+                                       "value":  "Geen rechterlijke herstelmaatregel of bestuurlijke maatregel opgelegd"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Bouwvergunning",
+                                       "value":  "Geen bouwvergunning"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Verkavelingsvergunning",
+                                       "value":  "Ja"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Voorkooprecht",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Beschermd erfgoed",
+                                       "value":  "Neen"
+                                   },
+                                   {
+                                       "section":  "Omschrijving",
+                                       "label":  "Renovatieplicht",
+                                       "value":  "Niet ingegeven"
+                                   }
+                               ]
+                }
+}

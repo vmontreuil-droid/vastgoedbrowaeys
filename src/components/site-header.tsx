@@ -1,31 +1,100 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { ArrowRight, Home, KeyRound, Briefcase, Users, MessageCircle, Lock, Info } from 'lucide-react'
+import { SiteTopbar } from './site-topbar'
+import { BrandLogo } from './brand-logo'
+
+type NavItem = {
+  href: string
+  label: string
+  icon: React.ComponentType<{ className?: string }>
+  match: (pathname: string) => boolean
+}
+
+const NAV: NavItem[] = [
+  { href: '/te-koop',          label: 'Te koop',   icon: Home,          match: (p) => p === '/te-koop' || p.startsWith('/aanbod/') },
+  { href: '/te-huur',          label: 'Te huur',   icon: KeyRound,      match: (p) => p === '/te-huur' },
+  { href: '/diensten/verkoop', label: 'Diensten',  icon: Briefcase,     match: (p) => p.startsWith('/diensten/') },
+  { href: '/info',             label: 'Info',      icon: Info,          match: (p) => p.startsWith('/info') },
+  { href: '/ons-team',         label: 'Ons team',  icon: Users,         match: (p) => p === '/ons-team' },
+  { href: '/contact',          label: 'Contact',   icon: MessageCircle, match: (p) => p === '/contact' },
+]
 
 export function SiteHeader() {
+  const pathname = usePathname()
+
   return (
-    <header className="sticky top-0 z-40 bg-[var(--color-paper)]/85 backdrop-blur-md border-b border-[var(--color-line)]">
-      <div className="container-px mx-auto max-w-6xl flex items-center justify-between h-16 md:h-20">
-        <Link href="/" className="flex flex-col leading-none">
-          <span className="font-[var(--font-display)] text-xl md:text-2xl tracking-tight">
-            Vastgoed Browaeys
-          </span>
-          <span className="eyebrow mt-1 text-[0.6rem]">Vlaamse Ardennen</span>
-        </Link>
+    <div
+      className="sticky top-0 z-40"
+      style={{
+        background: 'color-mix(in srgb, var(--color-paper) 92%, transparent)',
+        backdropFilter: 'blur(12px) saturate(140%)',
+        WebkitBackdropFilter: 'blur(12px) saturate(140%)',
+        boxShadow: '0 6px 24px -16px rgba(11, 79, 88, 0.18), 0 2px 4px -2px rgba(11, 79, 88, 0.05)',
+      }}
+    >
+      <SiteTopbar />
 
-        <nav className="hidden md:flex items-center gap-8 text-sm">
-          <Link href="/te-koop" className="link-underline">Te koop</Link>
-          <Link href="/te-huur" className="link-underline">Te huur</Link>
-          <Link href="/ons-team" className="link-underline">Ons team</Link>
-          <Link href="/contact" className="link-underline">Contact</Link>
-          <Link href="/gratis-schatting" className="btn btn-outline !py-2 !px-4 text-xs">
-            Gratis schatting
+      <header
+        className="border-b"
+        style={{ borderColor: 'var(--color-line)' }}
+      >
+        <div className="container-px mx-auto max-w-screen-2xl flex items-center justify-between h-20">
+          {/* === Logo (officieel, horizontaal) === */}
+          <Link href="/" className="block transition-opacity hover:opacity-85">
+            <BrandLogo height={44} priority />
           </Link>
-        </nav>
 
-        {/* Mobile: korte tekst-CTA, geen burger-menu in deze fase */}
-        <Link href="/contact" className="md:hidden text-sm link-underline">
-          Contact
-        </Link>
-      </div>
-    </header>
+          {/* === Navigatie === */}
+          <nav className="hidden lg:flex items-center gap-8">
+            {NAV.map((item) => {
+              const Icon = item.icon
+              const active = item.match(pathname)
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  data-active={active || undefined}
+                  className="nav-link inline-flex items-center gap-1.5"
+                >
+                  <Icon className="size-3.5 opacity-70" />
+                  {item.label}
+                </Link>
+              )
+            })}
+          </nav>
+
+          {/* === Rechtse CTA + portaal === */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/portaal/login"
+              aria-label="Klantenportaal"
+              title="Klantenportaal"
+              data-active={pathname.startsWith('/portaal') || undefined}
+              className="hidden md:grid place-items-center size-10 rounded-full transition-colors data-[active=true]:bg-[var(--color-paper-2)]"
+              style={{ color: 'var(--color-mute)' }}
+            >
+              <Lock className="size-4" />
+            </Link>
+            <Link href="/gratis-schatting" className="pill-cta">
+              Gratis schatting
+              <ArrowRight className="size-3.5" />
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* === Subtiel accent-lijntje onder de header — clay-dark gradient === */}
+      <div
+        aria-hidden
+        className="h-px w-full"
+        style={{
+          background:
+            'linear-gradient(to right, transparent 0%, color-mix(in srgb, var(--color-clay-dark) 55%, transparent) 25%, color-mix(in srgb, var(--color-clay-dark) 55%, transparent) 75%, transparent 100%)',
+        }}
+      />
+    </div>
   )
 }

@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
 
 @theme {
   /* === Vastgoed Browaeys — boutique-editorial palette ===
@@ -7,13 +8,23 @@
   /* Basis-neutrals */
   --color-paper:     #faf8f4;  /* hoofdachtergrond — gebroken wit, warmer dan puur wit */
   --color-paper-2:   #f3efe7;  /* sub-vlakken (sections, hover) */
+  --color-sand:      #ecdfcc;  /* warme zand-tint voor secundaire vlakken */
   --color-line:      #e6e1d7;  /* fijne lijntjes */
   --color-mute:      #6b6b6b;  /* secundaire tekst */
   --color-ink:       #1a1a1a;  /* hoofdtekst */
 
-  /* Eén accent — diep petrol. Zeldzaam gebruiken: links, focus, kleine streep. */
-  --color-accent:    #0b4f58;
-  --color-accent-2:  #0e6571;  /* hover-state */
+  /* Primair accent — diep petrol */
+  --color-accent:       #0b4f58;
+  --color-accent-2:     #0e6571;  /* hover-state */
+  --color-accent-light: #20a09f;  /* lichter teal — voor V in monogram + highlights */
+  --color-accent-soft:  #d6e3e5;  /* zachte petrol-wash voor sub-tints */
+
+  /* Secundair accent — warm clay (zand-bruin), tegenwicht voor petrol */
+  --color-clay:        #c4a380;
+  --color-clay-dark:   #a17e58;
+
+  /* Tertiair accent — gedempt mosgroen voor categorie-labels (bouwgrond) */
+  --color-moss:        #6e7d4d;
 
   /* Tailwind defaults */
   --color-background: var(--color-paper);
@@ -21,10 +32,35 @@
 
   /* Typografie */
   --font-display: 'Fraunces', 'Georgia', 'Times New Roman', serif;
-  --font-sans:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans:    'Montserrat', system-ui, -apple-system, sans-serif;
 
   /* Layout */
   --container-prose: 65ch;
+}
+
+/* === Luxe theme — zwart + goud, geïnspireerd op luxevastgoed.be ===
+   Geactiveerd via <html class="theme-luxe"> door ThemeApplier op /luxe/* routes. */
+html.theme-luxe {
+  --color-paper:        #0a0a0a;
+  --color-paper-2:      #161616;
+  --color-sand:         #1f1c14;
+  --color-line:         rgba(201, 166, 79, 0.18);
+  --color-mute:         #a39689;
+  --color-ink:          #f5f1e8;
+
+  --color-accent:       #c9a64f;
+  --color-accent-2:     #d9bd6e;
+  --color-accent-light: #d9bd6e;
+  --color-accent-soft:  rgba(201, 166, 79, 0.15);
+
+  --color-clay:         #b08940;
+  --color-clay-dark:    #8c6b2e;
+  --color-moss:         #7d8c5c;
+}
+
+html.theme-luxe body {
+  background: var(--color-paper);
+  color: var(--color-ink);
 }
 
 @layer base {
@@ -102,11 +138,11 @@
     color: var(--color-paper);
   }
 
-  /* Tekstlink met fijne onderlijn-accent */
+  /* Tekstlink met fijne hover-onderlijn */
   .link-underline {
     position: relative;
     display: inline-block;
-    color: var(--color-ink);
+    color: inherit;
   }
   .link-underline::after {
     content: '';
@@ -116,10 +152,68 @@
     bottom: -3px;
     height: 1px;
     background: var(--color-accent);
-    transform-origin: left;
-    transition: transform 250ms ease;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 320ms cubic-bezier(0.65, 0, 0.35, 1);
   }
   .link-underline:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Top-navigatie link — klein, sober, hover-onderlijn */
+  .nav-link {
+    position: relative;
+    display: inline-block;
+    color: var(--color-ink);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: color 200ms ease;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 1px;
+    background: var(--color-accent);
     transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 320ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .nav-link:hover::after,
+  .nav-link[data-active="true"]::after {
+    transform: scaleX(1);
+    transform-origin: left;
+    height: 2px;
+    bottom: -8px;
+  }
+  .nav-link:hover,
+  .nav-link[data-active="true"] {
+    color: var(--color-accent);
+  }
+  .nav-link[data-active="true"] {
+    font-weight: 600;
+  }
+
+  /* Pill-CTA voor in de header — compact, afgerond, opaak petrol */
+  .pill-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 9999px;
+    background: var(--color-accent);
+    color: var(--color-paper);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    transition: background 220ms ease, transform 220ms ease;
+  }
+  .pill-cta:hover {
+    background: var(--color-ink);
+    transform: translateY(-1px);
   }
 }

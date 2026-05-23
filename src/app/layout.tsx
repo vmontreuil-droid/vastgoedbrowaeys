@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
-import { Fraunces, Inter } from 'next/font/google'
+import { Fraunces, Montserrat } from 'next/font/google'
+import { CookieConsent } from '@/components/cookie-consent'
+import { TopoBackground } from '@/components/topo-background'
+import { ThemeApplier } from '@/components/theme-applier'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -9,10 +12,11 @@ const fraunces = Fraunces({
   axes: ['SOFT', 'WONK'],
 })
 
-const inter = Inter({
+const montserrat = Montserrat({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-sans',
+  weight: ['300', '400', '500', '600', '700'],
 })
 
 export const metadata: Metadata = {
@@ -27,8 +31,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="nl" className={`${fraunces.variable} ${inter.variable}`}>
-      <body>{children}</body>
+    <html lang="nl" className={`${fraunces.variable} ${montserrat.variable}`}>
+      <body>
+        <ThemeApplier />
+        <TopoBackground />
+        {children}
+        <CookieConsent />
+      </body>
     </html>
   )
 }

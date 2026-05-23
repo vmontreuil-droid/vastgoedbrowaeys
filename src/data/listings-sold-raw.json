@@ -1,0 +1,698 @@
+[
+    {
+        "index":  0,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/2f7e153781c95ddf1d73156d7fca255df86113c8c102e9e6a4d2fa4a5a3e6b99.jpg",
+        "type":  "Woning",
+        "epcLabel":  "",
+        "description":  "Bent u op zoek naar een woning die ruimte, comfort én potentieel combineert? Dan...",
+        "city":  "Brakel"
+    },
+    {
+        "index":  1,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/52060446abc6f9d11a40e955ccb5073e5bf90b3bd52531ac801ef75f9a81deb0.jpg",
+        "type":  "Landhuis",
+        "epcLabel":  "B",
+        "description":  "Bent u op zoek naar een unieke eigendom waar rust, natuur en comfort samenkomen?...",
+        "city":  "Maarkedal"
+    },
+    {
+        "index":  2,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/4d157e4c976bb187a37a1162c6bed8af653c2b5a2b17a56df203e86dcad8327d.jpg",
+        "type":  "Woning",
+        "epcLabel":  "B",
+        "description":  "In het landelijke Mater, deelgemeente van Oudenaarde, bevindt zich deze in...",
+        "city":  "Oudenaarde"
+    },
+    {
+        "index":  3,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/9ffd4c137d3307f981c91ba0bb49a4bf5e59aa62a409da5baba66a205d10aced.jpg",
+        "type":  "Villa",
+        "epcLabel":  "C",
+        "description":  "Op zoek naar een woning in de Vlaamse Ardennen met weids uitzicht? Dan is dit on...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  4,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/4143b5a90849a6d3df3a979bec45db67e72c3b8d4232dd275214a6f1c6b8a0c9.jpg",
+        "type":  "Woning",
+        "epcLabel":  "A",
+        "description":  "Deze half open bebouwing met aanpalende garage omvat een inkomhal met bezoekerst...",
+        "city":  "Herzele"
+    },
+    {
+        "index":  5,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/7eeb588f18bc3ec291c3c62aba0fbac5b9bcc45fe87812349f87a7d9c43ffada.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "A",
+        "description":  "VERMELDE PRIJS INCLUSIEF staanplaats en kelderberging. Dit energiezuinige...",
+        "city":  "Oudenaarde"
+    },
+    {
+        "index":  6,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/b2fcba48b2725d588c5a0bb29cf3e1b6c46e2990356d49e01bb9c2dbe4347d8c.jpg",
+        "type":  "Woning",
+        "epcLabel":  "B",
+        "description":  "Deze gerenoveerde woning met terras en tuin, gelegen in Bevere is gemakkel...",
+        "city":  "Oudenaarde"
+    },
+    {
+        "index":  7,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/8925706819fcba749a1dfaed3a2470f5a146f07a0c7f4f572711a529a6e72811.jpg",
+        "type":  "Woning",
+        "epcLabel":  "A",
+        "description":  "Ontdek deze instapklare en uiterst energiezuinige woning in het landelijke maar ...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  8,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/bf34b2111de0beed0681901e1d47e345bd6e9b19d40218d54363a9583a493ed0.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Op zoek naar een investering of een charmante starterswoning? Dan is deze woning...",
+        "city":  "Oudenaarde"
+    },
+    {
+        "index":  9,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/8fcafaa9eaed66bd8d258c56bd1a7350ac4f768dcdebb8b4399617b098f3b3e3.jpg",
+        "type":  "Woning",
+        "epcLabel":  "E",
+        "description":  "Deze te renoveren fermette is centraal gelegen in de nabij tal van verbindingsw...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  10,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/64a2aeacde981ab4cc4fac17ded339ee7430a8f1650a4ec791e4b93c3bdcd86a.jpg",
+        "type":  "Woning",
+        "epcLabel":  "C",
+        "description":  "Deze te renoveren eigendom gelegen aan de Brugse Poort bevindt zich nabij veel v...",
+        "city":  "Gent"
+    },
+    {
+        "index":  11,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/0a79b33cfb61666d61b96e72c085368a3be835c8db0bf426f883cbb2808ae9ea.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Bent u op zoek naar een droomwoning in een oase van rust en omgeven door natuur...",
+        "city":  "Brakel"
+    },
+    {
+        "index":  12,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/a38a48f866b63ad61a44c4d37beb81e11bfd11af7ddfbe8dbcf1b3fef193a1df.jpg",
+        "type":  "Woning",
+        "epcLabel":  "C",
+        "description":  "Bent u op zoek naar een instapklare gezinswoning of een interessante investering...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  13,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/e861873feaeb2cc890db58f2f946f71ca21788ad4c87d6fee17a786f0c480337.jpg",
+        "type":  "Woning",
+        "epcLabel":  "B",
+        "description":  "Bent u op zoek naar een comfortabele en instapklare woning in het groene hart va...",
+        "city":  "Brakel"
+    },
+    {
+        "index":  14,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/e48722ae74013f5e559ad4ae0b2e3acfa2c13863744a68fa60c73de748917a9e.jpg",
+        "type":  "Woning",
+        "epcLabel":  "C",
+        "description":  "Deze woning biedt een uitstekende kans voor wie op zoek is naar een instapklare ...",
+        "city":  "Herzele"
+    },
+    {
+        "index":  15,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/fb6c743449be038ce3049db28ca44fbf313f7ad53b6437482e62e832fb5b5d77.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "",
+        "description":  "Ontdek dit splinternieuwe appartement gelegen recht tegenover het station van Ro...",
+        "city":  "Ronse"
+    },
+    {
+        "index":  16,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/9b6e773d0d9a17796bc938758ddd203cec5fc0b0514fde538f8a94a753d684d0.jpg",
+        "type":  "Bouwgrond",
+        "epcLabel":  "",
+        "description":  "Deze bouwgrond is gelegen in Opbrakel in een rustig gelegen straat omheven door ...",
+        "city":  "Brakel"
+    },
+    {
+        "index":  17,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/6f8e506b4a04e41855baf7cb7d25015b859860093b2d661fab2f3a2b61e58dc8.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Bent u op zoek naar een plek waar rust en natuur samenkomen? Dan is deze unieke ...",
+        "city":  "Brakel"
+    },
+    {
+        "index":  18,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/89867e17d90f5388ca464f78ad9c6c32095f4dbd4ab807eb887e5f7be71348e7.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "U bent op zoek naar een ruime woonst en u steekt graag de handen uit de mouwen? ...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  19,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/2d49c9a6e1c0b0e31500b3393bd3c00c4ecf2d2a329996b27bd9d65eb200ebca.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "C",
+        "description":  "Centraal twee- slaapkamerappartement gelegen te Zottegem. Het appartement beschi...",
+        "city":  "Zottegem"
+    },
+    {
+        "index":  20,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/b4322e1d1fdd5dffeed1d53529d1957bcb5675990a7957c5d77bbff66ba167ea.jpg",
+        "type":  "Villa",
+        "epcLabel":  "A",
+        "description":  "Deze energiezuinige en duurzame nieuwbouw woning kan u nog tot 30 juni 2025 aank...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  21,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/3a034415ad3ec44dad35539d8aa886b14687b80435a697d26a28e209033db7cc.jpg",
+        "type":  "Villa",
+        "epcLabel":  "",
+        "description":  "Deze energiezuinige en duurzame nieuwbouw kunt u nog steeds aankopen aan 6% btw ...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  22,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/050ff7852f7b08b7043c5f881f4124ef83c488c893e400b498d561948c4e9a8c.JPG",
+        "type":  "Woning",
+        "epcLabel":  "D",
+        "description":  "Bent u op zoek naar een nieuwe stek waarbij de locatie en tuin centraal staat? D...",
+        "city":  "Gent"
+    },
+    {
+        "index":  23,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/420090528aa7167839ef14099137f4d43b6a0c2010d5ace6d12224cec30c5a21.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Deze charmante woning is perfect bewoonbaar maar kan met enkele kleine aanpassin...",
+        "city":  "Zwijnaarde"
+    },
+    {
+        "index":  24,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/6bbdd38d3c358573f43611779308ce5d5172926bd81d98f146de301137893225.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Deze te renoveren gezinswoning in het centrum van Balegem is zeer centraal geleg...",
+        "city":  "Balegem"
+    },
+    {
+        "index":  25,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/99ae5e075aed93234bce7bd6d34e1c001bd0393c5d374e7bdb3d60722e250a65.jpg",
+        "type":  "Bouwgrond",
+        "epcLabel":  "",
+        "description":  "Ben je op zoek naar de perfecte locatie om je droomhuis te bouwen? Deze bouwgro...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  26,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/75a129802291e52de4bdf67fb8839f2251ffc491c3adad1611d119231db834d3.jpg",
+        "type":  "Bouwgrond",
+        "epcLabel":  "",
+        "description":  "Ben je op zoek naar de perfecte locatie om je droomhuis te bouwen? Deze bouwgro...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  27,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/7583c7db3a52a5c428bf80edf844a5c39e505d23f6cb7e059b6b08c4762086b7.jpg",
+        "type":  "Bel-etage",
+        "epcLabel":  "B",
+        "description":  "Deze volledig gerenoveerde bel-etagewoning in Aalst biedt een doordachte indelin...",
+        "city":  "Aalst"
+    },
+    {
+        "index":  28,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/a47dd1f14ada478a4401feede6b01f663f96e0ccb61b2d1ca46a387071713f3e.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "B",
+        "description":  "Dit moderne en praktische tweeslaapkamerappartement ligt op een uitstekende loca...",
+        "city":  "Aalst"
+    },
+    {
+        "index":  29,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/72ec2c440ff54da547cce9ed36a3f6b0fef27c23035694d6ab31b5868415a163.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Ontdek deze deels te renoveren woning in de Zwalmstreek waarbij je zelf nog je e...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  30,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/42d35ced24fe9195ab1b229ba85a69b736ca1ddb863c904841cd2ad8f45586fb.jpg",
+        "type":  "Woning",
+        "epcLabel":  "E",
+        "description":  "Deze te renoveren woning in Scheldewindeke moet u vooral persoonlijk komen ontde...",
+        "city":  "Oosterzele"
+    },
+    {
+        "index":  31,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/1db794799ee06faf572518cd4388bc9278096f4b87d0c2dff3418c67b37a6424.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "B",
+        "description":  "Het dakappartement in de Arestraat in Herzele biedt een unieke woonervaring met ...",
+        "city":  "Herzele"
+    },
+    {
+        "index":  32,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/af5a8eb36c8d3ad64b651e877eabf7b37b7d2b288c16277373a53a7631e41eb3.jpg",
+        "type":  "Woning",
+        "epcLabel":  "",
+        "description":  "Deze nieuwbouwwoning is gelegen nabij het station van Herzele en zal afgewerkt w...",
+        "city":  "Herzele"
+    },
+    {
+        "index":  33,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/f692a586b64ddc39446b6c4d1b97160bea70af14f5b10f7217051e35e074a8d8.jpg",
+        "type":  "Landbouwgrond",
+        "epcLabel":  "",
+        "description":  "VERKOCHT! Deze drie percelen zijn gelegen in Oudenaarde op de grens met Zwalm e...",
+        "city":  "Oudenaarde"
+    },
+    {
+        "index":  34,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/a8fcba1acc1fdeb62c41495e83f084544859f5226e4de8c4e9c236c5ceed41bf.jpg",
+        "type":  "Villa",
+        "epcLabel":  "E",
+        "description":  "Op zoek naar een woning in de Vlaamse Ardennen met weids uitzicht? Dan is dit on...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  35,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/028f0c6e6685ab1483027f4632b90585ccf8267d1f1e0122089557124ecda816.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "C",
+        "description":  "Dit lichtrijk appartement is gelegen in het hartje van Gent op wandelafstand van...",
+        "city":  "Gent"
+    },
+    {
+        "index":  36,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/5ca12fdf156f3fc3fdd01b0c62bf325f8aa91ccefd0c6f77a338aa6ddf8b9808.jpg",
+        "type":  "Woning",
+        "epcLabel":  "C",
+        "description":  "Deze moderne instapklare starterswoning is gelegen nabij het centrum van Herzele...",
+        "city":  "Herzele"
+    },
+    {
+        "index":  37,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/d3bc3c5cf86df201ff1fd289e17f1ac3a021ffdc4d196665641e0f6720642b18.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "B",
+        "description":  "Centraal gelegen appartement in het centrum van Merelbeke ideaal geschikt als in...",
+        "city":  "Merelbeke"
+    },
+    {
+        "index":  38,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/e04bafd4dc9f0a277f949bd1867bef7c331fd23d3e70fb1efafe2fcf16ffc8b3.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "B",
+        "description":  "Een ruim appartement in residentie Geuzenhoek met 3 ruime slaapkamers gelegen op...",
+        "city":  "Geraardsbergen"
+    },
+    {
+        "index":  39,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/1dd77628aff21030be6bcab43c2e4a11ea68b09037c04a0b35d7c52ed97590e8.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "B",
+        "description":  "Op zoek naar een woonst als starter of al vooruitdenkend naar later? Dan is dit ...",
+        "city":  "Laarne"
+    },
+    {
+        "index":  40,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/fddaccc95170463339f2dbf6073006722a1514a18d9baaa4a01730ae90026567.jpg",
+        "type":  "Bungalow",
+        "epcLabel":  "F",
+        "description":  "Deze bungalow is gelegen nabij tal van verbindingswegen en heeft een opknapbeurt...",
+        "city":  "Wetteren"
+    },
+    {
+        "index":  41,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/d5343ec5205c00fafa522728e09ee17bbceaf5ae4bb1c8ac32a2ad7025b41a3e.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "B",
+        "description":  "Dit appartement is gelegen in residentie Elisabeth nabij het park Liedts en op w...",
+        "city":  "Oudenaarde"
+    },
+    {
+        "index":  42,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/d8a31d29a96aa13933fca72dc75eb43584ad912a4b65df4b50bf224a7633a2bd.jpg",
+        "type":  "Woning",
+        "epcLabel":  "D",
+        "description":  "Deze gezinswoning in het centrum van Balegem is zeer centraal gelegen nabij tal ...",
+        "city":  "Balegem"
+    },
+    {
+        "index":  43,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/93fa806de3d0fe2b6a888c95ff5108718feac43e5b68977c81067a22f4be8054.jpg",
+        "type":  "Woning",
+        "epcLabel":  "D",
+        "description":  "Deze charmante woning, gelegen in een centrale omgeving, vormt het perfecte begi...",
+        "city":  "Zottegem"
+    },
+    {
+        "index":  44,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/bb0faf7d6b585fe76b760e329948e749cb1ba09b5b3774cae92075c665237bae.jpg",
+        "type":  "Woning",
+        "epcLabel":  "D",
+        "description":  "Dit veelzijdige gebouw bevindt zich dichtbij diverse belangrijke toegangswegen e...",
+        "city":  "Gentbrugge"
+    },
+    {
+        "index":  45,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/c486211b1a871bd84fa6d90f167f51276da474271da8758f4379dad57a859e14.jpg",
+        "type":  "Studio",
+        "epcLabel":  "C",
+        "description":  "Deze studio is gelegen nabij de Colruyt en omvat een leefruimte met slaaphoek en...",
+        "city":  "Merelbeke"
+    },
+    {
+        "index":  46,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/2a8a8b4c6f7a4e55344bad68089b80f036b793e6846707130932059508bbd3b5.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Dit te renoveren project is momenteel ingericht als woonhuis met handelsruimte e...",
+        "city":  "Gent"
+    },
+    {
+        "index":  47,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/118f0b481c2657586928d15a7bdd1108685f59b3412fda8805aec46d58cf0196.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Ben je op zoek naar een project om je eigen stempel op te drukken? Grijp dan dez...",
+        "city":  "Zottegem"
+    },
+    {
+        "index":  48,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/c677e99091550ac3519aa48c9b1f71386c68942d449956b61abf369aaf9cf6df.jpg",
+        "type":  "Woning",
+        "epcLabel":  "C",
+        "description":  "Deze recent gerenoveerde rijwoning, gelegen in het centrum van Brakel, biedt jou...",
+        "city":  "Brakel"
+    },
+    {
+        "index":  49,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/60102c77461bde4bc2b3769a8e8c0cc6c2fd7fc774e5d93e24f872d29aa2cbd2.JPG",
+        "type":  "Appartement",
+        "epcLabel":  "B",
+        "description":  "Recent goed onderhouden appartement. Zeer centraal gelegen, nabij tal van invals...",
+        "city":  "Gentbrugge"
+    },
+    {
+        "index":  50,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/5e7ab324611403e7446d92918c884c562647dc7b64d570a1eabf5b083b0397d7.JPG",
+        "type":  "Villa",
+        "epcLabel":  "C",
+        "description":  "Deze zeer goed onderhouden ruime (330m²) villa is gelegen nabij de N60 en tal va...",
+        "city":  "Eke"
+    },
+    {
+        "index":  51,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/a7a73c84d8a50b679a70a95af83879baae842ebb91b80809c4f92a24c1f83091.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Zoekt u een woning met uitstekende renovatiemogelijkheden en aanpalende tuin met...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  52,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/b7f1364ae496bc337b0b6d3897ee2e45b3b319ea6039edef05f3982d4757666d.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Welkom in onze charmante, te renoveren woning, ideaal gesitueerd in een prachtig...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  53,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/6e457e416bed2b00040dbc6d9ba00aba119535c3250c8700d52b39d283abd179.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "B",
+        "description":  "Gelegen op het eerste verdiep van Residentie Thibaud IV, biedt dit energiezuinig...",
+        "city":  "Merelbeke"
+    },
+    {
+        "index":  54,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/95b248178cf27c1d95fc0abe095764be559de8e448f062d474c48b91082bc118.jpg",
+        "type":  "Handelspand",
+        "epcLabel":  "B",
+        "description":  "Ontdek deze unieke kans om een strategisch gelegen kantoorruimte te verwerven! ...",
+        "city":  "Oudenaarde"
+    },
+    {
+        "index":  55,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/0ee67ff1c90ff38d095c005ead78970a50debfb4e470dfb59d06f45fb4aeaef1.jpg",
+        "type":  "Woning",
+        "epcLabel":  "C",
+        "description":  "Ontdek deze prachtige gerenoveerde hoeve daterend uit het jaar 1881. Deze histor...",
+        "city":  "Letterhoutem"
+    },
+    {
+        "index":  56,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/0acaabc91fb062f2ad353fec0b884df2858ed77731acfa90c2ae26a755248920.jpg",
+        "type":  "Villa",
+        "epcLabel":  "C",
+        "description":  "Deze woning is ideaal gelegen en biedt een ideale uitgangspositie op vlak van mo...",
+        "city":  "Oosterzele"
+    },
+    {
+        "index":  57,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/a06e944c7fa808dfa1cdb9f7e1d91bb40a5743a070c6c09fe9e868cfef3f37d2.jpg",
+        "type":  "Woning",
+        "epcLabel":  "E",
+        "description":  "Ontdek deze ideale gezinswoning gelegen in het charmante Galmaarden! Deze wonin...",
+        "city":  "Galmaarden"
+    },
+    {
+        "index":  58,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/e3f7f874ee1be582b11b166597446a75d64453e84b8a231842d959bb83f5e199.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "B",
+        "description":  "Instapklaar nieuwbouw dakappartement (155m²) voorzien van ruime zonrijke living ...",
+        "city":  "Oudenaarde"
+    },
+    {
+        "index":  59,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/fbb9c3e4d23eda34288222cc449f09c258e7ab9375f531f7068591ba799db429.jpg",
+        "type":  "Woning",
+        "epcLabel":  "C",
+        "description":  "Ontdek de charme van dit prachtige ruraal gelegen eigendom met loods, paardensta...",
+        "city":  "Zarlardinge"
+    },
+    {
+        "index":  60,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/2e18486382bd6457d84993826af5d3bda1af4e79530373aa3b01ee3383d26fd7.jpg",
+        "type":  "Woning",
+        "epcLabel":  "E",
+        "description":  "Deze woning is gelegen in Asper en centraal bereikbaar met makkelijke verbinding...",
+        "city":  "Gavere"
+    },
+    {
+        "index":  61,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/dc88365d21f3fc64562a9fb1610a77357e73f6c488f048e4caca01556e6f5653.jpg",
+        "type":  "Herenhuis",
+        "epcLabel":  "C",
+        "description":  "Ontdek dit karaktervolle herenhuis in het hart van Geraardsbergen, op wandelafst...",
+        "city":  "Geraardsbergen"
+    },
+    {
+        "index":  62,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/23149fdac5b953da7b3e4fc597b5d179f138991035f1ad346b1a1a7ce4c92f9b.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Wanneer u op zoek bent naar een rustige locatie midden in het groen dan is deze ...",
+        "city":  "Dikkelvenne"
+    },
+    {
+        "index":  63,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/10f29810b6a61d6b148caf31b85e5182c59c7dac4b5395dbac8571d44beaa46c.jpg",
+        "type":  "Bouwgrond",
+        "epcLabel":  "",
+        "description":  "In het landelijk gelegen pittoreske Sint Maria Horebeke kan u deze residentieel ...",
+        "city":  "Horebeke"
+    },
+    {
+        "index":  64,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/e4334cd4fb94c6c871ac7692255c1566fe9f9882cd576b4de171288a43d1ab53.jpg",
+        "type":  "Villa",
+        "epcLabel":  "B",
+        "description":  "Deze adembenemende eengezinswoning is centraal gelegen nabij tal van verbindings...",
+        "city":  "Mariakerke"
+    },
+    {
+        "index":  65,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/b3f3d03e09648c564adb77d6bd188a10e56b0fbb4c558d3776434c5edabae603.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Deze te renoveren woning is gelegen nabij het centrum van Brakel en biedt tal va...",
+        "city":  "Brakel"
+    },
+    {
+        "index":  66,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/1cd409e7693f4b21cb8ab886c4a4b2c15e61a797e74956bf4b923822a96ffcfe.jpg",
+        "type":  "Woning",
+        "epcLabel":  "A",
+        "description":  "Deze in aanbouw zijnde nieuwbouwwoning is gelegen in de dorpskern van Rozebeke o...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  67,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/8dccf4423e605129dc5052ecfce34637fe626c98f5a76e16cdbede95559d0294.jpg",
+        "type":  "Woning",
+        "epcLabel":  "A",
+        "description":  "Deze in aanbouw zijnde nieuwbouwwoning is gelegen in de dorpskern van Rozebeke o...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  68,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/0dd3ed001ca0498934cb9e3be9dff8bf81cea840b17bee28657dec7e107d73bb.jpg",
+        "type":  "",
+        "epcLabel":  "",
+        "description":  "Dit unieke in aanbouw zijnde woonerf is gelegen in de dorpskern van Rozebeke omv...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  69,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/c4239ab2946fff35c1c3a2d3f75892a6160f2d5b842f6c0f0c97b7455b7c7fc9.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "De te renoveren woning bevindt zich op een exclusieve locatie nabij het stadscen...",
+        "city":  "Oudenaarde"
+    },
+    {
+        "index":  70,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/4b5bc0f213599cc26d0c5729089c079195371b20f5b0956d1e63bceda6b55089.jpg",
+        "type":  "Woning",
+        "epcLabel":  "C",
+        "description":  "Goed onderhouden half open bebouwing gelegen nabij tal van invalswegen naar Brus...",
+        "city":  "Burst"
+    },
+    {
+        "index":  71,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/f1e36a50b0a0ccee4b73431ba8f79244c0b7e8af2a5035f2a146b742a718a6b8.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "C",
+        "description":  "Dit centraal gelegen dakappartement is gelegen in het centrum van Merelbeke nabi...",
+        "city":  "Merelbeke"
+    },
+    {
+        "index":  72,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/fec07f03c4743a861a0b3698c8dda24630f31ef2be370fe279c347db620c6543.jpg",
+        "type":  "Appartement",
+        "epcLabel":  "C",
+        "description":  "Dit instapklaar startersappartement is gelegen in het centrum van Merelbeke en g...",
+        "city":  "Merelbeke"
+    },
+    {
+        "index":  73,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/7a83f6283e245afe624aaa40d0985d1ba7f6265991c48b99457c6f03ae059842.jpg",
+        "type":  "Fermette",
+        "epcLabel":  "E",
+        "description":  "Deze exclusieve, alleenstaande fermette is gelegen in het dorpje Nukerke, deelge...",
+        "city":  "Maarkedal"
+    },
+    {
+        "index":  74,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/ffdc331595d3e6d83bd8badea39b727c9774c919c9cac3cea74af58a5999af8a.jpg",
+        "type":  "Villa",
+        "epcLabel":  "",
+        "description":  "Deze pas opgeleverde nieuwbouwwoning is gelegen in het het pittoreske Paulatem, ...",
+        "city":  "Paulatem"
+    },
+    {
+        "index":  75,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/68a09d421fb4d074abd0536905a4476b3448f7807bc8413a49531a8bc1da9499.jpg",
+        "type":  "Hoeve",
+        "epcLabel":  "F",
+        "description":  "Deze exclusieve eigendom is gelegen op een uiterst unieke locatie gekenmerkt doo...",
+        "city":  "Gavere"
+    },
+    {
+        "index":  76,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/d04fe8cdcd3b902008d8d756e03582f7168a17adf58c5aac788ddfa60da61a9d.jpg",
+        "type":  "Woning",
+        "epcLabel":  "E",
+        "description":  "Rustig gelegen woning gelegen nabij tal van verbindingswegen en het centrum van ...",
+        "city":  "Ninove"
+    },
+    {
+        "index":  77,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/b540a1b9c399dd6b38bc9d86e2c93711f6800114c0190476855296d23a565b2d.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Bent u op zoek naar een centraal gelegen woning en bent u een echte stadsmus dan...",
+        "city":  "Gent"
+    },
+    {
+        "index":  78,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/e7b6218357a0e2d8d4cdf2a019f7b8580de5fef4bbf5be906e5fb366a02ea4d7.jpg",
+        "type":  "Woning",
+        "epcLabel":  "",
+        "description":  "Dit in aanbouw zijnde woonerf is gelegen in Herzele (Borsbeke) nabij tal van ver...",
+        "city":  "Herzele"
+    },
+    {
+        "index":  79,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/db370b9f8b80b8800b2f94d2364f5f46d97a0d5d5388f635e8e41bf0dc37dfd2.jpg",
+        "type":  "Villa",
+        "epcLabel":  "B",
+        "description":  "U bent op zoek naar een volledig afgewerkte villa uitgerust met alle comfort? Da...",
+        "city":  "Wortegem-Petegem"
+    },
+    {
+        "index":  80,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/586d186ca899eb2c7b31e04e1b7ec882c641f351400b8257b6a8d64efe81196a.jpg",
+        "type":  "Woning",
+        "epcLabel":  "F",
+        "description":  "Bent u een wielerfanaat en/of liefhebber van het schitterende landschap in de Vl...",
+        "city":  "Brakel"
+    },
+    {
+        "index":  81,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/d01ea9f56dd95ed39a8696c3daee29c7b6ba6d86e8f6fde8b7fc1b9465e82ee0.jpg",
+        "type":  "Villa",
+        "epcLabel":  "C",
+        "description":  "Deze woning werd recent gerenoveerd met oog voor detail en kwaliteit en met maar...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  82,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/11bb80c11b6353d343c7996eaf70532cd6dcd015ea8a6429335cc3239aeb1f5c.jpg",
+        "type":  "Hoeve",
+        "epcLabel":  "F",
+        "description":  "Deze voormalige boerderij (8054m²) is gelegen in Sint-Blasius-Boekel en voorzien...",
+        "city":  "Zwalm"
+    },
+    {
+        "index":  83,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/64853b94e1d5957a4ba2a913ec49ffd0892fea7c5348185169f8305a2ecb630c.jpg",
+        "type":  "Woning",
+        "epcLabel":  "",
+        "description":  "Te renoveren statige rijwoning gelegen in Michelbeke en voorzien van kelder, ink...",
+        "city":  "Brakel"
+    },
+    {
+        "index":  84,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/a7a5ad6d5ec7b5613d57948560870afc17f2ece7647479dd47689181d5e6aa00.jpg",
+        "type":  "Woning",
+        "epcLabel":  "",
+        "description":  "Dit nieuw te bouwen woonerf is gelegen in Herzele (Borsbeke) nabij tal van verbi...",
+        "city":  "Herzele"
+    },
+    {
+        "index":  85,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/913aa3ba37e9151c25e9b9bef21a9704d599bfa626e400cc953ec425b99008ee.jpg",
+        "type":  "Woning",
+        "epcLabel":  "",
+        "description":  "Dit nieuw te bouwen woonerf is gelegen in Herzele (Borsbeke) nabij tal van verbi...",
+        "city":  "Herzele"
+    },
+    {
+        "index":  86,
+        "imageUrl":  "https://files.zabun.be/upload/2140/images/d97c5e9556b869db39cd6e98fc3714cb7ebb2d6ea81b53c11884dba180cefcc6.jpg",
+        "type":  "Woning",
+        "epcLabel":  "",
+        "description":  "Dit nieuw te bouwen woonerf is gelegen in Herzele (Borsbeke) nabij tal van verbi...",
+        "city":  "Herzele"
+    }
+]
