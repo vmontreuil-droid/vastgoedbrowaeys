@@ -77,29 +77,46 @@ export async function POST(req: Request) {
       }
     }
 
-    // Promoot naar agent in profiles + naam (trigger maakt rij aan bij create)
-    const profilePatch: Record<string, unknown> = { role: 'agent' }
+    // Profiel altijd upserten met role=agent (trigger heeft mogelijk al een
+    // rij met role=client aangemaakt; we forceren agent + naam).
+    const profilePatch: Record<string, unknown> = {
+      id: user.id,
+      email: user.email,
+      role: 'agent',
+    }
     if (first_name?.trim()) profilePatch.first_name = first_name.trim()
     if (last_name?.trim()) profilePatch.last_name = last_name.trim()
 
-    const { error: profileErr } = await supabase
+    const { error: upsertErr } = await supabase
       .from('profiles')
-      .update(profilePatch)
+      .upsert(profilePatch, { onConflict: 'id' })
+    if (upsertErr) {
+      return NextResponse.json(
+        { error: 'profiles upsert: ' + upsertErr.message },
+        { status: 500 },
+      )
+    }
+
+    // Lees terug om zeker te zijn dat de rol nu agent is
+    const { data: verifyProfile, error: verifyErr } = await supabase
+      .from('profiles')
+      .select('id, email, role, first_name, last_name')
       .eq('id', user.id)
-    if (profileErr) {
-      await supabase.from('profiles').upsert({
-        id: user.id,
-        email: user.email,
-        ...profilePatch,
-      })
+      .single()
+    if (verifyErr) {
+      return NextResponse.json(
+        { error: 'verify profile: ' + verifyErr.message },
+        { status: 500 },
+      )
     }
 
     return NextResponse.json({
       ok: true,
-      message: `User ${action} + email confirmed + role=agent set`,
+      message: `User ${action} + email confirmed + role=${verifyProfile.role} set`,
       action,
       user_id: user.id,
       email: user.email,
+      profile: verifyProfile,
     })
   } catch (e) {
     return NextResponse.json(
