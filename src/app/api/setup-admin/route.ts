@@ -43,26 +43,40 @@ export async function POST(req: Request) {
     if (listErr) {
       return NextResponse.json({ error: 'listUsers: ' + listErr.message }, { status: 500 })
     }
-    const user = usersData.users.find((u) => u.email === email)
+    let user = usersData.users.find((u) => u.email === email)
+    let action: 'created' | 'updated' = 'updated'
+
     if (!user) {
-      return NextResponse.json({ error: 'User not found in auth.users' }, { status: 404 })
+      // User bestaat niet → aanmaken via officiële Admin API
+      const { data: created, error: createErr } = await supabase.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+      })
+      if (createErr || !created.user) {
+        return NextResponse.json(
+          { error: 'createUser: ' + (createErr?.message || 'unknown error') },
+          { status: 500 },
+        )
+      }
+      user = created.user
+      action = 'created'
+    } else {
+      // User bestaat → password resetten + email bevestigen
+      const { error: updateErr } = await supabase.auth.admin.updateUserById(user.id, {
+        password,
+        email_confirm: true,
+      })
+      if (updateErr) {
+        return NextResponse.json({ error: 'updateUser: ' + updateErr.message }, { status: 500 })
+      }
     }
 
-    // Reset password + bevestig email (officiële admin API)
-    const { error: updateErr } = await supabase.auth.admin.updateUserById(user.id, {
-      password,
-      email_confirm: true,
-    })
-    if (updateErr) {
-      return NextResponse.json({ error: 'updateUser: ' + updateErr.message }, { status: 500 })
-    }
-
-    // Promoot naar agent in profiles
+    // Promoot naar agent in profiles (trigger maakt rij aan bij create, maar voor de zekerheid upsert)
     const { error: profileErr } = await supabase
       .from('profiles')
       .update({ role: 'agent' })
       .eq('id', user.id)
-    // Niet kritiek als profiles update faalt — we proberen ook insert
     if (profileErr) {
       await supabase.from('profiles').upsert({
         id: user.id,
@@ -73,7 +87,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       ok: true,
-      message: 'Password reset + email confirmed + role=agent set',
+      message: `User ${action} + email confirmed + role=agent set`,
+      action,
       user_id: user.id,
       email: user.email,
     })
