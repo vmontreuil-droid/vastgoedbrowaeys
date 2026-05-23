@@ -82,7 +82,7 @@ export async function POST(req: Request) {
     const profilePatch: Record<string, unknown> = {
       id: user.id,
       email: user.email,
-      role: 'agent',
+      role: 'admin',
     }
     if (first_name?.trim()) profilePatch.first_name = first_name.trim()
     if (last_name?.trim()) profilePatch.last_name = last_name.trim()

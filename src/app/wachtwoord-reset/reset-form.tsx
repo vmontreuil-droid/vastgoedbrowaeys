@@ -69,7 +69,7 @@ export function ResetPasswordForm() {
         .select('role')
         .eq('id', userData.user.id)
         .single()
-      const target = profile?.role === 'agent' ? '/admin/login' : '/portaal/login'
+      const target = profile?.role === 'admin' ? '/admin/login' : '/portaal/login'
       setTimeout(() => router.push(target), 1500)
     } else {
       setTimeout(() => router.push('/'), 1500)

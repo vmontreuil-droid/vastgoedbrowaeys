@@ -45,7 +45,7 @@ export default function AdminSetupPage() {
           Admin setup (eenmalig)
         </h1>
         <p style={{ color: '#6b6b6b', marginBottom: 24, fontSize: 14 }}>
-          Reset een wachtwoord en zet de gebruiker als agent — gebruikt de officiële
+          Reset een wachtwoord en zet de gebruiker als admin — gebruikt de officiële
           Supabase Admin API in plaats van directe SQL (omzeilt bcrypt-format issues).
         </p>
 

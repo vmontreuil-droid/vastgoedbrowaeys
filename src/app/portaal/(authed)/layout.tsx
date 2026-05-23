@@ -28,7 +28,7 @@ export default async function PortalAuthedLayout({ children }: { children: React
     .single()
 
   const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || user.email || 'Klant'
-  const isAgent = profile?.role === 'agent'
+  const isAgent = profile?.role === 'admin'
 
   return (
     <>

@@ -58,7 +58,7 @@ export function AdminLoginForm() {
       return
     }
 
-    if (profile.role !== 'agent') {
+    if (profile.role !== 'admin') {
       await supabase.auth.signOut()
       setStatus('idle')
       setError(`Profile-rol = "${profile.role}" — moet "agent" zijn voor admin-toegang.`)

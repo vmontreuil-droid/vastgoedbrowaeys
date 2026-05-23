@@ -20,14 +20,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect('/portaal/login?redirect=/admin')
   }
 
-  // Check of user de 'agent' rol heeft — anders geen toegang
+  // Check of user de 'admin' rol heeft — anders geen toegang
   const { data: profile } = await supabase
     .from('profiles')
     .select('role, first_name, last_name, email')
     .eq('id', user.id)
     .single()
 
-  if (!profile || profile.role !== 'agent') {
+  if (!profile || profile.role !== 'admin') {
     redirect('/portaal')
   }
 
