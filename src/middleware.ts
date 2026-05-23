@@ -8,7 +8,7 @@ import { createServerClient } from '@supabase/ssr'
  *     /portaal/login geredirect
  */
 export async function middleware(request: NextRequest) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   // Indien Supabase nog niet geconfigureerd is, gewoon doorlaten (build/dev zonder env)
