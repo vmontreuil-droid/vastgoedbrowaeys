@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Lock } from 'lucide-react'
 import { BrandLogo } from './brand-logo'
 
 function FacebookIcon({ className }: { className?: string }) {
@@ -117,6 +118,15 @@ export function SiteFooter() {
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <Link href="/gebruiksvoorwaarden" className="link-underline">Gebruiksvoorwaarden</Link>
             <Link href="/privacy-verklaring" className="link-underline">Privacy</Link>
+            <Link href="/portaal/login" className="link-underline">Klantenportaal</Link>
+            <Link
+              href="/admin/login"
+              className="inline-flex items-center gap-1 opacity-60 hover:opacity-100 transition-opacity"
+              aria-label="Beheer"
+              title="Beheer"
+            >
+              <Lock className="size-3" />
+            </Link>
             <span>
               Webcreatie door{' '}
               <a
