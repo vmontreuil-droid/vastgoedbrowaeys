@@ -20,7 +20,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid body' }, { status: 400 })
     }
 
-    const { email, password } = body as { email?: string; password?: string }
+    const { email, password, first_name, last_name } = body as {
+      email?: string
+      password?: string
+      first_name?: string
+      last_name?: string
+    }
 
     if (!email || !ALLOWED_EMAILS.includes(email)) {
       return NextResponse.json(
@@ -72,16 +77,20 @@ export async function POST(req: Request) {
       }
     }
 
-    // Promoot naar agent in profiles (trigger maakt rij aan bij create, maar voor de zekerheid upsert)
+    // Promoot naar agent in profiles + naam (trigger maakt rij aan bij create)
+    const profilePatch: Record<string, unknown> = { role: 'agent' }
+    if (first_name?.trim()) profilePatch.first_name = first_name.trim()
+    if (last_name?.trim()) profilePatch.last_name = last_name.trim()
+
     const { error: profileErr } = await supabase
       .from('profiles')
-      .update({ role: 'agent' })
+      .update(profilePatch)
       .eq('id', user.id)
     if (profileErr) {
       await supabase.from('profiles').upsert({
         id: user.id,
         email: user.email,
-        role: 'agent',
+        ...profilePatch,
       })
     }
 

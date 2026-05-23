@@ -8,6 +8,8 @@ export const dynamic = 'force-dynamic'
 export default function AdminSetupPage() {
   const [email, setEmail] = useState('info@studio-vm.be')
   const [password, setPassword] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [status, setStatus] = useState<'idle' | 'running' | 'done' | 'error'>('idle')
   const [result, setResult] = useState<string>('')
 
@@ -19,7 +21,7 @@ export default function AdminSetupPage() {
       const res = await fetch('/api/setup-admin', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, first_name: firstName, last_name: lastName }),
       })
       const data = await res.json()
       setStatus(res.ok ? 'done' : 'error')
@@ -95,6 +97,41 @@ export default function AdminSetupPage() {
               }}
             />
           </label>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.16em', color: '#8c6b2e' }}>
+                Voornaam (optioneel)
+              </span>
+              <input
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                style={{
+                  padding: 12,
+                  border: '1px solid #e6e1d7',
+                  fontSize: 16,
+                  background: 'transparent',
+                }}
+              />
+            </label>
+            <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.16em', color: '#8c6b2e' }}>
+                Familienaam (optioneel)
+              </span>
+              <input
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                style={{
+                  padding: 12,
+                  border: '1px solid #e6e1d7',
+                  fontSize: 16,
+                  background: 'transparent',
+                }}
+              />
+            </label>
+          </div>
 
           <button
             type="submit"

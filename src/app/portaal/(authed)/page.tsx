@@ -1,12 +1,34 @@
 import Link from 'next/link'
 import { ArrowRight, FolderOpen, BellRing, Calendar, FileText, Home } from 'lucide-react'
 import { getListings, formatPrice } from '@/lib/listings'
+import { createClient } from '@/lib/supabase/server'
 
 export const metadata = {
   title: 'Mijn portaal',
 }
 
-export default function PortalDashboardPage() {
+function deriveDisplayName(profile: { first_name: string | null; last_name: string | null } | null, email: string | null) {
+  const first = profile?.first_name?.trim()
+  if (first) return first
+  if (email) {
+    const local = email.split('@')[0]
+    return local.charAt(0).toUpperCase() + local.slice(1)
+  }
+  return 'u'
+}
+
+export default async function PortalDashboardPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: profile } = user
+    ? await supabase
+        .from('profiles')
+        .select('first_name, last_name')
+        .eq('id', user.id)
+        .single()
+    : { data: null }
+  const displayName = deriveDisplayName(profile, user?.email ?? null)
+
   // Demo-data — komt later uit Supabase, gekoppeld aan de ingelogde klant.
   const myListings = getListings({ status: ['te-koop'], limit: 2 })
   const upcoming = [
@@ -31,7 +53,7 @@ export default function PortalDashboardPage() {
         <h1 className="text-3xl md:text-5xl">
           Welkom terug,{' '}
           <span className="italic" style={{ color: 'var(--color-accent)' }}>
-            Pieter.
+            {displayName}.
           </span>
         </h1>
         <p className="mt-4 text-[var(--color-mute)] max-w-2xl">
