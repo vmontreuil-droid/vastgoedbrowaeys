@@ -1,7 +1,8 @@
-import { Phone, Mail, MapPin, Clock } from 'lucide-react'
+import { Phone, Mail, Clock, MapPin } from 'lucide-react'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { ContactForm } from './contact-form'
+import { ContactMapWrapper } from '@/components/contact-map-wrapper'
 
 export const metadata = {
   title: 'Contact',
@@ -86,19 +87,9 @@ export default function ContactPage() {
           </div>
         </section>
 
-        {/* === Kaart placeholder === */}
-        <section className="relative h-[400px] md:h-[500px] mt-12" style={{ background: 'var(--color-paper-2)' }}>
-          <div className="absolute inset-0 grid place-items-center text-center px-6">
-            <div>
-              <MapPin className="size-10 mx-auto mb-4" style={{ color: 'var(--color-accent)' }} />
-              <p className="text-xl mb-2" style={{ fontFamily: 'var(--font-display)' }}>
-                Dorpsstraat 93/00.1, 9667 Horebeke
-              </p>
-              <p className="text-sm text-[var(--color-mute)]">
-                Hier komt later een interactieve kaart (Leaflet of Google Maps embed).
-              </p>
-            </div>
-          </div>
+        {/* === Interactieve kaart op kantoor-locatie === */}
+        <section className="w-full mt-12">
+          <ContactMapWrapper />
         </section>
       </main>
 
