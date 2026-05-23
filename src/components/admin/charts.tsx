@@ -52,7 +52,6 @@ export function DonutChart({
               border: '1px solid #e6e1d7',
               fontSize: 13,
             }}
-            formatter={(value: number, name: string) => [`${value}`, name]}
           />
           <Legend
             verticalAlign="bottom"

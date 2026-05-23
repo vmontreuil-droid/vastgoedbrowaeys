@@ -7,9 +7,7 @@ import {
   MessageSquare,
   Plus,
   Home,
-  BellRing,
   ArrowUpRight,
-  Eye,
   TrendingUp,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
