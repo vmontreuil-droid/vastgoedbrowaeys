@@ -24,6 +24,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (user.user_metadata?.role !== 'admin') {
     redirect('/portaal')
   }
+  // Gedeactiveerde admins worden uitgelogd en teruggestuurd naar login
+  if (user.user_metadata?.active === false) {
+    const supabaseClient = await createClient()
+    await supabaseClient.auth.signOut()
+    redirect('/admin/login?error=deactivated')
+  }
 
   const first = user.user_metadata?.first_name as string | undefined
   const last = user.user_metadata?.last_name as string | undefined

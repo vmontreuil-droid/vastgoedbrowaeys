@@ -39,6 +39,7 @@ export function AdminLoginForm() {
 
     // Rol-check via JWT user_metadata (gaat via GoTrue, niet PostgREST)
     const role = authData.user.user_metadata?.role
+    const active = authData.user.user_metadata?.active !== false
     if (role !== 'admin') {
       await supabase.auth.signOut()
       setStatus('idle')
@@ -47,6 +48,12 @@ export function AdminLoginForm() {
           ? `Rol = "${role}" — moet "admin" zijn voor beheer-toegang.`
           : 'Dit account heeft geen beheerder-rol toegekend gekregen.',
       )
+      return
+    }
+    if (!active) {
+      await supabase.auth.signOut()
+      setStatus('idle')
+      setError('Dit account is gedeactiveerd. Contacteer een collega-beheerder.')
       return
     }
 

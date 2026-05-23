@@ -1,22 +1,11 @@
-import { Mail, Phone, BadgeCheck, Users } from 'lucide-react'
+import { Users } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { AddTeamMemberForm } from './add-team-member-form'
-import { DeleteTeamMemberButton } from './delete-team-member-button'
+import { TeamMemberCard, type TeamMember } from './team-member-card'
 
 export const metadata = {
   title: 'Admin · Instellingen',
-}
-
-type TeamMember = {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  title?: string
-  phone?: string
-  bivNumber?: string
-  createdAt: string
 }
 
 export default async function InstellingenPage() {
@@ -35,12 +24,16 @@ export default async function InstellingenPage() {
       email: u.email || '',
       firstName: (u.user_metadata?.first_name as string) || '',
       lastName: (u.user_metadata?.last_name as string) || '',
-      title: u.user_metadata?.title as string | undefined,
-      phone: u.user_metadata?.phone as string | undefined,
-      bivNumber: u.user_metadata?.biv_number as string | undefined,
-      createdAt: u.created_at || '',
+      title: (u.user_metadata?.title as string | undefined) || undefined,
+      phone: (u.user_metadata?.phone as string | undefined) || undefined,
+      bivNumber: (u.user_metadata?.biv_number as string | undefined) || undefined,
+      active: u.user_metadata?.active !== false,
     }))
-    .sort((a, b) => a.lastName.localeCompare(b.lastName, 'nl-BE'))
+    .sort((a, b) => {
+      // Actieve eerst, dan op familienaam
+      if (a.active !== b.active) return a.active ? -1 : 1
+      return a.lastName.localeCompare(b.lastName, 'nl-BE')
+    })
 
   return (
     <div className="container-px mx-auto max-w-screen-2xl py-10 md:py-14">
@@ -73,55 +66,11 @@ export default async function InstellingenPage() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           {team.map((m) => (
-            <article
+            <TeamMemberCard
               key={m.id}
-              className="p-5"
-              style={{
-                background: 'var(--color-paper)',
-                border: '1px solid var(--color-line)',
-              }}
-            >
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div className="min-w-0">
-                  <p className="text-lg" style={{ fontFamily: 'var(--font-display)' }}>
-                    {m.firstName} {m.lastName}
-                  </p>
-                  {m.title && (
-                    <p className="text-xs text-[var(--color-mute)] mt-0.5">{m.title}</p>
-                  )}
-                </div>
-                <DeleteTeamMemberButton
-                  userId={m.id}
-                  name={`${m.firstName} ${m.lastName}`}
-                  isSelf={currentUser?.id === m.id}
-                />
-              </div>
-
-              <div className="space-y-1.5 text-sm">
-                <a
-                  href={`mailto:${m.email}`}
-                  className="flex items-center gap-2 text-[var(--color-ink)] link-underline truncate"
-                >
-                  <Mail className="size-3.5 shrink-0" style={{ color: 'var(--color-accent)' }} />
-                  <span className="truncate">{m.email}</span>
-                </a>
-                {m.phone && (
-                  <a
-                    href={`tel:${m.phone.replace(/\s|\//g, '')}`}
-                    className="flex items-center gap-2 text-[var(--color-ink)] link-underline"
-                  >
-                    <Phone className="size-3.5 shrink-0" style={{ color: 'var(--color-accent)' }} />
-                    {m.phone}
-                  </a>
-                )}
-                {m.bivNumber && (
-                  <p className="flex items-center gap-2 text-xs text-[var(--color-mute)]">
-                    <BadgeCheck className="size-3.5 shrink-0" />
-                    BIV {m.bivNumber}
-                  </p>
-                )}
-              </div>
-            </article>
+              member={m}
+              isSelf={currentUser?.id === m.id}
+            />
           ))}
         </div>
 
