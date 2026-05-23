@@ -1,10 +1,12 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { ShieldCheck } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { PortalShell } from '@/components/portal-shell'
 
 export default async function PortalAuthedLayout({ children }: { children: React.ReactNode }) {
-  // Indien Supabase nog niet geconfigureerd is (lokaal zonder env), demo-modus
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  // Demo-modus indien Supabase nog niet geconfigureerd is
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.SUPABASE_URL) {
     return (
       <PortalShell user={{ name: 'Demo gebruiker', email: 'demo@vastgoedbrowaeys.be' }}>
         {children}
@@ -19,18 +21,32 @@ export default async function PortalAuthedLayout({ children }: { children: React
     redirect('/portaal/login')
   }
 
-  // Haal profiel op voor naam-display
   const { data: profile } = await supabase
     .from('profiles')
-    .select('first_name, last_name, email')
+    .select('role, first_name, last_name, email')
     .eq('id', user.id)
     .single()
 
   const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || user.email || 'Klant'
+  const isAgent = profile?.role === 'agent'
 
   return (
-    <PortalShell user={{ name, email: profile?.email || user.email || '' }}>
-      {children}
-    </PortalShell>
+    <>
+      {isAgent && (
+        <div
+          className="w-full text-center text-xs uppercase tracking-[0.18em] font-medium py-2 px-4"
+          style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
+        >
+          <span className="inline-flex items-center gap-2 flex-wrap justify-center">
+            <ShieldCheck className="size-3.5" />
+            U bekijkt het klantenportaal in beheerder-modus —
+            <Link href="/admin" className="underline">terug naar admin →</Link>
+          </span>
+        </div>
+      )}
+      <PortalShell user={{ name, email: profile?.email || user.email || '' }}>
+        {children}
+      </PortalShell>
+    </>
   )
 }
