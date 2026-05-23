@@ -7,8 +7,8 @@ export const metadata = {
   title: 'Mijn portaal',
 }
 
-function deriveDisplayName(profile: { first_name: string | null; last_name: string | null } | null, email: string | null) {
-  const first = profile?.first_name?.trim()
+function deriveDisplayName(firstName: string | undefined, email: string | null) {
+  const first = firstName?.trim()
   if (first) return first
   if (email) {
     const local = email.split('@')[0]
@@ -20,14 +20,8 @@ function deriveDisplayName(profile: { first_name: string | null; last_name: stri
 export default async function PortalDashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const { data: profile } = user
-    ? await supabase
-        .from('profiles')
-        .select('first_name, last_name')
-        .eq('id', user.id)
-        .single()
-    : { data: null }
-  const displayName = deriveDisplayName(profile, user?.email ?? null)
+  const firstName = user?.user_metadata?.first_name as string | undefined
+  const displayName = deriveDisplayName(firstName, user?.email ?? null)
 
   // Demo-data — komt later uit Supabase, gekoppeld aan de ingelogde klant.
   const myListings = getListings({ status: ['te-koop'], limit: 2 })

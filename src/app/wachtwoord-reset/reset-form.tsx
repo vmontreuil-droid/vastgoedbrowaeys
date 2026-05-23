@@ -61,15 +61,11 @@ export function ResetPasswordForm() {
 
     setStatus('success')
 
-    // Detecteer of user agent is → redirect naar admin login, anders portaal
+    // Detecteer rol via JWT user_metadata → redirect naar juiste login
     const { data: userData } = await supabase.auth.getUser()
     if (userData.user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', userData.user.id)
-        .single()
-      const target = profile?.role === 'admin' ? '/admin/login' : '/portaal/login'
+      const target =
+        userData.user.user_metadata?.role === 'admin' ? '/admin/login' : '/portaal/login'
       setTimeout(() => router.push(target), 1500)
     } else {
       setTimeout(() => router.push('/'), 1500)

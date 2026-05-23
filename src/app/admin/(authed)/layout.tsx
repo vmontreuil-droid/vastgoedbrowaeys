@@ -17,24 +17,20 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/portaal/login?redirect=/admin')
+    redirect('/admin/login')
   }
 
-  // Check of user de 'admin' rol heeft — anders geen toegang
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role, first_name, last_name, email')
-    .eq('id', user.id)
-    .single()
-
-  if (!profile || profile.role !== 'admin') {
+  // Rol-check via JWT user_metadata (omzeilt PostgREST schema-cache issues)
+  if (user.user_metadata?.role !== 'admin') {
     redirect('/portaal')
   }
 
-  const name = [profile.first_name, profile.last_name].filter(Boolean).join(' ') || user.email || 'Agent'
+  const first = user.user_metadata?.first_name as string | undefined
+  const last = user.user_metadata?.last_name as string | undefined
+  const name = [first, last].filter(Boolean).join(' ') || user.email || 'Beheerder'
 
   return (
-    <AdminShell user={{ name, email: profile.email || user.email || '' }}>
+    <AdminShell user={{ name, email: user.email || '' }}>
       {children}
     </AdminShell>
   )

@@ -51,12 +51,18 @@ export async function POST(req: Request) {
     let user = usersData.users.find((u) => u.email === email)
     let action: 'created' | 'updated' = 'updated'
 
+    // user_metadata bouwen — rol + naam komen IN het JWT, dus geen DB-query
+    // nodig voor auth-checks. Bypassed PostgREST schema-cache issues volledig.
+    const userMetadata: Record<string, unknown> = { role: 'admin' }
+    if (first_name?.trim()) userMetadata.first_name = first_name.trim()
+    if (last_name?.trim()) userMetadata.last_name = last_name.trim()
+
     if (!user) {
-      // User bestaat niet → aanmaken via officiële Admin API
       const { data: created, error: createErr } = await supabase.auth.admin.createUser({
         email,
         password,
         email_confirm: true,
+        user_metadata: userMetadata,
       })
       if (createErr || !created.user) {
         return NextResponse.json(
@@ -67,18 +73,24 @@ export async function POST(req: Request) {
       user = created.user
       action = 'created'
     } else {
-      // User bestaat → password resetten + email bevestigen
-      const { error: updateErr } = await supabase.auth.admin.updateUserById(user.id, {
-        password,
-        email_confirm: true,
-      })
+      // Bestaande user → password resetten + email bevestigen + metadata mergen
+      const { data: updated, error: updateErr } = await supabase.auth.admin.updateUserById(
+        user.id,
+        {
+          password,
+          email_confirm: true,
+          user_metadata: { ...(user.user_metadata || {}), ...userMetadata },
+        },
+      )
       if (updateErr) {
         return NextResponse.json({ error: 'updateUser: ' + updateErr.message }, { status: 500 })
       }
+      if (updated.user) user = updated.user
     }
 
-    // Profiel altijd upserten met role=agent (trigger heeft mogelijk al een
-    // rij met role=client aangemaakt; we forceren agent + naam).
+    // Profiel-upsert is optioneel: handig voor klantenlijst/dossier-flows,
+    // maar de auth-flow zelf hangt er niet meer van af. Faalt ie (bv. door
+    // PostgREST schema cache), no-op'en we ipv 500'en.
     const profilePatch: Record<string, unknown> = {
       id: user.id,
       email: user.email,
@@ -90,33 +102,15 @@ export async function POST(req: Request) {
     const { error: upsertErr } = await supabase
       .from('profiles')
       .upsert(profilePatch, { onConflict: 'id' })
-    if (upsertErr) {
-      return NextResponse.json(
-        { error: 'profiles upsert: ' + upsertErr.message },
-        { status: 500 },
-      )
-    }
-
-    // Lees terug om zeker te zijn dat de rol nu agent is
-    const { data: verifyProfile, error: verifyErr } = await supabase
-      .from('profiles')
-      .select('id, email, role, first_name, last_name')
-      .eq('id', user.id)
-      .single()
-    if (verifyErr) {
-      return NextResponse.json(
-        { error: 'verify profile: ' + verifyErr.message },
-        { status: 500 },
-      )
-    }
 
     return NextResponse.json({
       ok: true,
-      message: `User ${action} + email confirmed + role=${verifyProfile.role} set`,
+      message: `User ${action} + email confirmed + role=admin in user_metadata`,
       action,
       user_id: user.id,
       email: user.email,
-      profile: verifyProfile,
+      user_metadata: user.user_metadata,
+      profile_upsert_warning: upsertErr?.message || null,
     })
   } catch (e) {
     return NextResponse.json(

@@ -21,18 +21,15 @@ export default async function PortalAuthedLayout({ children }: { children: React
     redirect('/portaal/login')
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role, first_name, last_name, email')
-    .eq('id', user.id)
-    .single()
-
-  const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || user.email || 'Klant'
-  const isAgent = profile?.role === 'admin'
+  // Rol + naam via JWT user_metadata (omzeilt PostgREST schema-cache issues)
+  const first = user.user_metadata?.first_name as string | undefined
+  const last = user.user_metadata?.last_name as string | undefined
+  const name = [first, last].filter(Boolean).join(' ') || user.email || 'Klant'
+  const isAdmin = user.user_metadata?.role === 'admin'
 
   return (
     <>
-      {isAgent && (
+      {isAdmin && (
         <div
           className="w-full text-center text-xs uppercase tracking-[0.18em] font-medium py-2 px-4"
           style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
@@ -44,7 +41,7 @@ export default async function PortalAuthedLayout({ children }: { children: React
           </span>
         </div>
       )}
-      <PortalShell user={{ name, email: profile?.email || user.email || '' }}>
+      <PortalShell user={{ name, email: user.email || '' }}>
         {children}
       </PortalShell>
     </>

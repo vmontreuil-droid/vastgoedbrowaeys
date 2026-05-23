@@ -37,31 +37,16 @@ export function AdminLoginForm() {
       return
     }
 
-    // Rol-check: alleen agents mogen door
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', authData.user.id)
-      .single()
-
-    if (profileError) {
+    // Rol-check via JWT user_metadata (gaat via GoTrue, niet PostgREST)
+    const role = authData.user.user_metadata?.role
+    if (role !== 'admin') {
       await supabase.auth.signOut()
       setStatus('idle')
-      setError(`Profile-query mislukt: ${profileError.message} (code: ${profileError.code || 'n/a'})`)
-      return
-    }
-
-    if (!profile) {
-      await supabase.auth.signOut()
-      setStatus('idle')
-      setError(`Geen profile-rij gevonden voor user ${authData.user.id}.`)
-      return
-    }
-
-    if (profile.role !== 'admin') {
-      await supabase.auth.signOut()
-      setStatus('idle')
-      setError(`Profile-rol = "${profile.role}" — moet "agent" zijn voor admin-toegang.`)
+      setError(
+        role
+          ? `Rol = "${role}" — moet "admin" zijn voor beheer-toegang.`
+          : 'Dit account heeft geen beheerder-rol toegekend gekregen.',
+      )
       return
     }
 
