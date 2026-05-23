@@ -147,7 +147,7 @@ export default function AdminSetupPage() {
               opacity: status === 'running' ? 0.6 : 1,
             }}
           >
-            {status === 'running' ? 'Bezig…' : 'Reset wachtwoord + zet als agent'}
+            {status === 'running' ? 'Bezig…' : 'Reset wachtwoord + zet als beheerder'}
           </button>
         </form>
 
