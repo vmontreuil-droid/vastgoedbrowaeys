@@ -3,15 +3,17 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react'
+import { ArrowRight, Eye, EyeOff, AlertCircle, ShieldCheck } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
-export function LoginForm() {
+export function AdminLoginForm() {
   const router = useRouter()
   const params = useSearchParams()
+  const initialError = params.get('error') === 'no-access' ? 'Geen admin-toegang voor dit account.' : null
+
   const [showPassword, setShowPassword] = useState(false)
-  const [status, setStatus] = useState<'idle' | 'sending' | 'error'>('idle')
-  const [error, setError] = useState<string | null>(null)
+  const [status, setStatus] = useState<'idle' | 'sending'>('idle')
+  const [error, setError] = useState<string | null>(initialError)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -26,7 +28,7 @@ export function LoginForm() {
     const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
 
     if (signInError || !authData.user) {
-      setStatus('error')
+      setStatus('idle')
       setError(
         signInError?.message === 'Invalid login credentials'
           ? 'E-mail of wachtwoord onjuist.'
@@ -35,24 +37,21 @@ export function LoginForm() {
       return
     }
 
-    // Rol-check: agents horen op /admin, niet op klantenportaal
+    // Rol-check: alleen agents mogen door
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', authData.user.id)
       .single()
 
-    if (profile?.role === 'agent') {
+    if (!profile || profile.role !== 'agent') {
       await supabase.auth.signOut()
-      setStatus('error')
-      setError('Beheerders loggen in via het admin-portaal.')
-      setTimeout(() => router.push('/admin/login'), 1500)
+      setStatus('idle')
+      setError('Dit account heeft geen admin-toegang.')
       return
     }
 
-    // Succes — klant naar zijn dashboard
-    const redirectTo = params.get('redirect') || '/portaal'
-    router.push(redirectTo)
+    router.push('/admin')
     router.refresh()
   }
 
@@ -85,7 +84,7 @@ export function LoginForm() {
         <span className="eyebrow text-[0.6rem] mb-2 block flex items-center justify-between">
           Wachtwoord
           <Link
-            href="/portaal/wachtwoord-vergeten"
+            href="/admin/wachtwoord-vergeten"
             className="link-underline normal-case tracking-normal text-[0.7rem] text-[var(--color-mute)]"
           >
             Vergeten?
@@ -111,18 +110,14 @@ export function LoginForm() {
         </div>
       </label>
 
-      <label className="flex items-center gap-2 text-sm text-[var(--color-mute)]">
-        <input type="checkbox" name="remember" className="accent-[var(--color-accent)]" />
-        Mij onthouden op dit toestel
-      </label>
-
       <button
         type="submit"
         disabled={status === 'sending'}
         className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-medium transition-colors disabled:opacity-60"
-        style={{ background: 'var(--color-accent)', color: 'var(--color-paper)' }}
+        style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
       >
-        {status === 'sending' ? 'Bezig met inloggen…' : 'Inloggen'}
+        <ShieldCheck className="size-4" />
+        {status === 'sending' ? 'Bezig met inloggen…' : 'Inloggen als beheerder'}
         <ArrowRight className="size-4" />
       </button>
     </form>

@@ -36,21 +36,41 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   const url = request.nextUrl
-  const isPortalPath = url.pathname.startsWith('/portaal')
-  const isLoginPath = url.pathname.startsWith('/portaal/login') || url.pathname.startsWith('/portaal/wachtwoord-vergeten')
+  const path = url.pathname
 
-  // Niet-ingelogde gebruiker probeert beschermde portaal-route: redirect naar login
-  if (isPortalPath && !isLoginPath && !user) {
+  const isPortalPath = path.startsWith('/portaal')
+  const isPortalLogin = path.startsWith('/portaal/login') || path.startsWith('/portaal/wachtwoord-vergeten')
+  const isAdminPath = path.startsWith('/admin')
+  const isAdminLogin = path.startsWith('/admin/login') || path.startsWith('/admin/wachtwoord-vergeten')
+
+  // Klantenportaal: niet ingelogd → naar /portaal/login
+  if (isPortalPath && !isPortalLogin && !user) {
     const redirectUrl = url.clone()
     redirectUrl.pathname = '/portaal/login'
-    redirectUrl.searchParams.set('redirect', url.pathname)
+    redirectUrl.searchParams.set('redirect', path)
     return NextResponse.redirect(redirectUrl)
   }
 
-  // Ingelogde gebruiker op login-pagina: direct naar dashboard
-  if (isLoginPath && user) {
+  // Admin: niet ingelogd → naar /admin/login
+  if (isAdminPath && !isAdminLogin && !user) {
+    const redirectUrl = url.clone()
+    redirectUrl.pathname = '/admin/login'
+    redirectUrl.search = ''
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  // Ingelogd op portaal-login → direct naar /portaal
+  if (isPortalLogin && user) {
     const redirectUrl = url.clone()
     redirectUrl.pathname = '/portaal'
+    redirectUrl.search = ''
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  // Ingelogd op admin-login → direct naar /admin (rol-check gebeurt in admin layout)
+  if (isAdminLogin && user) {
+    const redirectUrl = url.clone()
+    redirectUrl.pathname = '/admin'
     redirectUrl.search = ''
     return NextResponse.redirect(redirectUrl)
   }
