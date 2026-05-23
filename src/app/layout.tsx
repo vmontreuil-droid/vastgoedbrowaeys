@@ -3,6 +3,7 @@ import { Fraunces, Montserrat } from 'next/font/google'
 import { CookieConsent } from '@/components/cookie-consent'
 import { TopoBackground } from '@/components/topo-background'
 import { ThemeApplier } from '@/components/theme-applier'
+import { HashRecoveryRedirector } from '@/components/hash-recovery-redirector'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="nl" className={`${fraunces.variable} ${montserrat.variable}`}>
       <body>
         <ThemeApplier />
+        <HashRecoveryRedirector />
         <TopoBackground />
         {children}
         <CookieConsent />
