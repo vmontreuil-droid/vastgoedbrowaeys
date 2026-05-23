@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { InfoPageFooter } from '@/components/info-page-footer'
 
 export const metadata = {
   title: 'Veelgestelde vragen',
@@ -140,6 +141,8 @@ export default function FaqPage() {
               </article>
             ))}
           </div>
+
+          <InfoPageFooter pageKey="faq" />
 
           <div className="mt-12 pt-8 border-t" style={{ borderColor: 'var(--color-line)' }}>
             <h2 className="text-2xl mb-3" style={{ fontFamily: 'var(--font-display)' }}>

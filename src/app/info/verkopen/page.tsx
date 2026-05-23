@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { InfoPageFooter } from '@/components/info-page-footer'
 
 export const metadata = {
   title: 'Uw woning verkopen',
@@ -151,6 +152,8 @@ export default function VerkopenPage() {
               <Step n="07" title="Akte bij notaris" body="Binnen 4 maanden — saldo wordt overgemaakt, eigendom wisselt." />
             </ol>
           </div>
+
+          <InfoPageFooter pageKey="verkopen" />
 
           {/* === CTA === */}
           <div className="pt-8 border-t" style={{ borderColor: 'var(--color-line)' }}>

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { InfoPageFooter } from '@/components/info-page-footer'
 
 export const metadata = {
   title: 'Vastgoed-woordenlijst',
@@ -99,7 +100,7 @@ export default function WoordenlijstPage() {
           </div>
         </section>
 
-        <section className="container-px mx-auto max-w-3xl pb-16 space-y-12">
+        <section className="container-px mx-auto max-w-3xl pb-8 space-y-12">
           {letters.map((letter) => (
             <div key={letter} id={`letter-${letter}`} className="scroll-mt-24">
               <h2
@@ -120,6 +121,10 @@ export default function WoordenlijstPage() {
               </div>
             </div>
           ))}
+        </section>
+
+        <section className="container-px mx-auto max-w-3xl pb-16">
+          <InfoPageFooter pageKey="woordenlijst" />
         </section>
       </main>
 

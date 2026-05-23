@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { InfoPageFooter } from '@/components/info-page-footer'
 
 export const metadata = {
   title: 'Een woning kopen',
@@ -168,6 +169,8 @@ export default function KopenPage() {
               <Tip text="Reken bij een woning met EPC E of F op een renovatieverplichting binnen 5 jaar (zie ook onze EPC-pagina)." />
             </ul>
           </div>
+
+          <InfoPageFooter pageKey="kopen" />
 
           {/* === CTA === */}
           <div className="pt-8 border-t" style={{ borderColor: 'var(--color-line)' }}>

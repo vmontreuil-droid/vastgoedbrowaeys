@@ -70,13 +70,12 @@ export function SiteHeader() {
           <div className="flex items-center gap-3">
             <Link
               href="/portaal/login"
-              aria-label="Klantenportaal"
-              title="Klantenportaal"
               data-active={pathname.startsWith('/portaal') || undefined}
-              className="hidden md:grid place-items-center size-10 rounded-full transition-colors data-[active=true]:bg-[var(--color-paper-2)]"
-              style={{ color: 'var(--color-mute)' }}
+              className="hidden md:inline-flex items-center gap-2 px-3 py-2 text-xs font-medium uppercase tracking-[0.14em] transition-colors data-[active=true]:bg-[var(--color-paper-2)]"
+              style={{ color: 'var(--color-mute)', border: '1px solid var(--color-line)' }}
             >
-              <Lock className="size-4" />
+              <Lock className="size-3.5" />
+              <span className="hidden lg:inline">Klantenportaal</span>
             </Link>
             <Link href="/gratis-schatting" className="pill-cta">
               Gratis schatting

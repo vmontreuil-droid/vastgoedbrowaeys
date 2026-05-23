@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { BrandLogo } from '@/components/brand-logo'
@@ -85,7 +86,9 @@ export default function PortalLoginPage() {
             Toegang tot uw persoonlijk dossier.
           </p>
 
-          <LoginForm />
+          <Suspense fallback={<div className="h-64" />}>
+            <LoginForm />
+          </Suspense>
 
           <p className="mt-10 pt-6 border-t text-sm text-[var(--color-mute)]" style={{ borderColor: 'var(--color-line)' }}>
             Nog geen toegang? Uw makelaar maakt uw account aan zodra uw dossier opgestart wordt.

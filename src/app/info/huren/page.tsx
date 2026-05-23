@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { InfoPageFooter } from '@/components/info-page-footer'
 
 export const metadata = {
   title: 'Huren & verhuren',
@@ -128,6 +129,8 @@ export default function HurenPage() {
               MyMinFin of myrent.be.
             </p>
           </Block>
+
+          <InfoPageFooter pageKey="huren" />
 
           {/* CTA */}
           <div className="pt-8 border-t" style={{ borderColor: 'var(--color-line)' }}>

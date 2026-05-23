@@ -1,4 +1,5 @@
-import { Phone, Mail, Clock } from 'lucide-react'
+import Link from 'next/link'
+import { Phone, Mail, Clock, Settings } from 'lucide-react'
 
 export function SiteTopbar() {
   return (
@@ -34,6 +35,15 @@ export function SiteTopbar() {
           <span className="opacity-60">BIV 504.553</span>
           <span className="opacity-30">·</span>
           <span style={{ color: 'var(--color-clay)' }}>Dorpsstraat 93, 9667 Horebeke</span>
+          <span className="opacity-30">·</span>
+          <Link
+            href="/admin"
+            className="inline-flex items-center gap-1.5 transition-colors hover:text-[var(--color-paper)]"
+            style={{ color: 'var(--color-clay)' }}
+          >
+            <Settings className="size-3" />
+            Admin
+          </Link>
         </div>
       </div>
     </div>

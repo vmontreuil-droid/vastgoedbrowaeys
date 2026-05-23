@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { InfoPageFooter } from '@/components/info-page-footer'
 
 export const metadata = {
   title: 'EPC uitgelegd',
@@ -170,6 +171,8 @@ export default function EpcPage() {
               Bovendien kan de koper of huurder een schadevergoeding eisen.
             </p>
           </div>
+
+          <InfoPageFooter pageKey="epc" />
 
           {/* === CTA === */}
           <div className="pt-8 border-t" style={{ borderColor: 'var(--color-line)' }}>

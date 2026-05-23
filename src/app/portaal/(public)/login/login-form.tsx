@@ -2,23 +2,58 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Eye, EyeOff } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 export function LoginForm() {
+  const router = useRouter()
+  const params = useSearchParams()
   const [showPassword, setShowPassword] = useState(false)
-  const [status, setStatus] = useState<'idle' | 'sending'>('idle')
+  const [status, setStatus] = useState<'idle' | 'sending' | 'error'>('idle')
+  const [error, setError] = useState<string | null>(null)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setStatus('sending')
-    // Placeholder — Supabase auth komt later
-    setTimeout(() => {
-      window.location.href = '/portaal'
-    }, 600)
+    setError(null)
+
+    const formData = new FormData(e.currentTarget)
+    const email = String(formData.get('email') ?? '').trim()
+    const password = String(formData.get('password') ?? '')
+
+    const supabase = createClient()
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (signInError) {
+      setStatus('error')
+      setError(
+        signInError.message === 'Invalid login credentials'
+          ? 'E-mail of wachtwoord onjuist.'
+          : signInError.message,
+      )
+      return
+    }
+
+    // Succes — naar dashboard of de oorspronkelijk gevraagde pagina
+    const redirectTo = params.get('redirect') || '/portaal'
+    router.push(redirectTo)
+    router.refresh()
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {error && (
+        <div
+          className="flex items-start gap-3 p-3 text-sm"
+          style={{ background: 'rgba(239, 68, 68, 0.08)', color: '#b91c1c' }}
+          role="alert"
+        >
+          <AlertCircle className="size-4 mt-0.5 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
       <label className="block">
         <span className="eyebrow text-[0.6rem] mb-2 block">E-mailadres</span>
         <input
@@ -34,7 +69,10 @@ export function LoginForm() {
       <label className="block">
         <span className="eyebrow text-[0.6rem] mb-2 block flex items-center justify-between">
           Wachtwoord
-          <Link href="/portaal/wachtwoord-vergeten" className="link-underline normal-case tracking-normal text-[0.7rem] text-[var(--color-mute)]">
+          <Link
+            href="/portaal/wachtwoord-vergeten"
+            className="link-underline normal-case tracking-normal text-[0.7rem] text-[var(--color-mute)]"
+          >
             Vergeten?
           </Link>
         </span>
@@ -66,10 +104,10 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={status === 'sending'}
-        className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-medium transition-colors"
+        className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-medium transition-colors disabled:opacity-60"
         style={{ background: 'var(--color-accent)', color: 'var(--color-paper)' }}
       >
-        {status === 'sending' ? 'Inloggen…' : 'Inloggen'}
+        {status === 'sending' ? 'Bezig met inloggen…' : 'Inloggen'}
         <ArrowRight className="size-4" />
       </button>
     </form>
