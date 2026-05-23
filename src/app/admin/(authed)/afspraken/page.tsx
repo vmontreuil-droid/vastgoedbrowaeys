@@ -1,7 +1,6 @@
 import Link from 'next/link'
-import { Calendar, Plus, Clock, MapPin, User, Check, X } from 'lucide-react'
-import { APPOINTMENTS, type AppointmentType, type AppointmentStatus } from '@/data/admin-mock'
-import { DonutChart, SimpleLine } from '@/components/admin/charts'
+import { Calendar, Plus, Clock, MapPin, User, Check, X, AlertCircle } from 'lucide-react'
+import { getAdminAppointments } from '@/lib/admin-db'
 
 export const metadata = {
   title: 'Admin · Afspraken',
@@ -9,25 +8,7 @@ export const metadata = {
 
 type SearchParams = { [k: string]: string | string[] | undefined }
 
-const TYPE_LABEL: Record<AppointmentType, string> = {
-  bezichtiging: 'Bezichtiging',
-  schatting:    'Schatting',
-  intake:       'Intake',
-  compromis:    'Compromis',
-  akte:         'Akte',
-  overig:       'Overig',
-}
-
-const TYPE_COLOR: Record<AppointmentType, string> = {
-  bezichtiging: '#0b4f58',
-  schatting:    '#c98c4f',
-  intake:       '#5a7a48',
-  compromis:    '#a25b3a',
-  akte:         '#0b4f58',
-  overig:       '#9b6e7b',
-}
-
-const STATUS_LABEL: Record<AppointmentStatus, string> = {
+const STATUS_LABEL: Record<string, string> = {
   planned:   'Gepland',
   confirmed: 'Bevestigd',
   completed: 'Voltooid',
@@ -39,58 +20,32 @@ export default async function AfsprakenPage({
 }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams
   const range = (params.range as string | undefined) ?? 'week'
-  const typeFilter = (params.type as string | undefined) ?? 'alle'
-  const agentFilter = (params.agent as string | undefined) ?? 'alle'
 
-  const now = new Date('2026-05-23T12:00:00+02:00')
+  const { items: all, error } = await getAdminAppointments()
+
+  const now = new Date()
   const startOfDay = new Date(now); startOfDay.setHours(0, 0, 0, 0)
-  const ranges: Record<string, number> = {
-    today: 1,
-    week:  7,
-    month: 30,
-  }
-  const days = ranges[range] ?? 7
+  const days = range === 'today' ? 1 : range === 'month' ? 30 : 7
   const endTs = startOfDay.getTime() + days * 24 * 3600 * 1000
 
-  let upcoming = APPOINTMENTS.filter((a) => {
-    const t = new Date(a.start).getTime()
-    return t >= startOfDay.getTime() && t < endTs
-  })
+  const upcoming = all
+    .filter((a) => {
+      const t = new Date(a.start).getTime()
+      return t >= startOfDay.getTime() && t < endTs
+    })
+    .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
 
-  if (typeFilter !== 'alle') upcoming = upcoming.filter((a) => a.type === typeFilter)
-  if (agentFilter !== 'alle') upcoming = upcoming.filter((a) => a.agent === agentFilter)
-  upcoming.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
-
-  const past = APPOINTMENTS
+  const past = all
     .filter((a) => new Date(a.start).getTime() < startOfDay.getTime())
     .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime())
     .slice(0, 5)
 
-  // Group by day
   const grouped = new Map<string, typeof upcoming>()
   upcoming.forEach((a) => {
     const day = new Date(a.start).toISOString().split('T')[0]
     if (!grouped.has(day)) grouped.set(day, [])
     grouped.get(day)!.push(a)
   })
-
-  // Stats
-  const byType = (Object.keys(TYPE_LABEL) as AppointmentType[])
-    .map((t) => ({
-      name: TYPE_LABEL[t],
-      value: APPOINTMENTS.filter((a) => a.type === t && a.status !== 'cancelled').length,
-      color: TYPE_COLOR[t],
-    }))
-    .filter((d) => d.value > 0)
-
-  // Trend per week mock
-  const weekTrend = ['W17', 'W18', 'W19', 'W20', 'W21'].map((w, i) => ({
-    x: w,
-    Gepland: [3, 4, 5, 6, 7][i],
-    Voltooid: [2, 3, 5, 4, 6][i],
-  }))
-
-  const agents = Array.from(new Set(APPOINTMENTS.map((a) => a.agent)))
 
   return (
     <div className="container-px mx-auto max-w-screen-2xl py-8 md:py-10">
@@ -112,20 +67,13 @@ export default async function AfsprakenPage({
         </Link>
       </section>
 
-      {/* Charts */}
-      <section className="grid lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-2 p-5" style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
-          <h3 className="text-sm mb-2" style={{ fontFamily: 'var(--font-display)' }}>Afspraken per week</h3>
-          <SimpleLine data={weekTrend} dataKeys={[
-            { key: 'Gepland',  label: 'Gepland',  color: '#0b4f58' },
-            { key: 'Voltooid', label: 'Voltooid', color: '#5a7a48' },
-          ]} height={220} />
+      {error && (
+        <div className="flex items-start gap-3 p-3 mb-6 text-sm"
+          style={{ background: 'rgba(239,68,68,0.08)', color: '#b91c1c' }}>
+          <AlertCircle className="size-4 mt-0.5 shrink-0" />
+          <span>Kon afspraken niet laden: {error}</span>
         </div>
-        <div className="p-5" style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
-          <h3 className="text-sm mb-2" style={{ fontFamily: 'var(--font-display)' }}>Per type</h3>
-          <DonutChart data={byType} centerLabel="afspraken" />
-        </div>
-      </section>
+      )}
 
       {/* Filters */}
       <section
@@ -141,27 +89,6 @@ export default async function AfsprakenPage({
           ]}
           current={range}
           queryKey="range"
-          otherKeyValues={{ type: typeFilter, agent: agentFilter }}
-        />
-        <FilterPills
-          label="Type"
-          options={[
-            { value: 'alle', label: 'Alle' },
-            ...Object.entries(TYPE_LABEL).map(([k, v]) => ({ value: k, label: v })),
-          ]}
-          current={typeFilter}
-          queryKey="type"
-          otherKeyValues={{ range, agent: agentFilter }}
-        />
-        <FilterPills
-          label="Werknemer"
-          options={[
-            { value: 'alle', label: 'Iedereen' },
-            ...agents.map((a) => ({ value: a, label: a })),
-          ]}
-          current={agentFilter}
-          queryKey="agent"
-          otherKeyValues={{ range, type: typeFilter }}
         />
       </section>
 
@@ -196,23 +123,23 @@ export default async function AfsprakenPage({
 
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span
-                          className="inline-block px-1.5 py-0.5 text-[0.55rem] uppercase tracking-[0.1em] font-medium"
-                          style={{ background: TYPE_COLOR[a.type], color: '#fff' }}
-                        >
-                          {TYPE_LABEL[a.type]}
-                        </span>
                         <AppointmentStatusBadge status={a.status} />
+                        {a.dossierRef && (
+                          <span className="text-[0.55rem] uppercase tracking-[0.12em] text-[var(--color-mute)]">
+                            #{a.dossierRef}
+                          </span>
+                        )}
                       </div>
                       <p className="text-base mt-0.5" style={{ fontFamily: 'var(--font-display)' }}>{a.title}</p>
-                      <div className="mt-1 grid grid-cols-1 sm:grid-cols-3 gap-1 text-xs text-[var(--color-mute)]">
+                      <div className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs text-[var(--color-mute)]">
                         <span className="flex items-center gap-1">
                           <User className="size-3" /> {a.clientName}
                         </span>
-                        <span className="flex items-center gap-1">
-                          <MapPin className="size-3" /> {a.location}
-                        </span>
-                        <span className="italic">{a.agent}</span>
+                        {a.location && (
+                          <span className="flex items-center gap-1">
+                            <MapPin className="size-3" /> {a.location}
+                          </span>
+                        )}
                       </div>
                     </div>
 
@@ -231,16 +158,17 @@ export default async function AfsprakenPage({
         {grouped.size === 0 && (
           <div className="p-10 text-center text-sm text-[var(--color-mute)]"
             style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
-            Geen afspraken in deze periode.
+            {all.length === 0
+              ? 'Nog geen afspraken. Plan er een via "+ Afspraak plannen".'
+              : 'Geen afspraken in deze periode.'}
           </div>
         )}
       </section>
 
-      {/* Recente / voltooide afspraken */}
       {past.length > 0 && (
         <section className="mt-12">
           <h2 className="text-sm uppercase tracking-[0.16em] text-[var(--color-mute)] mb-3">
-            Recent voltooid
+            Recent voorbij
           </h2>
           <div
             className="overflow-x-auto"
@@ -267,41 +195,37 @@ export default async function AfsprakenPage({
   )
 }
 
-function AppointmentStatusBadge({ status }: { status: AppointmentStatus }) {
+function AppointmentStatusBadge({ status }: { status: string }) {
   const cfg = {
     planned:   { bg: 'rgba(115,115,115,0.15)', fg: '#525252', icon: <Clock className="size-3" /> },
     confirmed: { bg: 'rgba(11,79,88,0.15)',    fg: '#0b4f58', icon: <Check className="size-3" /> },
     completed: { bg: 'rgba(34,197,94,0.18)',   fg: '#14532d', icon: <Check className="size-3" /> },
     cancelled: { bg: 'rgba(239,68,68,0.10)',   fg: '#b91c1c', icon: <X className="size-3" /> },
-  }[status]
+  }[status] ?? { bg: 'rgba(115,115,115,0.15)', fg: '#525252', icon: <Clock className="size-3" /> }
   return (
     <span
       className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[0.55rem] uppercase tracking-[0.1em] font-medium"
       style={{ background: cfg.bg, color: cfg.fg }}
     >
       {cfg.icon}
-      {STATUS_LABEL[status]}
+      {STATUS_LABEL[status] ?? status}
     </span>
   )
 }
 
 function FilterPills({
-  label, options, current, queryKey, otherKeyValues,
+  label, options, current, queryKey,
 }: {
   label: string
   options: Array<{ value: string; label: string }>
   current: string
   queryKey: string
-  otherKeyValues: Record<string, string>
 }) {
   return (
     <div className="inline-flex items-center gap-1 flex-wrap">
       <span className="text-[0.55rem] uppercase tracking-[0.16em] text-[var(--color-mute)] mr-1">{label}:</span>
       {options.map((o) => {
         const params = new URLSearchParams()
-        Object.entries(otherKeyValues).forEach(([k, v]) => {
-          if (v && v !== 'alle') params.set(k, v)
-        })
         if (o.value !== 'alle') params.set(queryKey, o.value)
         const href = `?${params.toString()}`
         const active = o.value === current

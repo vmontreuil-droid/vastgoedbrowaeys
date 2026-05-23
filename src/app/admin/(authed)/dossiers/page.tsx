@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { FolderOpen, Plus, ArrowRight, Hash, Check, Clock, X } from 'lucide-react'
-import { DOSSIERS, formatDate } from '@/data/admin-mock'
+import { FolderOpen, Plus, Hash, Check, Clock, X, AlertCircle } from 'lucide-react'
+import { getAdminDossiers } from '@/lib/admin-db'
 import { formatPrice } from '@/lib/listings'
-import { DonutChart, StackedBars } from '@/components/admin/charts'
+import { DonutChart } from '@/components/admin/charts'
 
 export const metadata = {
   title: 'Admin · Dossiers',
@@ -32,36 +32,23 @@ export default async function DossiersPage({
   const params = await searchParams
   const statusFilter = (params.status as string | undefined) ?? 'open_lopend'
   const typeFilter = (params.type as string | undefined) ?? 'alle'
-  const agentFilter = (params.agent as string | undefined) ?? 'alle'
 
-  let dossiers = [...DOSSIERS]
+  const { items: allDossiers, error } = await getAdminDossiers()
+
+  let dossiers = [...allDossiers]
   if (statusFilter === 'open_lopend') {
     dossiers = dossiers.filter((d) => ['open', 'in_behandeling', 'onder_optie'].includes(d.status))
   } else if (statusFilter !== 'alle') {
     dossiers = dossiers.filter((d) => d.status === statusFilter)
   }
   if (typeFilter !== 'alle') dossiers = dossiers.filter((d) => d.type === typeFilter)
-  if (agentFilter !== 'alle') dossiers = dossiers.filter((d) => d.agent === agentFilter)
-  dossiers.sort((a, b) => new Date(b.openedAt).getTime() - new Date(a.openedAt).getTime())
 
-  // Donut per type
   const byType = [
-    { name: 'Verkoop',     value: DOSSIERS.filter((d) => d.type === 'verkoop').length,     color: '#0b4f58' },
-    { name: 'Verhuur',     value: DOSSIERS.filter((d) => d.type === 'verhuur').length,     color: '#8c6b2e' },
-    { name: 'Koop-zoeker', value: DOSSIERS.filter((d) => d.type === 'koop_zoeker').length, color: '#a25b3a' },
-    { name: 'Huur-zoeker', value: DOSSIERS.filter((d) => d.type === 'huur_zoeker').length, color: '#5a7a48' },
+    { name: 'Verkoop',     value: allDossiers.filter((d) => d.type === 'verkoop').length,     color: '#0b4f58' },
+    { name: 'Verhuur',     value: allDossiers.filter((d) => d.type === 'verhuur').length,     color: '#8c6b2e' },
+    { name: 'Koop-zoeker', value: allDossiers.filter((d) => d.type === 'koop_zoeker').length, color: '#a25b3a' },
+    { name: 'Huur-zoeker', value: allDossiers.filter((d) => d.type === 'huur_zoeker').length, color: '#5a7a48' },
   ].filter((d) => d.value > 0)
-
-  // Stacked bars: dossiers geopend per maand
-  const monthly = ['Dec', 'Jan', 'Feb', 'Mrt', 'Apr', 'Mei'].map((m, i) => ({
-    x: m,
-    Verkoop:     [1, 0, 2, 1, 0, 1][i],
-    Verhuur:     [1, 0, 0, 0, 0, 0][i],
-    'Koop-zoeker': [0, 0, 1, 1, 1, 0][i],
-    'Huur-zoeker': [0, 0, 0, 1, 0, 0][i],
-  }))
-
-  const agents = Array.from(new Set(DOSSIERS.map((d) => d.agent)))
 
   return (
     <div className="container-px mx-auto max-w-screen-2xl py-8 md:py-10">
@@ -70,7 +57,7 @@ export default async function DossiersPage({
           <p className="eyebrow mb-3">Admin · Dossiers</p>
           <h1 className="text-3xl md:text-4xl flex items-center gap-3">
             <FolderOpen className="size-7" style={{ color: 'var(--color-accent)' }} />
-            Dossiers <span className="text-[var(--color-mute)] text-2xl">({DOSSIERS.length})</span>
+            Dossiers <span className="text-[var(--color-mute)] text-2xl">({allDossiers.length})</span>
           </h1>
         </div>
         <Link
@@ -83,26 +70,29 @@ export default async function DossiersPage({
         </Link>
       </section>
 
-      {/* Stats + chart */}
-      <section className="grid lg:grid-cols-3 gap-6 mb-8">
-        <div
-          className="p-5"
-          style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
-        >
-          <h3 className="text-sm mb-2" style={{ fontFamily: 'var(--font-display)' }}>Per type</h3>
-          <DonutChart data={byType} total={DOSSIERS.length} centerLabel="dossiers" />
+      {error && (
+        <div className="flex items-start gap-3 p-3 mb-6 text-sm"
+          style={{ background: 'rgba(239,68,68,0.08)', color: '#b91c1c' }}>
+          <AlertCircle className="size-4 mt-0.5 shrink-0" />
+          <span>Kon dossiers niet laden: {error}</span>
         </div>
-        <div
-          className="lg:col-span-2 p-5"
-          style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
-        >
-          <h3 className="text-sm mb-2" style={{ fontFamily: 'var(--font-display)' }}>Geopend per maand</h3>
-          <StackedBars data={monthly} dataKeys={[
-            { key: 'Verkoop',      label: 'Verkoop',      color: '#0b4f58' },
-            { key: 'Verhuur',      label: 'Verhuur',      color: '#8c6b2e' },
-            { key: 'Koop-zoeker',  label: 'Koop-zoeker',  color: '#a25b3a' },
-            { key: 'Huur-zoeker',  label: 'Huur-zoeker',  color: '#5a7a48' },
-          ]} height={240} />
+      )}
+
+      {/* Stats */}
+      <section className="grid lg:grid-cols-3 gap-6 mb-8">
+        <div className="p-5" style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
+          <h3 className="text-sm mb-2" style={{ fontFamily: 'var(--font-display)' }}>Per type</h3>
+          {byType.length > 0 ? (
+            <DonutChart data={byType} total={allDossiers.length} centerLabel="dossiers" />
+          ) : (
+            <p className="text-sm text-[var(--color-mute)] py-12 text-center">Nog geen dossiers.</p>
+          )}
+        </div>
+        <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <MiniStat label="Open"        value={allDossiers.filter((d) => d.status === 'open').length} accent="#16a34a" />
+          <MiniStat label="In behandeling" value={allDossiers.filter((d) => d.status === 'in_behandeling').length} accent="#0b4f58" />
+          <MiniStat label="Onder optie" value={allDossiers.filter((d) => d.status === 'onder_optie').length} accent="#c98c4f" />
+          <MiniStat label="Afgesloten"  value={allDossiers.filter((d) => ['verkocht','verhuurd','geannuleerd'].includes(d.status)).length} accent="#9b6e7b" />
         </div>
       </section>
 
@@ -124,7 +114,7 @@ export default async function DossiersPage({
           ]}
           current={statusFilter}
           queryKey="status"
-          otherKeyValues={{ type: typeFilter, agent: agentFilter }}
+          otherKeyValues={{ type: typeFilter }}
         />
         <FilterPills
           label="Type"
@@ -137,93 +127,58 @@ export default async function DossiersPage({
           ]}
           current={typeFilter}
           queryKey="type"
-          otherKeyValues={{ status: statusFilter, agent: agentFilter }}
-        />
-        <FilterPills
-          label="Werknemer"
-          options={[
-            { value: 'alle', label: 'Iedereen' },
-            ...agents.map((a) => ({ value: a, label: a })),
-          ]}
-          current={agentFilter}
-          queryKey="agent"
-          otherKeyValues={{ status: statusFilter, type: typeFilter }}
+          otherKeyValues={{ status: statusFilter }}
         />
       </section>
 
       {/* List */}
       <section className="grid lg:grid-cols-2 gap-4">
-        {dossiers.map((d) => {
-          const doneSteps = d.steps.filter((s) => s.doneAt).length
-          const totalSteps = d.steps.length
-          const progress = (doneSteps / totalSteps) * 100
-          return (
-            <Link
-              key={d.id}
-              href={`/admin/dossiers/${d.id}`}
-              className="p-5 transition-all hover:shadow-sm"
-              style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
-            >
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.12em] text-[var(--color-mute)]">
-                    <Hash className="size-3" />
-                    {d.ref}
-                    <span>·</span>
-                    <span>{TYPE_LABEL[d.type]}</span>
-                  </div>
-                  <p className="mt-1.5 text-lg" style={{ fontFamily: 'var(--font-display)' }}>
-                    {d.property || `Zoekopdracht — ${d.clientName}`}
-                  </p>
-                  {d.propertyCity && (
-                    <p className="text-xs text-[var(--color-mute)] mt-0.5">{d.propertyCity}</p>
-                  )}
+        {dossiers.map((d) => (
+          <Link
+            key={d.id}
+            href={`/admin/dossiers/${d.id}`}
+            className="p-5 transition-all hover:shadow-sm"
+            style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
+          >
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.12em] text-[var(--color-mute)]">
+                  <Hash className="size-3" />
+                  {d.ref ?? d.id.slice(0, 8)}
+                  <span>·</span>
+                  <span>{TYPE_LABEL[d.type] ?? d.type}</span>
                 </div>
-                <DossierStatusBadge status={d.status} />
+                <p className="mt-1.5 text-lg" style={{ fontFamily: 'var(--font-display)' }}>
+                  {d.propertyAddress || `Zoekopdracht — ${d.clientName}`}
+                </p>
+                {d.propertyCity && (
+                  <p className="text-xs text-[var(--color-mute)] mt-0.5">{d.propertyCity}</p>
+                )}
               </div>
+              <DossierStatusBadge status={d.status} />
+            </div>
 
-              <div className="grid grid-cols-3 gap-2 text-xs py-3 my-3 border-y" style={{ borderColor: 'var(--color-line)' }}>
-                <StatTiny label="Klant" value={d.clientName} />
-                <StatTiny
-                  label={d.type === 'verkoop' || d.type === 'verhuur' ? 'Vraagprijs' : 'Budget'}
-                  value={d.askingPrice ? formatPrice(d.askingPrice) : '—'}
-                />
-                <StatTiny label="Werknemer" value={d.agent} />
-              </div>
+            <div className="grid grid-cols-3 gap-2 text-xs py-3 my-3 border-y" style={{ borderColor: 'var(--color-line)' }}>
+              <StatTiny label="Klant" value={d.clientName} />
+              <StatTiny
+                label={d.type === 'verkoop' || d.type === 'verhuur' ? 'Vraagprijs' : 'Budget'}
+                value={d.askingPrice ? formatPrice(d.askingPrice) : '—'}
+              />
+              <StatTiny label="Geopend" value={new Date(d.openedAt).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short' })} />
+            </div>
 
-              <div className="mb-2">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[0.6rem] uppercase tracking-[0.12em] text-[var(--color-mute)]">
-                    Stappen
-                  </span>
-                  <span className="text-xs text-[var(--color-mute)]">{doneSteps} / {totalSteps}</span>
-                </div>
-                <div className="h-1.5 w-full" style={{ background: 'var(--color-paper-2)' }}>
-                  <div
-                    className="h-full"
-                    style={{
-                      background: 'var(--color-accent)',
-                      width: `${progress}%`,
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between text-xs text-[var(--color-mute)] mt-3">
-                <span>Geopend {formatDate(d.openedAt)}</span>
-                <div className="flex items-center gap-3">
-                  <span title="Afspraken">📅 {d.appointmentsCount}</span>
-                  <span title="Documenten">📄 {d.documentsCount}</span>
-                  <span title="Biedingen">💼 {d.offersCount}</span>
-                </div>
-              </div>
-            </Link>
-          )
-        })}
+            <div className="flex items-center justify-end gap-4 text-xs text-[var(--color-mute)]">
+              <span title="Afspraken">📅 {d.appointmentsCount}</span>
+              <span title="Documenten">📄 {d.documentsCount}</span>
+            </div>
+          </Link>
+        ))}
         {dossiers.length === 0 && (
           <div className="lg:col-span-2 p-10 text-center text-sm text-[var(--color-mute)]"
             style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
-            Geen dossiers voor deze filters.
+            {allDossiers.length === 0
+              ? 'Nog geen dossiers. Maak er een aan via "+ Nieuw dossier".'
+              : 'Geen dossiers voor deze filters.'}
           </div>
         )}
       </section>
@@ -233,12 +188,12 @@ export default async function DossiersPage({
 
 function DossierStatusBadge({ status }: { status: string }) {
   const cfg = {
-    open:            { bg: 'rgba(34,197,94,0.15)',  fg: '#166534', icon: <Clock className="size-3" /> },
-    in_behandeling:  { bg: 'rgba(11,79,88,0.15)',   fg: '#0b4f58', icon: <Clock className="size-3" /> },
-    onder_optie:     { bg: 'rgba(201,140,79,0.20)', fg: '#92400e', icon: <Clock className="size-3" /> },
-    verkocht:        { bg: 'rgba(34,197,94,0.18)',  fg: '#14532d', icon: <Check className="size-3" /> },
-    verhuurd:        { bg: 'rgba(34,197,94,0.18)',  fg: '#14532d', icon: <Check className="size-3" /> },
-    geannuleerd:     { bg: 'rgba(115,115,115,0.18)',fg: '#525252', icon: <X className="size-3" /> },
+    open:           { bg: 'rgba(34,197,94,0.15)',  fg: '#166534', icon: <Clock className="size-3" /> },
+    in_behandeling: { bg: 'rgba(11,79,88,0.15)',   fg: '#0b4f58', icon: <Clock className="size-3" /> },
+    onder_optie:    { bg: 'rgba(201,140,79,0.20)', fg: '#92400e', icon: <Clock className="size-3" /> },
+    verkocht:       { bg: 'rgba(34,197,94,0.18)',  fg: '#14532d', icon: <Check className="size-3" /> },
+    verhuurd:       { bg: 'rgba(34,197,94,0.18)',  fg: '#14532d', icon: <Check className="size-3" /> },
+    geannuleerd:    { bg: 'rgba(115,115,115,0.18)',fg: '#525252', icon: <X className="size-3" /> },
   }[status] ?? { bg: 'rgba(115,115,115,0.18)', fg: '#525252', icon: <Clock className="size-3" /> }
   return (
     <span
@@ -246,7 +201,7 @@ function DossierStatusBadge({ status }: { status: string }) {
       style={{ background: cfg.bg, color: cfg.fg }}
     >
       {cfg.icon}
-      {STATUS_LABEL[status]}
+      {STATUS_LABEL[status] ?? status}
     </span>
   )
 }
@@ -256,6 +211,18 @@ function StatTiny({ label, value }: { label: string; value: string }) {
     <div>
       <p className="text-[0.55rem] uppercase tracking-[0.12em] text-[var(--color-mute)]">{label}</p>
       <p className="mt-0.5 truncate">{value}</p>
+    </div>
+  )
+}
+
+function MiniStat({ label, value, accent }: { label: string; value: number; accent: string }) {
+  return (
+    <div className="p-4" style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
+      <div className="flex items-center justify-between mb-2">
+        <span className="eyebrow text-[0.55rem]">{label}</span>
+        <span className="size-1.5 rounded-full" style={{ background: accent }} />
+      </div>
+      <p className="text-2xl" style={{ fontFamily: 'var(--font-display)' }}>{value}</p>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { Users, Plus, Search, Filter, Mail, Phone, MapPin, ArrowRight } from 'lucide-react'
-import { CLIENTS, DOSSIERS, formatDate } from '@/data/admin-mock'
+import { Users, Plus, Search, Filter, Mail, Phone, MapPin, ArrowRight, AlertCircle } from 'lucide-react'
+import { getAdminClients, getAdminDossiers } from '@/lib/admin-db'
 import { DonutChart } from '@/components/admin/charts'
 
 export const metadata = {
@@ -19,34 +19,35 @@ export default async function ClientsPage({
   const statusFilter = (params.status as string | undefined) ?? 'alle'
   const kindFilter = (params.kind as string | undefined) ?? 'alle'
 
-  let clients = [...CLIENTS]
+  const [{ items: allClients, error: clientsErr }, { items: allDossiers }] =
+    await Promise.all([getAdminClients(), getAdminDossiers()])
+
+  let clients = [...allClients]
   if (statusFilter !== 'alle') clients = clients.filter((c) => c.status === statusFilter)
-  if (kindFilter !== 'alle') clients = clients.filter((c) => c.kinds.includes(kindFilter as never))
+  if (kindFilter !== 'alle') clients = clients.filter((c) => c.kinds.includes(kindFilter))
   if (q) {
     clients = clients.filter((c) =>
-      (c.firstName + ' ' + c.lastName + ' ' + c.email + ' ' + c.city).toLowerCase().includes(q),
+      ((c.firstName + ' ' + c.lastName + ' ' + c.email + ' ' + (c.city ?? '')).toLowerCase()).includes(q),
     )
   }
-  clients.sort((a, b) => new Date(b.lastContact).getTime() - new Date(a.lastContact).getTime())
 
   const totalDossiersByClient = new Map<string, number>()
-  DOSSIERS.forEach((d) => totalDossiersByClient.set(d.clientId, (totalDossiersByClient.get(d.clientId) ?? 0) + 1))
+  allDossiers.forEach((d) => totalDossiersByClient.set(d.clientId, (totalDossiersByClient.get(d.clientId) ?? 0) + 1))
 
   const byStatus = [
-    { name: 'Actief',   value: CLIENTS.filter((c) => c.status === 'actief').length,   color: '#0b4f58' },
-    { name: 'Lead',     value: CLIENTS.filter((c) => c.status === 'lead').length,     color: '#c98c4f' },
-    { name: 'Inactief', value: CLIENTS.filter((c) => c.status === 'inactief').length, color: '#9b6e7b' },
+    { name: 'Actief',   value: allClients.filter((c) => c.status === 'actief').length,   color: '#0b4f58' },
+    { name: 'Lead',     value: allClients.filter((c) => c.status === 'lead').length,     color: '#c98c4f' },
+    { name: 'Inactief', value: allClients.filter((c) => c.status === 'inactief').length, color: '#9b6e7b' },
   ].filter((d) => d.value > 0)
 
   return (
     <div className="container-px mx-auto max-w-screen-2xl py-8 md:py-10">
-      {/* Header */}
       <section className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="eyebrow mb-3">Admin · Klanten</p>
           <h1 className="text-3xl md:text-4xl flex items-center gap-3">
             <Users className="size-7" style={{ color: 'var(--color-accent)' }} />
-            Klanten <span className="text-[var(--color-mute)] text-2xl">({CLIENTS.length})</span>
+            Klanten <span className="text-[var(--color-mute)] text-2xl">({allClients.length})</span>
           </h1>
         </div>
         <Link
@@ -59,22 +60,32 @@ export default async function ClientsPage({
         </Link>
       </section>
 
-      {/* Stats + donut */}
+      {clientsErr && (
+        <div
+          className="flex items-start gap-3 p-3 mb-6 text-sm"
+          style={{ background: 'rgba(239,68,68,0.08)', color: '#b91c1c' }}
+        >
+          <AlertCircle className="size-4 mt-0.5 shrink-0" />
+          <span>Kon klant-lijst niet volledig laden: {clientsErr}</span>
+        </div>
+      )}
+
       <section className="grid lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-2 grid grid-cols-3 gap-4">
-          <MiniStat label="Verkopers"  value={CLIENTS.filter((c) => c.kinds.includes('verkoper')).length} accent="#0b4f58" />
-          <MiniStat label="Kopers"     value={CLIENTS.filter((c) => c.kinds.includes('koper')).length}    accent="#8c6b2e" />
-          <MiniStat label="Huur"       value={CLIENTS.filter((c) => c.kinds.includes('huurder') || c.kinds.includes('verhuurder')).length} accent="#5a7a48" />
-          <MiniStat label="Leads"      value={CLIENTS.filter((c) => c.status === 'lead').length}          accent="#c98c4f" />
-          <MiniStat label="Met dossier" value={Array.from(totalDossiersByClient.keys()).length}           accent="#0b4f58" />
-          <MiniStat label="Inactief"   value={CLIENTS.filter((c) => c.status === 'inactief').length}     accent="#9b6e7b" />
+          <MiniStat label="Verkopers"   value={allClients.filter((c) => c.kinds.includes('verkoper')).length}   accent="#0b4f58" />
+          <MiniStat label="Kopers"      value={allClients.filter((c) => c.kinds.includes('koper')).length}      accent="#8c6b2e" />
+          <MiniStat label="Huur"        value={allClients.filter((c) => c.kinds.includes('huurder') || c.kinds.includes('verhuurder')).length} accent="#5a7a48" />
+          <MiniStat label="Leads"       value={allClients.filter((c) => c.status === 'lead').length}            accent="#c98c4f" />
+          <MiniStat label="Met dossier" value={Array.from(totalDossiersByClient.keys()).length}                 accent="#0b4f58" />
+          <MiniStat label="Inactief"    value={allClients.filter((c) => c.status === 'inactief').length}        accent="#9b6e7b" />
         </div>
-        <div
-          className="p-5"
-          style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
-        >
+        <div className="p-5" style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
           <h3 className="text-sm mb-2" style={{ fontFamily: 'var(--font-display)' }}>Verdeling</h3>
-          <DonutChart data={byStatus} centerLabel="klanten" />
+          {byStatus.length > 0 ? (
+            <DonutChart data={byStatus} centerLabel="klanten" />
+          ) : (
+            <p className="text-sm text-[var(--color-mute)] py-12 text-center">Nog geen klanten.</p>
+          )}
         </div>
       </section>
 
@@ -92,12 +103,8 @@ export default async function ClientsPage({
             placeholder="Zoek op naam, email of stad…"
             className="flex-1 px-2 py-1.5 text-sm bg-transparent focus:outline-none"
           />
-          {(statusFilter !== 'alle' || kindFilter !== 'alle') && (
-            <>
-              <input type="hidden" name="status" value={statusFilter} />
-              <input type="hidden" name="kind" value={kindFilter} />
-            </>
-          )}
+          {statusFilter !== 'alle' && <input type="hidden" name="status" value={statusFilter} />}
+          {kindFilter !== 'alle' && <input type="hidden" name="kind" value={kindFilter} />}
         </form>
         <div className="flex items-center gap-2">
           <Filter className="size-3.5 text-[var(--color-mute)]" />
@@ -129,7 +136,6 @@ export default async function ClientsPage({
         </div>
       </section>
 
-      {/* List */}
       <section>
         <div
           className="overflow-x-auto"
@@ -143,8 +149,7 @@ export default async function ClientsPage({
                 <th className="text-left px-4 py-3 eyebrow text-[0.55rem]">Type</th>
                 <th className="text-left px-4 py-3 eyebrow text-[0.55rem]">Contact</th>
                 <th className="text-left px-4 py-3 eyebrow text-[0.55rem] hidden md:table-cell">Stad</th>
-                <th className="text-left px-4 py-3 eyebrow text-[0.55rem] hidden lg:table-cell">Werknemer</th>
-                <th className="text-left px-4 py-3 eyebrow text-[0.55rem] hidden md:table-cell">Laatste contact</th>
+                <th className="text-left px-4 py-3 eyebrow text-[0.55rem] hidden md:table-cell">Aangemaakt</th>
                 <th className="text-right px-4 py-3 eyebrow text-[0.55rem]">Dossiers</th>
                 <th></th>
               </tr>
@@ -153,40 +158,44 @@ export default async function ClientsPage({
               {clients.map((c) => {
                 const dossierCount = totalDossiersByClient.get(c.id) ?? 0
                 return (
-                  <tr
-                    key={c.id}
-                    className="border-t"
-                    style={{ borderColor: 'var(--color-line)' }}
-                  >
+                  <tr key={c.id} className="border-t" style={{ borderColor: 'var(--color-line)' }}>
                     <td className="px-4 py-3">
                       <Link href={`/admin/klanten/${c.id}`} className="link-underline">
-                        {c.firstName} {c.lastName}
+                        {c.firstName || c.lastName ? `${c.firstName} ${c.lastName}`.trim() : c.email}
                       </Link>
+                      {!c.hasAuthAccount && (
+                        <span className="ml-2 text-[0.55rem] uppercase tracking-[0.1em] text-[var(--color-mute)]">geen login</span>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <StatusBadge status={c.status} />
                     </td>
                     <td className="px-4 py-3 text-xs text-[var(--color-mute)]">
-                      {c.kinds.map((k) => k.replace('_', ' ')).join(', ')}
+                      {c.kinds.length > 0 ? c.kinds.join(', ') : '—'}
                     </td>
                     <td className="px-4 py-3 text-xs">
-                      <div className="flex items-center gap-2 text-[var(--color-ink)] truncate max-w-[180px]">
+                      <div className="flex items-center gap-2 text-[var(--color-ink)] truncate max-w-[200px]">
                         <Mail className="size-3 shrink-0 text-[var(--color-mute)]" />
                         <span className="truncate">{c.email}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-[var(--color-mute)] mt-0.5">
-                        <Phone className="size-3 shrink-0" />
-                        {c.phone}
-                      </div>
+                      {c.phone && (
+                        <div className="flex items-center gap-2 text-[var(--color-mute)] mt-0.5">
+                          <Phone className="size-3 shrink-0" />
+                          {c.phone}
+                        </div>
+                      )}
                     </td>
-                    <td className="px-4 py-3 text-xs hidden md:table-cell">
-                      <div className="flex items-center gap-1.5 text-[var(--color-mute)]">
-                        <MapPin className="size-3" />
-                        {c.city}
-                      </div>
+                    <td className="px-4 py-3 text-xs hidden md:table-cell text-[var(--color-mute)]">
+                      {c.city ? (
+                        <span className="flex items-center gap-1.5">
+                          <MapPin className="size-3" />
+                          {c.city}
+                        </span>
+                      ) : '—'}
                     </td>
-                    <td className="px-4 py-3 text-xs italic text-[var(--color-mute)] hidden lg:table-cell">{c.agent}</td>
-                    <td className="px-4 py-3 text-xs text-[var(--color-mute)] hidden md:table-cell">{formatDate(c.lastContact)}</td>
+                    <td className="px-4 py-3 text-xs text-[var(--color-mute)] hidden md:table-cell">
+                      {new Date(c.createdAt).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </td>
                     <td className="px-4 py-3 text-right">
                       {dossierCount > 0 ? (
                         <span
@@ -209,8 +218,10 @@ export default async function ClientsPage({
               })}
               {clients.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-4 py-10 text-center text-sm text-[var(--color-mute)]">
-                    Geen klanten gevonden voor deze filters.
+                  <td colSpan={8} className="px-4 py-10 text-center text-sm text-[var(--color-mute)]">
+                    {allClients.length === 0
+                      ? 'Nog geen klanten. Maak er een aan via "+ Nieuwe klant".'
+                      : 'Geen klanten gevonden voor deze filters.'}
                   </td>
                 </tr>
               )}
@@ -265,7 +276,7 @@ function FilterPills({
       {options.map((o) => {
         const params = new URLSearchParams()
         Object.entries(otherKeyValues).forEach(([k, v]) => {
-          if (v) params.set(k, v)
+          if (v && v !== 'alle') params.set(k, v)
         })
         if (o.value !== 'alle') params.set(queryKey, o.value)
         const href = `?${params.toString()}`

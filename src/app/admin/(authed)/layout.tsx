@@ -1,36 +1,41 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AdminShell, type AdminNavBadges } from '@/components/admin-shell'
-import { CLIENTS, DOSSIERS, APPOINTMENTS, MESSAGES } from '@/data/admin-mock'
+import { MESSAGES } from '@/data/admin-mock'
 import { getListings } from '@/lib/listings'
+import { getAdminClients, getAdminDossiers, getAdminAppointments } from '@/lib/admin-db'
 
 const DEMO_AGENT = {
   name: 'Stefanie Browaeys',
   email: 'stefanie@vastgoedbrowaeys.be',
 }
 
-function computeBadges(): AdminNavBadges {
-  const now = new Date()
-  const nowMs = now.getTime()
+async function computeBadges(): Promise<AdminNavBadges> {
+  const now = Date.now()
   const weekMs = 7 * 24 * 3600 * 1000
 
-  const openDossiers = DOSSIERS.filter((d) =>
+  const [{ items: clients }, { items: dossiers }, { items: appointments }] = await Promise.all([
+    getAdminClients(),
+    getAdminDossiers(),
+    getAdminAppointments(),
+  ])
+
+  const openDossiers = dossiers.filter((d) =>
     ['open', 'in_behandeling', 'onder_optie'].includes(d.status),
   ).length
 
-  const activeClients = CLIENTS.filter((c) => c.status === 'actief' || c.status === 'lead').length
   const onlineListings = getListings({ status: ['te-koop', 'te-huur', 'optie'] }).length
 
-  const upcomingThisWeek = APPOINTMENTS.filter((a) => {
+  const upcomingThisWeek = appointments.filter((a) => {
     const t = new Date(a.start).getTime()
-    return t >= nowMs && t < nowMs + weekMs && a.status !== 'cancelled'
+    return t >= now && t < now + weekMs && a.status !== 'cancelled'
   }).length
 
   const total = MESSAGES.length
   const unread = MESSAGES.filter((m) => !m.readAt).length
 
   return {
-    klanten: activeClients,
+    klanten: clients.length,
     dossiers: openDossiers,
     aanbod: onlineListings,
     afspraken: upcomingThisWeek,
@@ -39,7 +44,7 @@ function computeBadges(): AdminNavBadges {
 }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const badges = computeBadges()
+  const badges = await computeBadges()
 
   // Demo-modus indien Supabase nog niet geconfigureerd is
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.SUPABASE_URL) {
