@@ -185,7 +185,85 @@ export default async function MarktLeadDetailPage({
           <DeleteLeadButton leadId={lead.id} />
         </aside>
 
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Gallery — alleen tonen als detail-data binnen is */}
+          {lead.images.length > 0 && (
+            <section>
+              <h2 className="text-lg md:text-xl mb-3 flex items-center gap-2"
+                style={{ fontFamily: 'var(--font-display)' }}>
+                Foto&apos;s <span className="text-[var(--color-mute)] text-sm">({lead.images.length})</span>
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {lead.images.slice(0, 12).map((src, i) => (
+                  <a key={i} href={src} target="_blank" rel="noopener"
+                    className="relative aspect-[4/3] block overflow-hidden"
+                    style={{ background: 'var(--color-paper-2)' }}>
+                    <Image
+                      src={src}
+                      alt={`Foto ${i + 1}`}
+                      fill
+                      sizes="(min-width: 1024px) 25vw, 50vw"
+                      className="object-cover hover:scale-105 transition-transform"
+                      unoptimized
+                    />
+                  </a>
+                ))}
+              </div>
+              {lead.images.length > 12 && (
+                <p className="mt-2 text-xs text-[var(--color-mute)]">
+                  + {lead.images.length - 12} extra foto&apos;s in de gallery — klik &ldquo;Bekijk origineel zoekertje&rdquo; voor de volledige set.
+                </p>
+              )}
+            </section>
+          )}
+
+          {/* Kenmerken */}
+          {Object.keys(lead.features).length > 0 && (
+            <section>
+              <h2 className="text-lg md:text-xl mb-3 flex items-center gap-2"
+                style={{ fontFamily: 'var(--font-display)' }}>
+                Kenmerken <span className="text-[var(--color-mute)] text-sm">({Object.keys(lead.features).length})</span>
+              </h2>
+              <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm p-4"
+                style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
+                {Object.entries(lead.features).slice(0, 30).map(([key, val]) => (
+                  <div key={key} className="flex justify-between gap-3 border-b py-1.5"
+                    style={{ borderColor: 'var(--color-line)' }}>
+                    <dt className="text-[var(--color-mute)] capitalize">{key}</dt>
+                    <dd className="text-right">{String(val ?? '—')}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
+
+          {/* Beschrijving */}
+          {lead.description && (
+            <section>
+              <h2 className="text-lg md:text-xl mb-3"
+                style={{ fontFamily: 'var(--font-display)' }}>
+                Beschrijving
+              </h2>
+              <div className="p-4 text-sm whitespace-pre-line"
+                style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
+                {lead.description}
+              </div>
+            </section>
+          )}
+
+          {/* Verrijk-prompt als nog geen detail-data */}
+          {lead.images.length === 0 && !lead.description && Object.keys(lead.features).length === 0 && (
+            <section className="p-4 text-sm"
+              style={{ background: 'var(--color-paper)', border: '1px dashed var(--color-line)' }}>
+              <p className="font-medium mb-1">💡 Verrijk met detail-info</p>
+              <p className="text-[var(--color-mute)] text-xs">
+                Open dit pand op de oorspronkelijke site (&ldquo;Bekijk origineel zoekertje&rdquo;) en klik op
+                de Browaeys-bookmark in je favorieten-balk. Alle foto&apos;s, beschrijving en
+                kenmerken worden opgehaald.
+              </p>
+            </section>
+          )}
+
           <BriefGenerator
             lead={{
               street: lead.street,

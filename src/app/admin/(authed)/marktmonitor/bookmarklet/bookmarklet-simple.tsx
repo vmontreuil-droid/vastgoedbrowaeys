@@ -105,6 +105,90 @@ export function BookmarkletSimple({
         return u.href;
       }
 
+      // Detail-page detectie: URL bevat zoekertje/classified met groot ID aan eind
+      var detail=/\\/(zoekertje|classified)\\/[^\\/]+\\/[^\\/]+\\/[^\\/]+\\/\\d{4,}/.test(location.href)||/\\/zoekertje\\/.+\\/\\d{6,}/.test(location.href);
+
+      if(detail){
+        // === DETAIL-PAGE EXTRACTIE ===
+        var imgs=[];
+        var imgSeen={};
+        document.querySelectorAll('main img, [class*=gallery] img, [class*=carousel] img, [class*=swiper] img, picture source').forEach(function(el){
+          var src=el.src||el.getAttribute('data-src')||el.getAttribute('data-original')||'';
+          if(!src){
+            var ss=el.getAttribute('srcset')||el.getAttribute('data-srcset');
+            if(ss)src=ss.split(',')[0].trim().split(' ')[0];
+          }
+          if(!src||src.indexOf('data:')===0)return;
+          // Filter logos/icons (te klein, of in nav)
+          if(/logo|icon|avatar|brand|favicon/i.test(src))return;
+          if(el.closest('nav,header,footer'))return;
+          // Resize naar large als mogelijk (immoweb pattern)
+          src=src.replace(/_small\\.|_thumb\\.|_thumbnail\\./,'_large.');
+          if(imgSeen[src])return;
+          imgSeen[src]=1;
+          imgs.push(src);
+        });
+
+        // Beschrijving: zoek grootste tekst-blok in main
+        var descEl=document.querySelector('[class*="description"], [data-test*="description"], article p, main section p')||null;
+        var description=null;
+        if(descEl){
+          var d=document.querySelectorAll('[class*="description"] p, [class*="description"], article > section, main > section');
+          var maxLen=0;
+          d.forEach(function(el){
+            var txt=(el.innerText||'').trim();
+            if(txt.length>maxLen&&txt.length>50){maxLen=txt.length;description=txt.slice(0,2000);}
+          });
+        }
+
+        // Kenmerken: zoek dl/table met label-value pairs
+        var features={};
+        document.querySelectorAll('dl,table,[class*="feature"],[class*="characteristic"]').forEach(function(c){
+          // dl/dt/dd
+          var dts=c.querySelectorAll('dt');
+          for(var k=0;k<dts.length;k++){
+            var dd=dts[k].nextElementSibling;
+            if(dd&&dd.tagName==='DD'){
+              var key=(dts[k].innerText||'').trim().toLowerCase().slice(0,60);
+              var val=(dd.innerText||'').trim().slice(0,200);
+              if(key&&val)features[key]=val;
+            }
+          }
+          // table rows
+          c.querySelectorAll('tr').forEach(function(tr){
+            var cells=tr.querySelectorAll('th,td');
+            if(cells.length===2){
+              var key2=(cells[0].innerText||'').trim().toLowerCase().slice(0,60);
+              var val2=(cells[1].innerText||'').trim().slice(0,200);
+              if(key2&&val2)features[key2]=val2;
+            }
+          });
+        });
+
+        // Basisinfo van de current page (1 listing)
+        var c2=extract(document);
+        var single=c2[0]||{url:location.href.split('#')[0],title:document.title,imageUrl:imgs[0]||null,price:null,addressLine:null};
+        // Probeer beter prijs/adres uit detail-content
+        var bodyText=document.body.innerText||'';
+        if(!single.price){
+          var pm2=bodyText.match(/\\u20AC\\s*([\\d]{1,3}(?:[.\\s]\\d{3})+)/);
+          if(pm2)single.price=parseInt(pm2[1].replace(/[^\\d]/g,''));
+        }
+        if(!single.addressLine){
+          var am2=bodyText.match(/\\b([1-9]\\d{3})\\s+([A-Za-z\\u00C0-\\u017F][A-Za-z\\u00C0-\\u017F\\s\\-']{1,40})/);
+          if(am2)single.addressLine=am2[0].trim();
+        }
+        single.images=imgs.slice(0,30);
+        single.description=description;
+        single.features=features;
+
+        var r=await fetch(${JSON.stringify(apiUrl)},{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer ${token}'},body:JSON.stringify({url:location.href,listings:[single],detail:true})});
+        var d=await r.json();
+        alert('Browaeys (detail): '+(d.message||d.error||'klaar')+' · '+imgs.length+' foto\\'s, '+Object.keys(features).length+' kenmerken');
+        return;
+      }
+
+      // === ZOEK-PAGINA EXTRACTIE (huidige logica) ===
       var current=extract(document);
       var max=maxPage(document);
       var all=current.slice();
@@ -112,7 +196,6 @@ export function BookmarkletSimple({
         if(!confirm('Detecteer '+max+' pagina\\'s ('+current.length+' op huidige pagina). Wil je alle pagina\\'s importeren? Kan 10-30s duren.')){
           // Alleen huidige pagina sturen
         }else{
-          // Begin bij pagina 2 (huidige is meestal pagina 1)
           var cur=new URL(location.href).searchParams.get('page');
           var startPage=cur?parseInt(cur)+1:2;
           for(var p=startPage;p<=max;p++){
@@ -209,7 +292,8 @@ export function BookmarkletSimple({
               style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}>1</span>
             <div className="text-sm">
               Ga naar <strong>Immoweb</strong>, <strong>Zimmo</strong> of <strong>Realo</strong>{' '}
-              en zoek panden in jouw streek zoals je normaal doet.
+              en zoek panden in jouw streek. <em>Of</em> open een specifiek pand om
+              volledige info op te halen (gallery, beschrijving, kenmerken).
             </div>
           </li>
           <li className="flex items-start gap-3 p-3"

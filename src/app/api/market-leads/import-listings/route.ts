@@ -42,6 +42,10 @@ type RawListing = {
   imageUrl?: string | null
   price?: number | string | null
   addressLine?: string | null
+  // Detail-page enrichment (optioneel)
+  images?: string[]
+  description?: string | null
+  features?: Record<string, string | number | null>
 }
 
 function deriveSourceSite(url: string): string {
@@ -163,7 +167,7 @@ export async function POST(request: Request) {
     )
   }
 
-  let body: { url?: string; listings?: RawListing[] }
+  let body: { url?: string; listings?: RawListing[]; detail?: boolean }
   try {
     body = await request.json()
   } catch {
@@ -175,6 +179,7 @@ export async function POST(request: Request) {
 
   const pageUrl = body.url ?? ''
   const rawListings = body.listings ?? []
+  const isDetailImport = body.detail === true
   if (!Array.isArray(rawListings) || rawListings.length === 0) {
     return NextResponse.json(
       {
@@ -187,6 +192,7 @@ export async function POST(request: Request) {
   }
 
   const scraped: ScrapedListing[] = []
+  const enrichments = new Map<string, { images: string[]; description: string | null; features: Record<string, string | number | null> }>()
   const seenUrls = new Set<string>()
   for (const r of rawListings) {
     const m = mapToScraped(r, pageUrl)
@@ -194,6 +200,14 @@ export async function POST(request: Request) {
     if (seenUrls.has(m.sourceUrl)) continue
     seenUrls.add(m.sourceUrl)
     scraped.push(m)
+    // Bewaar detail-data per URL als die aanwezig is
+    if (r.images || r.description || r.features) {
+      enrichments.set(m.sourceUrl, {
+        images: Array.isArray(r.images) ? r.images.slice(0, 30) : [],
+        description: typeof r.description === 'string' ? r.description.slice(0, 5000) : null,
+        features: r.features ?? {},
+      })
+    }
   }
 
   if (scraped.length === 0) {
@@ -209,10 +223,29 @@ export async function POST(request: Request) {
 
   const report = await importListings(scraped, user.id)
 
+  // Detail-enrichment: update images/description/features voor elke URL
+  if (enrichments.size > 0) {
+    const admin = createAdminClient()
+    for (const [url, enrich] of enrichments) {
+      const updates: Record<string, unknown> = {
+        enriched_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+      if (enrich.images.length > 0) updates.images = enrich.images
+      if (enrich.description) updates.description = enrich.description
+      if (Object.keys(enrich.features).length > 0) updates.features = enrich.features
+      await admin.from('market_leads').update(updates).eq('source_url', url)
+    }
+  }
+
+  const summary = isDetailImport
+    ? `Pand verrijkt met ${enrichments.values().next().value?.images.length ?? 0} foto's en ${Object.keys(enrichments.values().next().value?.features ?? {}).length} kenmerken`
+    : `${report.newLeads} nieuw · ${report.mergedLeads} samengevoegd · ${report.skipped} reeds bekend (${scraped.length}/${rawListings.length} herkend)`
+
   return NextResponse.json(
     {
       ok: true,
-      message: `${report.newLeads} nieuw · ${report.mergedLeads} samengevoegd · ${report.skipped} reeds bekend (${scraped.length}/${rawListings.length} herkend)`,
+      message: summary,
       site: report.site,
       parsed: report.totalParsed,
       new: report.newLeads,

@@ -557,6 +557,10 @@ export type MarketLead = {
   updatedAt: string
   extraSourceUrls: string[]
   dedupKey: string | null
+  images: string[]
+  description: string | null
+  features: Record<string, string | number | null>
+  enrichedAt: string | null
 }
 
 export async function getMarketLeads(): Promise<FetchResult<MarketLead>> {
@@ -575,6 +579,8 @@ export async function getMarketLeads(): Promise<FetchResult<MarketLead>> {
     status: MarketLeadStatus; notes: string | null; contacted_at: string | null;
     created_by: string | null; created_at: string; updated_at: string;
     extra_source_urls: string[] | null; dedup_key: string | null;
+    images: string[] | null; description: string | null;
+    features: Record<string, string | number | null> | null; enriched_at: string | null;
   }>).map((r) => ({
     id: r.id,
     sourceUrl: r.source_url,
@@ -597,6 +603,10 @@ export async function getMarketLeads(): Promise<FetchResult<MarketLead>> {
     updatedAt: r.updated_at,
     extraSourceUrls: r.extra_source_urls ?? [],
     dedupKey: r.dedup_key,
+    images: r.images ?? [],
+    description: r.description,
+    features: r.features ?? {},
+    enrichedAt: r.enriched_at,
   }))
   return { items }
 }
