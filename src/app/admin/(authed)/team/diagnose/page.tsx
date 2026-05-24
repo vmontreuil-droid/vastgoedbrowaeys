@@ -83,14 +83,41 @@ async function tryGetByEmail(email: string) {
   return { email, found: false, error: 'kan alleen via listUsers gevonden worden' as const }
 }
 
+type RpcCheckResult =
+  | { ok: true; count: number; users: Array<{ id: string; email: string | null; role: string | null; metadataKeys: string[] }> }
+  | { ok: false; error: string }
+
+async function tryRpc(): Promise<RpcCheckResult> {
+  const admin = createAdminClient()
+  try {
+    const { data, error } = await admin.rpc('list_admin_users')
+    if (error) return { ok: false, error: error.message }
+    if (!Array.isArray(data)) return { ok: false, error: 'RPC gaf geen array terug' }
+    type Row = { id: string; email: string | null; raw_user_meta_data: Record<string, unknown> | null }
+    return {
+      ok: true,
+      count: data.length,
+      users: (data as Row[]).map((r) => ({
+        id: r.id,
+        email: r.email,
+        role: (r.raw_user_meta_data?.role as string) ?? null,
+        metadataKeys: r.raw_user_meta_data ? Object.keys(r.raw_user_meta_data) : [],
+      })),
+    }
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) }
+  }
+}
+
 export default async function DiagnosePage() {
   // Probeer drie verschillende perPage-waardes om te zien waar het breekt
-  const [big, medium, small1, small2, small3] = await Promise.all([
+  const [big, medium, small1, small2, small3, rpc] = await Promise.all([
     tryPaginated(100, 1),
     tryPaginated(10, 1),
     tryPaginated(5, 1),
     tryPaginated(5, 2),
     tryPaginated(5, 3),
+    tryRpc(),
   ])
 
   // Probeer specifieke bekende accounts te resolven (alleen mogelijk als we ze in listUsers vinden)
@@ -103,6 +130,23 @@ export default async function DiagnosePage() {
   const byEmail = new Map<string, (typeof big.users)[number]>()
   for (const u of allFoundUsers) {
     if (u.email) byEmail.set(u.email.toLowerCase(), u)
+  }
+  // Vul aan met RPC-resultaten (kan andere users tonen dan listUsers)
+  if (rpc.ok) {
+    for (const u of rpc.users) {
+      if (!u.email) continue
+      const key = u.email.toLowerCase()
+      if (!byEmail.has(key)) {
+        byEmail.set(key, {
+          id: u.id,
+          email: u.email,
+          role: u.role,
+          active: true,
+          metadataKeys: u.metadataKeys,
+          metadataIssue: null,
+        })
+      }
+    }
   }
 
   return (
@@ -126,6 +170,59 @@ export default async function DiagnosePage() {
           batch-groottes om te isoleren welk record of welke pagina de
           &ldquo;Database error finding users&rdquo; veroorzaakt.
         </p>
+      </section>
+
+      {/* RPC-fallback */}
+      <section className="mb-10">
+        <h2 className="text-xl mb-3" style={{ fontFamily: 'var(--font-display)' }}>
+          RPC-fallback: <code>public.list_admin_users()</code>
+        </h2>
+        {rpc.ok ? (
+          <div className="p-4"
+            style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.3)' }}>
+            <p className="text-sm font-medium flex items-center gap-2 mb-2" style={{ color: '#166534' }}>
+              <CheckCircle2 className="size-4" />
+              RPC werkt — {rpc.count} admin-user{rpc.count === 1 ? '' : 's'} gevonden via directe SQL.
+            </p>
+            <ul className="text-xs space-y-1">
+              {rpc.users.map((u) => (
+                <li key={u.id}>
+                  <code className="text-[0.65rem]">{u.id.slice(0, 8)}…</code>{' '}
+                  <span className="font-medium">{u.email || '(geen email)'}</span>{' '}
+                  <span className="text-[var(--color-mute)]">role={u.role ?? '—'}, keys=[{u.metadataKeys.join(', ')}]</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <div className="p-4"
+            style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.3)' }}>
+            <p className="text-sm font-medium flex items-center gap-2 mb-2" style={{ color: '#b91c1c' }}>
+              <AlertCircle className="size-4" />
+              RPC niet beschikbaar
+            </p>
+            <p className="text-xs text-[var(--color-mute)] mb-2">{rpc.error}</p>
+            <details className="text-xs">
+              <summary className="cursor-pointer text-[var(--color-mute)] hover:text-[var(--color-ink)]">
+                SQL om uit te voeren in Supabase SQL Editor
+              </summary>
+              <pre className="mt-2 p-3 overflow-x-auto text-[0.65rem]"
+                style={{ background: 'var(--color-paper-2)', border: '1px solid var(--color-line)' }}>{`create or replace function public.list_admin_users()
+returns table (id uuid, email text, raw_user_meta_data jsonb, created_at timestamptz)
+language sql security definer
+set search_path = auth, public
+as $$
+  select id, email, raw_user_meta_data, created_at
+  from auth.users
+  where raw_user_meta_data->>'role' = 'admin';
+$$;
+
+revoke all on function public.list_admin_users() from public;
+grant execute on function public.list_admin_users() to service_role;
+notify pgrst, 'reload schema';`}</pre>
+            </details>
+          </div>
+        )}
       </section>
 
       {/* Pagination-tests */}

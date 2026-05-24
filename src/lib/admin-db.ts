@@ -458,15 +458,60 @@ export type TeamMember = {
   active: boolean
 }
 
+function metadataToTeamMember(
+  id: string,
+  email: string,
+  md: Record<string, unknown> | null | undefined,
+): TeamMember {
+  return {
+    id,
+    email,
+    firstName: (md?.first_name as string) || '',
+    lastName: (md?.last_name as string) || '',
+    title: (md?.title as string | undefined) || undefined,
+    phone: (md?.phone as string | undefined) || undefined,
+    bivNumber: (md?.biv_number as string | undefined) || undefined,
+    active: md?.active !== false,
+  }
+}
+
+function sortTeam(team: TeamMember[]): TeamMember[] {
+  return team.sort((a, b) => {
+    if (a.active !== b.active) return a.active ? -1 : 1
+    return a.lastName.localeCompare(b.lastName, 'nl-BE')
+  })
+}
+
 /**
- * Haalt werknemers via auth.admin.listUsers(). Supabase Auth kan af en toe
- * een "Database error finding users" gooien — typisch transient. We doen
- * 1 retry. Bij volledige fail, valt de aanroeper terug op fallbackUserId
- * zodat de pagina nooit volledig leeg is voor de ingelogde admin.
+ * Probeert eerst de directe RPC `list_admin_users` (omzeilt de Supabase
+ * Auth listUsers-call die in dit project crasht met "Database error
+ * finding users"). Valt terug op admin.auth.admin.listUsers met 1 retry.
+ * Bij totale fail wordt minstens `fallbackUserId` (de ingelogde admin)
+ * via getUserById opgehaald zodat de pagina niet leeg is.
  */
 export async function getTeamMembers(fallbackUserId?: string): Promise<FetchResult<TeamMember>> {
   const admin = createAdminClient()
 
+  // 1) RPC-pad — werkt zolang de SQL-functie is gedeployd
+  type RpcRow = {
+    id: string
+    email: string | null
+    raw_user_meta_data: Record<string, unknown> | null
+    created_at: string
+  }
+  try {
+    const { data: rpcRows, error: rpcErr } = await admin.rpc('list_admin_users')
+    if (!rpcErr && Array.isArray(rpcRows)) {
+      const team: TeamMember[] = (rpcRows as RpcRow[])
+        .filter((r) => r.email)
+        .map((r) => metadataToTeamMember(r.id, r.email!, r.raw_user_meta_data))
+      return { items: sortTeam(team) }
+    }
+  } catch {
+    // RPC niet beschikbaar — door naar listUsers-pad
+  }
+
+  // 2) SDK-pad met retry
   async function tryListUsers() {
     return await admin.auth.admin.listUsers()
   }
@@ -478,25 +523,15 @@ export async function getTeamMembers(fallbackUserId?: string): Promise<FetchResu
   }
 
   if (error) {
-    // Volledige fail — probeer minstens de ingelogde gebruiker terug te
-    // geven zodat de team-pagina niet leeg is.
+    // 3) Single-user fallback via getUserById
     if (fallbackUserId) {
       try {
         const { data: single } = await admin.auth.admin.getUserById(fallbackUserId)
         const u = single?.user
         if (u && u.user_metadata?.role === 'admin' && u.email) {
           return {
-            items: [{
-              id: u.id,
-              email: u.email,
-              firstName: (u.user_metadata?.first_name as string) || '',
-              lastName: (u.user_metadata?.last_name as string) || '',
-              title: (u.user_metadata?.title as string | undefined) || undefined,
-              phone: (u.user_metadata?.phone as string | undefined) || undefined,
-              bivNumber: (u.user_metadata?.biv_number as string | undefined) || undefined,
-              active: u.user_metadata?.active !== false,
-            }],
-            error: `Volledige team-lijst niet beschikbaar (${error.message}). Alleen jouw account wordt getoond.`,
+            items: [metadataToTeamMember(u.id, u.email, u.user_metadata as Record<string, unknown>)],
+            error: `Volledige team-lijst niet beschikbaar (${error.message}). Alleen jouw account wordt getoond. Voer de list_admin_users RPC-migratie uit om dit op te lossen.`,
           }
         }
       } catch {
@@ -508,22 +543,9 @@ export async function getTeamMembers(fallbackUserId?: string): Promise<FetchResu
 
   const team: TeamMember[] = (data?.users ?? [])
     .filter((u) => u.user_metadata?.role === 'admin' && u.email)
-    .map((u) => ({
-      id: u.id,
-      email: u.email || '',
-      firstName: (u.user_metadata?.first_name as string) || '',
-      lastName: (u.user_metadata?.last_name as string) || '',
-      title: (u.user_metadata?.title as string | undefined) || undefined,
-      phone: (u.user_metadata?.phone as string | undefined) || undefined,
-      bivNumber: (u.user_metadata?.biv_number as string | undefined) || undefined,
-      active: u.user_metadata?.active !== false,
-    }))
-    .sort((a, b) => {
-      if (a.active !== b.active) return a.active ? -1 : 1
-      return a.lastName.localeCompare(b.lastName, 'nl-BE')
-    })
+    .map((u) => metadataToTeamMember(u.id, u.email!, u.user_metadata as Record<string, unknown>))
 
-  return { items: team }
+  return { items: sortTeam(team) }
 }
 
 export async function getNoteTemplates(): Promise<FetchResult<NoteTemplate>> {
