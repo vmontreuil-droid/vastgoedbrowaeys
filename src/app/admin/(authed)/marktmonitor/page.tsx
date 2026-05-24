@@ -3,10 +3,10 @@ import Link from 'next/link'
 import {
   Radar, MapPin, Tag, Building2, User as UserIcon, Settings, Layers, Stethoscope, Bookmark,
 } from 'lucide-react'
-import { getMarketLeads, type MarketLead, type MarketLeadStatus } from '@/lib/admin-db'
-import { formatPrice } from '@/lib/listings'
+import { getMarketLeads, type MarketLeadStatus } from '@/lib/admin-db'
 import { AddUrlForm } from './add-url-form'
 import { ScanAllButton } from './scan-all-button'
+import { MarketLeadsBulkGrid } from './bulk-grid'
 
 export const metadata = {
   title: 'Admin · Marktmonitor',
@@ -186,93 +186,9 @@ export default async function MarktmonitorPage({
             : 'Geen resultaten voor deze filters.'}
         </div>
       ) : (
-        <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {leads.map((lead) => (
-            <LeadCard key={lead.id} lead={lead} />
-          ))}
-        </ul>
+        <MarketLeadsBulkGrid leads={leads} />
       )}
     </div>
-  )
-}
-
-function LeadCard({ lead }: { lead: MarketLead }) {
-  const statusColor = STATUS_COLOR[lead.status]
-  return (
-    <li>
-      <Link
-        href={`/admin/marktmonitor/${lead.id}`}
-        className="block overflow-hidden transition-shadow hover:shadow-sm h-full"
-        style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
-      >
-        <div className="relative aspect-[4/3]" style={{ background: 'var(--color-paper-2)' }}>
-          {lead.imageUrl ? (
-            <Image
-              src={lead.imageUrl}
-              alt={lead.title ?? 'Pand'}
-              fill
-              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-              className="object-cover"
-              unoptimized
-            />
-          ) : (
-            <div className="absolute inset-0 grid place-items-center">
-              <Building2 className="size-10 text-[var(--color-mute)]" />
-            </div>
-          )}
-          <span
-            className="absolute top-2 right-2 inline-block px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.1em] font-medium"
-            style={{ background: statusColor.bg, color: statusColor.fg, backdropFilter: 'blur(8px)' }}
-          >
-            {STATUS_LABEL[lead.status]}
-          </span>
-          {lead.isParticulier && (
-            <span
-              className="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.1em] font-medium"
-              style={{ background: '#16a34a', color: '#fff' }}
-            >
-              <UserIcon className="size-2.5" />
-              Particulier
-            </span>
-          )}
-        </div>
-        <div className="p-3 md:p-4">
-          <div className="flex items-center justify-between gap-2 text-[0.6rem] uppercase tracking-[0.1em] text-[var(--color-mute)]">
-            <span className="inline-flex items-center gap-1">
-              {lead.sourceSite ?? '—'}
-              {lead.extraSourceUrls.length > 0 && (
-                <span className="inline-flex items-center gap-0.5 px-1 py-0.5 normal-case tracking-normal text-[0.55rem]"
-                  style={{ background: 'var(--color-accent)', color: '#fff' }}
-                  title={`Ook gevonden op ${lead.extraSourceUrls.length} ander(e) site(s)`}>
-                  <Layers className="size-2" />
-                  +{lead.extraSourceUrls.length}
-                </span>
-              )}
-            </span>
-            <span>{lead.listingType === 'verkoop' ? 'Te koop' : lead.listingType === 'verhuur' ? 'Te huur' : 'Onbekend'}</span>
-          </div>
-          {lead.price && (
-            <p className="mt-1 text-base md:text-lg italic" style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-display)' }}>
-              {formatPrice(lead.price)}
-              {lead.listingType === 'verhuur' && <span className="text-xs text-[var(--color-mute)]"> / maand</span>}
-            </p>
-          )}
-          <p className="mt-1 text-sm truncate">
-            {[lead.street, lead.postcode, lead.city].filter(Boolean).join(' · ')
-              || (lead.title && lead.title.length > 4 && !/^(ai|nieuw|new|huis|appartement)$/i.test(lead.title.trim()) ? lead.title : null)
-              || 'Adres onbekend'}
-          </p>
-          <div className="mt-2 flex items-center justify-between text-[0.65rem] text-[var(--color-mute)]">
-            <span className="inline-flex items-center gap-1 truncate">
-              {lead.propertyType && <><Tag className="size-3" />{lead.propertyType}</>}
-            </span>
-            {lead.agentName && (
-              <span className="truncate text-right max-w-[60%]" title={lead.agentName}>{lead.agentName}</span>
-            )}
-          </div>
-        </div>
-      </Link>
-    </li>
   )
 }
 

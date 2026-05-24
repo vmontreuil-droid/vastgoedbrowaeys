@@ -123,3 +123,49 @@ export async function deleteMarketLeadAction(id: string): Promise<SimpleResult> 
   revalidatePath('/admin/marktmonitor')
   return { ok: true }
 }
+
+export type BulkLeadResult = { ok: boolean; updated: number; error?: string }
+
+export async function bulkUpdateMarketLeadStatusAction(
+  ids: string[],
+  status: MarketLeadStatus,
+): Promise<BulkLeadResult> {
+  try { await requireAdmin() } catch (e) {
+    return { ok: false, updated: 0, error: e instanceof Error ? e.message : 'Geen toegang' }
+  }
+  if (ids.length === 0) return { ok: false, updated: 0, error: 'Geen leads geselecteerd.' }
+
+  const admin = createAdminClient()
+  const update: { status: MarketLeadStatus; contacted_at?: string; updated_at: string } = {
+    status,
+    updated_at: new Date().toISOString(),
+  }
+  if (status === 'benaderd') {
+    update.contacted_at = new Date().toISOString()
+  }
+  const { error, count } = await admin
+    .from('market_leads')
+    .update(update, { count: 'exact' })
+    .in('id', ids)
+  if (error) return { ok: false, updated: 0, error: error.message }
+
+  revalidatePath('/admin/marktmonitor')
+  return { ok: true, updated: count ?? ids.length }
+}
+
+export async function bulkDeleteMarketLeadsAction(ids: string[]): Promise<BulkLeadResult> {
+  try { await requireAdmin() } catch (e) {
+    return { ok: false, updated: 0, error: e instanceof Error ? e.message : 'Geen toegang' }
+  }
+  if (ids.length === 0) return { ok: false, updated: 0, error: 'Geen leads geselecteerd.' }
+
+  const admin = createAdminClient()
+  const { error, count } = await admin
+    .from('market_leads')
+    .delete({ count: 'exact' })
+    .in('id', ids)
+  if (error) return { ok: false, updated: 0, error: error.message }
+
+  revalidatePath('/admin/marktmonitor')
+  return { ok: true, updated: count ?? ids.length }
+}
