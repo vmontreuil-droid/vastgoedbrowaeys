@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ArrowLeft, Stethoscope, ExternalLink, AlertCircle, Globe } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export const metadata = {
   title: 'Admin · Marktmonitor · Debug',
@@ -18,7 +19,36 @@ type Snapshot = {
 export default async function DebugPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const snap = (user?.user_metadata?.last_market_debug as Snapshot | undefined) ?? null
+
+  let snap: Snapshot | null = null
+  if (user) {
+    const admin = createAdminClient()
+    type Row = {
+      source_url: string
+      source_host: string | null
+      created_at: string
+      html_size: number | null
+      hints: string[] | null
+      html_snippet: string | null
+    }
+    const { data } = await admin
+      .from('market_debug_snapshots')
+      .select('source_url, source_host, created_at, html_size, hints, html_snippet')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle() as { data: Row | null }
+    if (data) {
+      snap = {
+        url: data.source_url,
+        host: data.source_host ?? '',
+        timestamp: data.created_at,
+        htmlSize: data.html_size ?? 0,
+        hints: data.hints ?? [],
+        htmlSnippet: data.html_snippet ?? '',
+      }
+    }
+  }
 
   // Eenvoudige analyse: zoek mogelijke listing-patronen
   let analysis: string[] = []

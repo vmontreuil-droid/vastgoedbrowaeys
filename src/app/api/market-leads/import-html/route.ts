@@ -108,24 +108,18 @@ export async function POST(request: Request) {
     let host = ''
     try { host = new URL(url).hostname } catch {}
 
-    // Save debug snapshot in user_metadata zodat /admin/marktmonitor/debug 'm kan tonen
+    // Save debug snapshot in eigen tabel (NIET in user_metadata — anders
+    // belandt het in de JWT en wordt de auth-cookie te groot voor de headers).
     try {
       const adminClient = createAdminClient()
-      const { data: existing } = await adminClient.auth.admin.getUserById(user.id)
-      const md = (existing?.user?.user_metadata || {}) as Record<string, unknown>
-      await adminClient.auth.admin.updateUserById(user.id, {
-        user_metadata: {
-          ...md,
-          last_market_debug: {
-            url,
-            host,
-            timestamp: new Date().toISOString(),
-            htmlSize: html.length,
-            hints,
-            // Bewaar eerste 300KB — bij Next.js 13+ sites zit data verder in de stream
-            htmlSnippet: html.slice(0, 300000),
-          },
-        },
+      await adminClient.from('market_debug_snapshots').insert({
+        user_id: user.id,
+        source_url: url,
+        source_host: host,
+        html_size: html.length,
+        hints,
+        // 300KB volstaat om te zien wat de site stuurt — auto-pruned tot top 5 per user
+        html_snippet: html.slice(0, 300000),
       })
     } catch {
       // Niet kritisch
