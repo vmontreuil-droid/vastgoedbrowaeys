@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useTransition } from 'react'
+import { useMemo, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Save, AlertCircle, CheckCircle2, Trash2 } from 'lucide-react'
 import {
@@ -10,6 +10,7 @@ import {
   type ListingActionResult,
 } from './actions'
 import type { ListingDb } from '@/lib/listings-db'
+import { PhotoUploader } from '@/components/admin/photo-uploader'
 
 export function ListingForm({
   mode,
@@ -23,6 +24,14 @@ export function ListingForm({
   const [pending, startTransition] = useTransition()
   const [result, setResult] = useState<ListingActionResult | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
+
+  // Foto-folder: in edit-mode = listing-ID, in create-mode = tijdelijke draft-folder
+  const folderKey = useMemo(() => {
+    if (listing?.id) return listing.id
+    return 'draft-' + (typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2))
+  }, [listing?.id])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -147,18 +156,10 @@ export function ListingForm({
       </Section>
 
       <Section title="Foto's">
-        <Field
-          name="gallery"
-          label="Foto-URLs (één per lijn of komma-gescheiden)"
-          defaultValue={listing?.gallery?.join('\n') ?? ''}
-          multiline
-          rows={4}
-          placeholder="https://… of /listings/123/foto.jpg"
-        />
-        <Field
-          name="cover_photo"
-          label="Cover-foto URL (optioneel — anders eerste uit gallery)"
-          defaultValue={listing?.cover_photo ?? ''}
+        <PhotoUploader
+          folderKey={folderKey}
+          initialPhotos={listing?.gallery ?? []}
+          initialCover={listing?.cover_photo}
         />
       </Section>
 

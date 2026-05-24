@@ -1,8 +1,9 @@
 import Link from 'next/link'
-import Image from 'next/image'
-import { Home, Plus, Eye, Pencil, MapPin } from 'lucide-react'
-import { getListings, formatPrice, type ListingStatus, type ListingType } from '@/lib/listings'
+import { Home, Plus, Eye, Pencil, MapPin, AlertCircle } from 'lucide-react'
+import { getDbListings, type ListingDb } from '@/lib/listings-db'
+import { formatPrice } from '@/lib/listings'
 import { DonutChart, SimpleLine } from '@/components/admin/charts'
+import { ImportLegacyButton } from './import-legacy-button'
 
 export const metadata = {
   title: 'Admin · Aanbod',
@@ -15,6 +16,8 @@ const STATUS_LABEL: Record<string, string> = {
   'te-huur': 'Te huur',
   'optie':   'Onder optie',
   'verkocht':'Verkocht',
+  'verhuurd':'Verhuurd',
+  'concept': 'Concept',
 }
 
 export default async function AanbodPage({
@@ -24,22 +27,23 @@ export default async function AanbodPage({
   const statusFilter = (params.status as string | undefined) ?? 'online'
   const typeFilter = (params.type as string | undefined) ?? 'alle'
 
-  const all = getListings()
+  const all = await getDbListings()
   let filtered = [...all]
 
   if (statusFilter === 'online') {
-    filtered = filtered.filter((l) => l.status === 'te-koop' || l.status === 'te-huur' || l.status === 'optie')
+    filtered = filtered.filter((l) => ['te-koop', 'te-huur', 'optie'].includes(l.status))
   } else if (statusFilter !== 'alle') {
-    filtered = filtered.filter((l) => l.status === statusFilter as ListingStatus)
+    filtered = filtered.filter((l) => l.status === statusFilter)
   }
-  if (typeFilter !== 'alle') filtered = filtered.filter((l) => l.type === typeFilter as ListingType)
-  filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  if (typeFilter !== 'alle') filtered = filtered.filter((l) => l.type === typeFilter)
 
   const byStatus = [
     { name: 'Te koop',     value: all.filter((l) => l.status === 'te-koop').length,  color: '#0b4f58' },
     { name: 'Te huur',     value: all.filter((l) => l.status === 'te-huur').length,  color: '#5a7a48' },
     { name: 'Onder optie', value: all.filter((l) => l.status === 'optie').length,    color: '#c98c4f' },
     { name: 'Verkocht',    value: all.filter((l) => l.status === 'verkocht').length, color: '#9b6e7b' },
+    { name: 'Verhuurd',    value: all.filter((l) => l.status === 'verhuurd').length, color: '#9b6e7b' },
+    { name: 'Concept',     value: all.filter((l) => l.status === 'concept').length,  color: '#737373' },
   ].filter((d) => d.value > 0)
 
   const byType = [
@@ -48,13 +52,6 @@ export default async function AanbodPage({
     { name: 'Bouwgrond',   value: all.filter((l) => l.type === 'bouwgrond').length,   color: '#5a7a48' },
     { name: 'Handelspand', value: all.filter((l) => l.type === 'handelspand').length, color: '#a25b3a' },
   ].filter((d) => d.value > 0)
-
-  // Trend: panden online per maand (mock)
-  const trend = ['Dec', 'Jan', 'Feb', 'Mrt', 'Apr', 'Mei'].map((m, i) => ({
-    x: m,
-    Online: [9, 10, 11, 12, 13, 13][i],
-    Verkocht: [73, 75, 78, 82, 85, 87][i],
-  }))
 
   return (
     <div className="container-px mx-auto max-w-screen-2xl py-8 md:py-10">
@@ -66,36 +63,57 @@ export default async function AanbodPage({
             Aanbod <span className="text-[var(--color-mute)] text-2xl">({all.length})</span>
           </h1>
         </div>
-        <Link
-          href="/admin/aanbod/nieuw"
-          className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-medium uppercase tracking-[0.1em]"
-          style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
-        >
-          <Plus className="size-3.5" />
-          Pand toevoegen
-        </Link>
-      </section>
-
-      {/* Stats grafieken */}
-      <section className="grid lg:grid-cols-3 gap-6 mb-8">
-        <div className="p-5" style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
-          <h3 className="text-sm mb-2" style={{ fontFamily: 'var(--font-display)' }}>Per status</h3>
-          <DonutChart data={byStatus} total={all.length} centerLabel="panden" />
-        </div>
-        <div className="p-5" style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
-          <h3 className="text-sm mb-2" style={{ fontFamily: 'var(--font-display)' }}>Per type</h3>
-          <DonutChart data={byType} total={all.length} centerLabel="panden" />
-        </div>
-        <div className="p-5" style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
-          <h3 className="text-sm mb-2" style={{ fontFamily: 'var(--font-display)' }}>Trend 6 maanden</h3>
-          <SimpleLine data={trend} dataKeys={[
-            { key: 'Online',   label: 'Online',   color: '#0b4f58' },
-            { key: 'Verkocht', label: 'Verkocht (cumulatief)', color: '#9b6e7b' },
-          ]} height={220} />
+        <div className="flex flex-wrap items-center gap-2">
+          <ImportLegacyButton />
+          <Link
+            href="/admin/aanbod/nieuw"
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-medium uppercase tracking-[0.1em]"
+            style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
+          >
+            <Plus className="size-3.5" />
+            Pand toevoegen
+          </Link>
         </div>
       </section>
 
-      {/* Filters */}
+      {all.length === 0 && (
+        <div className="flex items-start gap-3 p-4 mb-6 text-sm"
+          style={{ background: 'rgba(11,79,88,0.08)', color: '#0b4f58' }}>
+          <AlertCircle className="size-4 mt-0.5 shrink-0" />
+          <span>
+            Nog geen panden in de DB. Klik op <strong>"Importeer Zabun-snapshot"</strong> hierboven om de 13 bestaande
+            Zabun-panden in één keer in de DB te zetten — daarna kan je ze bewerken (foto's vervangen, prijzen
+            wijzigen, etc.).
+          </span>
+        </div>
+      )}
+
+      {all.length > 0 && (
+        <section className="grid lg:grid-cols-3 gap-6 mb-8">
+          <div className="p-5" style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
+            <h3 className="text-sm mb-2" style={{ fontFamily: 'var(--font-display)' }}>Per status</h3>
+            <DonutChart data={byStatus} total={all.length} centerLabel="panden" />
+          </div>
+          <div className="p-5" style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
+            <h3 className="text-sm mb-2" style={{ fontFamily: 'var(--font-display)' }}>Per type</h3>
+            <DonutChart data={byType} total={all.length} centerLabel="panden" />
+          </div>
+          <div className="p-5" style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
+            <h3 className="text-sm mb-2" style={{ fontFamily: 'var(--font-display)' }}>Te koop vs te huur</h3>
+            <SimpleLine
+              data={[
+                { x: 'Te koop', Aantal: all.filter((l) => l.status === 'te-koop').length },
+                { x: 'Optie',   Aantal: all.filter((l) => l.status === 'optie').length },
+                { x: 'Verkocht', Aantal: all.filter((l) => l.status === 'verkocht').length },
+                { x: 'Te huur', Aantal: all.filter((l) => l.status === 'te-huur').length },
+              ]}
+              dataKeys={[{ key: 'Aantal', label: 'Aantal', color: '#0b4f58' }]}
+              height={200}
+            />
+          </div>
+        </section>
+      )}
+
       <section
         className="p-4 mb-6 flex flex-wrap items-center gap-3"
         style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
@@ -109,6 +127,7 @@ export default async function AanbodPage({
             { value: 'te-huur', label: 'Te huur' },
             { value: 'optie', label: 'Onder optie' },
             { value: 'verkocht', label: 'Verkocht' },
+            { value: 'concept', label: 'Concept' },
           ]}
           current={statusFilter}
           queryKey="status"
@@ -129,88 +148,87 @@ export default async function AanbodPage({
         />
       </section>
 
-      {/* Grid */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {filtered.map((l) => (
-          <article
-            key={l.id}
-            className="overflow-hidden flex flex-col"
-            style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
-          >
-            <Link href={`/aanbod/${l.id}`} target="_blank" rel="noopener" className="relative block aspect-[4/3]">
-              <Image
-                src={l.image}
-                alt={l.title}
-                fill
-                className="object-cover"
-                sizes="(min-width: 1024px) 320px, (min-width: 640px) 50vw, 100vw"
-              />
-              <span
-                className="absolute top-3 left-3 px-2 py-1 text-[0.6rem] uppercase tracking-[0.12em] font-medium"
-                style={{
-                  background:
-                    l.status === 'verkocht' ? 'rgba(155,110,123,0.95)' :
-                    l.status === 'optie'    ? 'rgba(201,140,79,0.95)' :
-                    l.status === 'te-huur'  ? 'rgba(90,122,72,0.95)' :
-                    'rgba(11,79,88,0.95)',
-                  color: '#fff',
-                }}
-              >
-                {STATUS_LABEL[l.status] ?? l.status}
-              </span>
-              {l.status === 'verkocht' && (
-                <span
-                  className="absolute top-3 right-3 px-2 py-1 text-[0.55rem] uppercase tracking-[0.12em] font-medium"
-                  style={{ background: 'rgba(0,0,0,0.6)', color: '#fff' }}
-                >
-                  Niet zichtbaar
-                </span>
-              )}
-            </Link>
-            <div className="p-4 flex-1 flex flex-col">
-              <div className="text-[0.55rem] uppercase tracking-[0.12em] text-[var(--color-mute)]">
-                {l.type} · #{l.ref}
-              </div>
-              <h3 className="mt-1 text-base leading-snug" style={{ fontFamily: 'var(--font-display)' }}>
-                {l.title}
-              </h3>
-              <p className="mt-1 text-xs text-[var(--color-mute)] flex items-center gap-1">
-                <MapPin className="size-3" />
-                {l.zip} {l.city}
-              </p>
-              <p className="mt-3 text-lg italic" style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-display)' }}>
-                {l.priceLabel || formatPrice(l.price)}
-              </p>
-              <div className="mt-auto pt-4 flex items-center justify-between text-xs">
-                <Link
-                  href={`/aanbod/${l.id}`}
-                  target="_blank"
-                  rel="noopener"
-                  className="inline-flex items-center gap-1 text-[var(--color-mute)] hover:text-[var(--color-ink)] link-underline"
-                >
-                  <Eye className="size-3" />
-                  Publiek
-                </Link>
-                <Link
-                  href={`/admin/aanbod/${l.id}`}
-                  className="inline-flex items-center gap-1 px-2 py-1"
-                  style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
-                >
-                  <Pencil className="size-3" />
-                  Bewerken
-                </Link>
-              </div>
-            </div>
-          </article>
+          <ListingCard key={l.id} listing={l} />
         ))}
         {filtered.length === 0 && (
           <div className="col-span-full p-10 text-center text-sm text-[var(--color-mute)]"
             style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
-            Geen panden voor deze filters.
+            {all.length === 0 ? 'Importeer eerst de Zabun-snapshot of voeg een nieuw pand toe.' : 'Geen panden voor deze filters.'}
           </div>
         )}
       </section>
     </div>
+  )
+}
+
+function ListingCard({ listing: l }: { listing: ListingDb }) {
+  const cover = l.cover_photo || l.gallery[0]
+  return (
+    <article
+      className="overflow-hidden flex flex-col"
+      style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
+    >
+      <Link href={`/admin/aanbod/${l.id}`} className="relative block aspect-[4/3]">
+        {cover ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={cover} alt={l.title} className="absolute inset-0 w-full h-full object-cover" />
+        ) : (
+          <div className="absolute inset-0 grid place-items-center" style={{ background: 'var(--color-paper-2)' }}>
+            <span className="text-xs text-[var(--color-mute)] italic">Geen foto</span>
+          </div>
+        )}
+        <span
+          className="absolute top-3 left-3 px-2 py-1 text-[0.6rem] uppercase tracking-[0.12em] font-medium"
+          style={{
+            background:
+              l.status === 'verkocht' || l.status === 'verhuurd' ? 'rgba(155,110,123,0.95)' :
+              l.status === 'optie'    ? 'rgba(201,140,79,0.95)' :
+              l.status === 'te-huur'  ? 'rgba(90,122,72,0.95)' :
+              l.status === 'concept'  ? 'rgba(115,115,115,0.95)' :
+              'rgba(11,79,88,0.95)',
+            color: '#fff',
+          }}
+        >
+          {STATUS_LABEL[l.status] ?? l.status}
+        </span>
+      </Link>
+      <div className="p-4 flex-1 flex flex-col">
+        <div className="text-[0.55rem] uppercase tracking-[0.12em] text-[var(--color-mute)]">
+          {l.type}{l.ref && ` · #${l.ref}`}
+        </div>
+        <h3 className="mt-1 text-base leading-snug" style={{ fontFamily: 'var(--font-display)' }}>
+          {l.title}
+        </h3>
+        <p className="mt-1 text-xs text-[var(--color-mute)] flex items-center gap-1">
+          <MapPin className="size-3" />
+          {l.zip ? `${l.zip} ` : ''}{l.city}
+        </p>
+        <p className="mt-3 text-lg italic" style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-display)' }}>
+          {l.price_label || formatPrice(l.price)}
+        </p>
+        <div className="mt-auto pt-4 flex items-center justify-between text-xs">
+          <Link
+            href={`/aanbod/${l.id}`}
+            target="_blank"
+            rel="noopener"
+            className="inline-flex items-center gap-1 text-[var(--color-mute)] hover:text-[var(--color-ink)] link-underline"
+          >
+            <Eye className="size-3" />
+            Publiek
+          </Link>
+          <Link
+            href={`/admin/aanbod/${l.id}`}
+            className="inline-flex items-center gap-1 px-2 py-1"
+            style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
+          >
+            <Pencil className="size-3" />
+            Bewerken
+          </Link>
+        </div>
+      </div>
+    </article>
   )
 }
 
