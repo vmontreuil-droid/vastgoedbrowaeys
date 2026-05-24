@@ -107,6 +107,15 @@ function mapJsonLd(item: ZimmoJsonLd, transaction: 'koop' | 'huur'): ScrapedList
   }
 }
 
+/** Pure functie: parse Zimmo-listings uit HTML. Gebruikt door bookmarklet-import. */
+export function extractZimmoListingsFromHtml(html: string, url: string): ScrapedListing[] {
+  const jsonLd = extractJsonLdBlocks(html)
+  const transaction: 'koop' | 'huur' = /huur|verhuur/i.test(url) ? 'huur' : 'koop'
+  return jsonLd
+    .map((item) => mapJsonLd(item, transaction))
+    .filter((x): x is ScrapedListing => x !== null)
+}
+
 export async function scrapeZimmo(region: SearchRegion): Promise<ScrapeResult> {
   const transactions: Array<'koop' | 'huur'> =
     region.listingType === 'verkoop' ? ['koop'] :

@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import {
-  Radar, MapPin, Tag, Building2, User as UserIcon, Settings, Layers, Stethoscope,
+  Radar, MapPin, Tag, Building2, User as UserIcon, Settings, Layers, Stethoscope, Bookmark,
 } from 'lucide-react'
 import { getMarketLeads, type MarketLead, type MarketLeadStatus } from '@/lib/admin-db'
 import { formatPrice } from '@/lib/listings'
@@ -96,6 +96,15 @@ export default async function MarktmonitorPage({
           >
             <Settings className="size-3.5" />
             Mijn zones
+          </Link>
+          <Link
+            href="/admin/marktmonitor/bookmarklet"
+            className="inline-flex items-center gap-2 px-3 py-2.5 text-xs"
+            style={{ background: 'var(--color-accent)', color: '#fff' }}
+            title="One-click import vanaf Immoweb/Zimmo/..."
+          >
+            <Bookmark className="size-3.5" />
+            Bookmarklet
           </Link>
           <Link
             href="/admin/marktmonitor/diagnose"

@@ -100,6 +100,20 @@ function mapItem(
   }
 }
 
+/** Pure functie: parse JSON-LD listings uit HTML voor een specifieke site. */
+export function extractJsonLdListingsFromHtml(
+  html: string,
+  url: string,
+  siteName: string,
+  hostFilter: string,
+): ScrapedListing[] {
+  const blocks = extractJsonLdBlocks(html)
+  const listingType = inferListingType(url, html)
+  return blocks
+    .map((b) => mapItem(b, siteName, hostFilter, listingType))
+    .filter((x): x is ScrapedListing => x !== null)
+}
+
 /** Probeert listings te halen via JSON-LD scraping van een search-URL. */
 export async function scrapeViaJsonLd(
   siteName: string,

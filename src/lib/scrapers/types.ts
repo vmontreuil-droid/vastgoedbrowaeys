@@ -51,11 +51,28 @@ export function dedupKey(l: { postcode: string | null; street: string | null; pr
 // ons eveneens via een eigen header zodat sites die meekijken weten wie we zijn.
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 
+/**
+ * Als SCRAPINGBEE_API_KEY env-var aanwezig is, route de fetch via hun
+ * proxy. Werkt door Cloudflare omdat ze residentiële IPs gebruiken.
+ * Zonder de key: directe fetch (Cloudflare blokkeert datacenter-IPs).
+ */
 export async function safeFetch(url: string, timeoutMs = 15000): Promise<Response> {
+  const apiKey = process.env.SCRAPINGBEE_API_KEY
+  let fetchUrl = url
+  if (apiKey) {
+    const params = new URLSearchParams({
+      api_key: apiKey,
+      url,
+      render_js: 'false', // sneller; render_js=true werkt voor SPA's maar kost meer credits
+      premium_proxy: 'true', // residentieel — nodig voor Cloudflare-omzeil
+      country_code: 'be',
+    })
+    fetchUrl = `https://app.scrapingbee.com/api/v1/?${params.toString()}`
+  }
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeoutMs)
   try {
-    return await fetch(url, {
+    return await fetch(fetchUrl, {
       headers: {
         'User-Agent': USER_AGENT,
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',

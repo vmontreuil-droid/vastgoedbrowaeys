@@ -155,6 +155,15 @@ function mapImmowebListing(raw: RawImmowebListing): ScrapedListing | null {
   }
 }
 
+/** Pure functie: parse Immoweb-listings uit HTML. Gebruikt door de bookmarklet-import. */
+export function extractImmowebListingsFromHtml(html: string): ScrapedListing[] {
+  const state = extractInitialState(html)
+  if (!state || !state.results) return []
+  return state.results
+    .map(mapImmowebListing)
+    .filter((x): x is ScrapedListing => x !== null)
+}
+
 export async function scrapeImmoweb(region: SearchRegion): Promise<ScrapeResult> {
   const transactions: Array<'koop' | 'huur'> =
     region.listingType === 'verkoop' ? ['koop'] :
