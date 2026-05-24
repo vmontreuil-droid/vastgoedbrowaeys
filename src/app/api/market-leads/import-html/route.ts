@@ -97,20 +97,45 @@ export async function POST(request: Request) {
 
   // Parse listings
   const listings = extractListingsFromHtml(url, html)
+
+  // Bij geen resultaat: bewaar snapshot voor debugging
   if (listings.length === 0) {
-    // Geef wat hints over wat we wel/niet in de HTML vonden — helpt bij debuggen
     const hints: string[] = []
-    if (html.includes('__NEXT_DATA__')) hints.push('__NEXT_DATA__ gevonden')
-    if (html.includes('__INITIAL_STATE__')) hints.push('__INITIAL_STATE__ gevonden')
-    if (html.includes('application/ld+json')) hints.push('JSON-LD gevonden')
-    if (html.includes('"property"') && html.includes('"transaction"')) hints.push('property/transaction velden aanwezig')
+    if (html.includes('__NEXT_DATA__')) hints.push('__NEXT_DATA__')
+    if (html.includes('__INITIAL_STATE__')) hints.push('__INITIAL_STATE__')
+    if (html.includes('application/ld+json')) hints.push('JSON-LD')
+    if (html.includes('"property"') && html.includes('"transaction"')) hints.push('property/transaction velden')
     let host = ''
     try { host = new URL(url).hostname } catch {}
-    const hintText = hints.length > 0 ? ` (${hints.join(', ')})` : ''
+
+    // Save debug snapshot in user_metadata zodat /admin/marktmonitor/debug 'm kan tonen
+    try {
+      const adminClient = createAdminClient()
+      const { data: existing } = await adminClient.auth.admin.getUserById(user.id)
+      const md = (existing?.user?.user_metadata || {}) as Record<string, unknown>
+      await adminClient.auth.admin.updateUserById(user.id, {
+        user_metadata: {
+          ...md,
+          last_market_debug: {
+            url,
+            host,
+            timestamp: new Date().toISOString(),
+            htmlSize: html.length,
+            hints,
+            // Bewaar eerste 30KB — meestal genoeg om de head + eerste body-elements te zien
+            htmlSnippet: html.slice(0, 30000),
+          },
+        },
+      })
+    } catch {
+      // Niet kritisch
+    }
+
+    const hintText = hints.length > 0 ? ` (gevonden: ${hints.join(', ')})` : ''
     return NextResponse.json(
       {
         ok: true,
-        message: `Geen panden herkend op ${host}${hintText}. Probeer een zoek-resultatenpagina i.p.v. detail- of homepage.`,
+        message: `Geen panden herkend op ${host}${hintText}. Bekijk debug-info op /admin/marktmonitor/debug.`,
         parsed: 0,
         new: 0,
         merged: 0,
