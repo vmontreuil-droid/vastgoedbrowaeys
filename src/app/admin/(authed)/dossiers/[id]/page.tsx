@@ -6,8 +6,9 @@ import {
 } from 'lucide-react'
 import {
   getAdminDossier, getAdminAppointments, getAdminClient, getAdminDocumentsForDossier,
-  getDossierEvents, getDossierSteps, getNoteTemplates,
+  getDossierEvents, getDossierSteps, getNoteTemplates, getTeamMembers,
 } from '@/lib/admin-db'
+import { createClient } from '@/lib/supabase/server'
 import { formatPrice } from '@/lib/listings'
 import { DocumentsPanel, type DocumentRow } from './documents-panel'
 import { EmailComposer } from './email-composer'
@@ -15,6 +16,7 @@ import { DossierTimeline } from './dossier-timeline'
 import { StepsPanel, type StepRow } from './steps-panel'
 import { CommissionPanel } from './commission-panel'
 import { TagsPanel } from './tags-panel'
+import { AssigneePanel } from './assignee-panel'
 
 export const metadata = {
   title: 'Admin · Dossier',
@@ -54,13 +56,17 @@ export default async function DossierDetailPage({
   const dossier = await getAdminDossier(id)
   if (!dossier) notFound()
 
-  const [client, { items: allAppointments }, { items: documents }, { items: events }, { items: steps }, { items: templates }] = await Promise.all([
+  const supabase = await createClient()
+  const { data: { user: currentUser } } = await supabase.auth.getUser()
+
+  const [client, { items: allAppointments }, { items: documents }, { items: events }, { items: steps }, { items: templates }, { items: team }] = await Promise.all([
     getAdminClient(dossier.clientId),
     getAdminAppointments(),
     getAdminDocumentsForDossier(dossier.id),
     getDossierEvents(dossier.id),
     getDossierSteps(dossier.id, dossier.type),
     getNoteTemplates(),
+    getTeamMembers(),
   ])
   const appointments = allAppointments
     .filter((a) => a.dossierId === dossier.id)
@@ -193,6 +199,15 @@ export default async function DossierDetailPage({
                 <p className="text-xs text-[var(--color-mute)] mt-2">Type: {dossier.propertyType}</p>
               )}
             </Card>
+          )}
+
+          {currentUser && (
+            <AssigneePanel
+              dossierId={dossier.id}
+              initialAssigneeId={dossier.assignedTo}
+              currentUserId={currentUser.id}
+              options={team.map((m) => ({ id: m.id, name: `${m.firstName} ${m.lastName}`.trim() || m.email, email: m.email, active: m.active }))}
+            />
           )}
 
           <CommissionPanel

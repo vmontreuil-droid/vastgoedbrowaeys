@@ -1,10 +1,8 @@
 import { headers } from 'next/headers'
-import { Users } from 'lucide-react'
+import Link from 'next/link'
+import { UserCog, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
 import { getNoteTemplates } from '@/lib/admin-db'
-import { AddTeamMemberForm } from './add-team-member-form'
-import { TeamMemberCard, type TeamMember } from './team-member-card'
 import { IcalPanel } from './ical-panel'
 import { TemplatesPanel } from './templates-panel'
 
@@ -13,31 +11,8 @@ export const metadata = {
 }
 
 export default async function InstellingenPage() {
-  // Wie ben ik?
   const supabase = await createClient()
   const { data: { user: currentUser } } = await supabase.auth.getUser()
-
-  // Lijst van admin-users via Admin API
-  const admin = createAdminClient()
-  const { data: usersData, error: listErr } = await admin.auth.admin.listUsers()
-
-  const team: TeamMember[] = (usersData?.users ?? [])
-    .filter((u) => u.user_metadata?.role === 'admin' && u.email)
-    .map((u) => ({
-      id: u.id,
-      email: u.email || '',
-      firstName: (u.user_metadata?.first_name as string) || '',
-      lastName: (u.user_metadata?.last_name as string) || '',
-      title: (u.user_metadata?.title as string | undefined) || undefined,
-      phone: (u.user_metadata?.phone as string | undefined) || undefined,
-      bivNumber: (u.user_metadata?.biv_number as string | undefined) || undefined,
-      active: u.user_metadata?.active !== false,
-    }))
-    .sort((a, b) => {
-      // Actieve eerst, dan op familienaam
-      if (a.active !== b.active) return a.active ? -1 : 1
-      return a.lastName.localeCompare(b.lastName, 'nl-BE')
-    })
 
   const hdr = await headers()
   const host = hdr.get('host') ?? 'vastgoedbrowaeys.vercel.app'
@@ -51,9 +26,9 @@ export default async function InstellingenPage() {
     <div className="container-px mx-auto max-w-screen-2xl py-10 md:py-14">
       <section className="mb-12">
         <p className="eyebrow mb-3">Admin · Instellingen</p>
-        <h1 className="text-3xl md:text-5xl">Team & instellingen</h1>
+        <h1 className="text-3xl md:text-5xl">Instellingen</h1>
         <p className="mt-3 text-[var(--color-mute)] max-w-2xl">
-          Beheer de medewerkers met toegang tot het beheerderspaneel.
+          Configuratie voor agenda-feeds, notitie-sjablonen en algemene voorkeuren.
         </p>
       </section>
 
@@ -62,35 +37,24 @@ export default async function InstellingenPage() {
       <TemplatesPanel initialTemplates={templates} />
 
       <section className="mb-10">
-        <div className="flex items-end justify-between mb-5">
-          <div>
-            <h2 className="text-2xl flex items-center gap-3">
-              <Users className="size-5" style={{ color: 'var(--color-accent)' }} />
-              Werknemers ({team.length})
-            </h2>
-            <p className="mt-1 text-sm text-[var(--color-mute)]">
-              Iedereen in deze lijst kan inloggen op het beheerderspaneel.
-            </p>
+        <Link
+          href="/admin/team"
+          className="flex items-center justify-between gap-4 p-5 transition-colors hover:bg-[var(--color-paper-2)]"
+          style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
+        >
+          <div className="flex items-start gap-3 min-w-0">
+            <UserCog className="size-5 shrink-0 mt-0.5" style={{ color: 'var(--color-accent)' }} />
+            <div className="min-w-0">
+              <h2 className="text-lg" style={{ fontFamily: 'var(--font-display)' }}>
+                Werknemers verhuisd naar Team
+              </h2>
+              <p className="mt-1 text-sm text-[var(--color-mute)]">
+                Beheer de medewerkers met toegang tot het paneel, hun dossiers en toewijzingen.
+              </p>
+            </div>
           </div>
-        </div>
-
-        {listErr && (
-          <p className="text-sm text-red-700">
-            Kon team-lijst niet ophalen: {listErr.message}
-          </p>
-        )}
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {team.map((m) => (
-            <TeamMemberCard
-              key={m.id}
-              member={m}
-              isSelf={currentUser?.id === m.id}
-            />
-          ))}
-        </div>
-
-        <AddTeamMemberForm />
+          <ArrowRight className="size-4 shrink-0 text-[var(--color-mute)]" />
+        </Link>
       </section>
     </div>
   )

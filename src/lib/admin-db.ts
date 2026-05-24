@@ -48,6 +48,8 @@ export type AdminDossier = {
   commissionVatIncluded: boolean
   commissionNotes: string | null
   tags: string[]
+  assignedTo: string | null
+  assignedToName: string | null
 }
 
 /**
@@ -182,6 +184,7 @@ export async function getAdminDossiers(): Promise<FetchResult<AdminDossier>> {
     commission_vat_included?: boolean | null;
     commission_notes?: string | null;
     tags?: string[] | null;
+    assigned_to?: string | null;
   }>
 
   // Resolve clientName lazy via profiles + auth in één keer
@@ -192,6 +195,21 @@ export async function getAdminDossiers(): Promise<FetchResult<AdminDossier>> {
     for (const p of (profs ?? []) as Array<{ id: string; first_name: string | null; last_name: string | null; email: string }>) {
       nameById.set(p.id, [p.first_name, p.last_name].filter(Boolean).join(' ') || p.email)
     }
+  }
+
+  // Team-namen voor assignedToName resolutie
+  const teamById = new Map<string, string>()
+  try {
+    const { data: usersData } = await admin.auth.admin.listUsers()
+    for (const u of usersData?.users ?? []) {
+      if (u.user_metadata?.role !== 'admin') continue
+      const first = (u.user_metadata?.first_name as string) || ''
+      const last = (u.user_metadata?.last_name as string) || ''
+      const name = `${first} ${last}`.trim() || u.email || ''
+      teamById.set(u.id, name)
+    }
+  } catch {
+    // Best-effort: lege namen i.p.v. crash
   }
 
   // Counts (één keer ophalen)
@@ -228,6 +246,8 @@ export async function getAdminDossiers(): Promise<FetchResult<AdminDossier>> {
     commissionVatIncluded: d.commission_vat_included === true,
     commissionNotes: d.commission_notes ?? null,
     tags: Array.isArray(d.tags) ? d.tags : [],
+    assignedTo: d.assigned_to ?? null,
+    assignedToName: d.assigned_to ? (teamById.get(d.assigned_to) ?? null) : null,
   }))
 
   return { items }
@@ -425,6 +445,42 @@ export type NoteTemplate = {
   orderIndex: number
   createdAt: string
   updatedAt: string
+}
+
+export type TeamMember = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  title?: string
+  phone?: string
+  bivNumber?: string
+  active: boolean
+}
+
+export async function getTeamMembers(): Promise<FetchResult<TeamMember>> {
+  const admin = createAdminClient()
+  const { data, error } = await admin.auth.admin.listUsers()
+  if (error) return { items: [], error: error.message }
+
+  const team: TeamMember[] = (data?.users ?? [])
+    .filter((u) => u.user_metadata?.role === 'admin' && u.email)
+    .map((u) => ({
+      id: u.id,
+      email: u.email || '',
+      firstName: (u.user_metadata?.first_name as string) || '',
+      lastName: (u.user_metadata?.last_name as string) || '',
+      title: (u.user_metadata?.title as string | undefined) || undefined,
+      phone: (u.user_metadata?.phone as string | undefined) || undefined,
+      bivNumber: (u.user_metadata?.biv_number as string | undefined) || undefined,
+      active: u.user_metadata?.active !== false,
+    }))
+    .sort((a, b) => {
+      if (a.active !== b.active) return a.active ? -1 : 1
+      return a.lastName.localeCompare(b.lastName, 'nl-BE')
+    })
+
+  return { items: team }
 }
 
 export async function getNoteTemplates(): Promise<FetchResult<NoteTemplate>> {

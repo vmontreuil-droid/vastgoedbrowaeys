@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { FolderOpen, Plus, AlertCircle, Download } from 'lucide-react'
 import { DossierBulkGrid } from './bulk-grid'
-import { getAdminDossiers } from '@/lib/admin-db'
+import { getAdminDossiers, getTeamMembers } from '@/lib/admin-db'
+import { createClient } from '@/lib/supabase/server'
 import { formatPrice } from '@/lib/listings'
 import { DonutChart } from '@/components/admin/charts'
 
@@ -34,8 +35,15 @@ export default async function DossiersPage({
   const statusFilter = (params.status as string | undefined) ?? 'open_lopend'
   const typeFilter = (params.type as string | undefined) ?? 'alle'
   const tagFilter = (params.tag as string | undefined) ?? ''
+  const assigneeFilter = (params.assignee as string | undefined) ?? 'alle'
 
-  const { items: allDossiers, error } = await getAdminDossiers()
+  const supabase = await createClient()
+  const { data: { user: currentUser } } = await supabase.auth.getUser()
+
+  const [{ items: allDossiers, error }, { items: team }] = await Promise.all([
+    getAdminDossiers(),
+    getTeamMembers(),
+  ])
 
   let dossiers = [...allDossiers]
   if (statusFilter === 'open_lopend') {
@@ -45,6 +53,13 @@ export default async function DossiersPage({
   }
   if (typeFilter !== 'alle') dossiers = dossiers.filter((d) => d.type === typeFilter)
   if (tagFilter) dossiers = dossiers.filter((d) => d.tags.includes(tagFilter))
+  if (assigneeFilter === 'mij' && currentUser) {
+    dossiers = dossiers.filter((d) => d.assignedTo === currentUser.id)
+  } else if (assigneeFilter === 'niemand') {
+    dossiers = dossiers.filter((d) => !d.assignedTo)
+  } else if (assigneeFilter !== 'alle') {
+    dossiers = dossiers.filter((d) => d.assignedTo === assigneeFilter)
+  }
 
   const tagCounts = new Map<string, number>()
   for (const d of allDossiers) {
@@ -135,7 +150,7 @@ export default async function DossiersPage({
           ]}
           current={statusFilter}
           queryKey="status"
-          otherKeyValues={{ type: typeFilter, tag: tagFilter }}
+          otherKeyValues={{ type: typeFilter, tag: tagFilter, assignee: assigneeFilter }}
         />
         <FilterPills
           label="Type"
@@ -148,7 +163,22 @@ export default async function DossiersPage({
           ]}
           current={typeFilter}
           queryKey="type"
-          otherKeyValues={{ status: statusFilter, tag: tagFilter }}
+          otherKeyValues={{ status: statusFilter, tag: tagFilter, assignee: assigneeFilter }}
+        />
+        <FilterPills
+          label="Eigenaar"
+          options={[
+            { value: 'alle',    label: 'Alle' },
+            { value: 'mij',     label: 'Mijn' },
+            { value: 'niemand', label: 'Niet toegewezen' },
+            ...team.filter((m) => m.active && m.id !== currentUser?.id).map((m) => ({
+              value: m.id,
+              label: m.firstName || m.email.split('@')[0],
+            })),
+          ]}
+          current={assigneeFilter}
+          queryKey="assignee"
+          otherKeyValues={{ status: statusFilter, type: typeFilter, tag: tagFilter }}
         />
         {allTags.length > 0 && (
           <div className="inline-flex items-center gap-1 flex-wrap basis-full mt-1">
@@ -158,6 +188,7 @@ export default async function DossiersPage({
                 const p = new URLSearchParams()
                 if (statusFilter !== 'alle') p.set('status', statusFilter)
                 if (typeFilter !== 'alle') p.set('type', typeFilter)
+                if (assigneeFilter !== 'alle') p.set('assignee', assigneeFilter)
                 return `?${p.toString()}`
               })()}
               className="px-2 py-1 text-[0.65rem] transition-colors"
@@ -173,6 +204,7 @@ export default async function DossiersPage({
               const p = new URLSearchParams()
               if (statusFilter !== 'alle') p.set('status', statusFilter)
               if (typeFilter !== 'alle') p.set('type', typeFilter)
+              if (assigneeFilter !== 'alle') p.set('assignee', assigneeFilter)
               p.set('tag', t)
               const active = tagFilter === t
               return (
@@ -218,6 +250,7 @@ export default async function DossiersPage({
             appointmentsCount: d.appointmentsCount,
             documentsCount: d.documentsCount,
             tags: d.tags,
+            assignedToName: d.assignedTo === currentUser?.id ? 'Jij' : d.assignedToName,
           }))}
         />
       )}

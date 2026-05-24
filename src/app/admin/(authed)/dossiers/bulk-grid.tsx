@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useTransition } from 'react'
 import {
-  Hash, Check, Clock, X, Trash2, CheckSquare, Square, AlertCircle, CheckCircle2,
+  Hash, Check, Clock, X, Trash2, CheckSquare, Square, AlertCircle, CheckCircle2, UserCog,
 } from 'lucide-react'
 import {
   bulkSetDossierStatusAction, bulkDeleteDossiersAction, type BulkStatus,
@@ -31,6 +31,7 @@ export type DossierCard = {
   appointmentsCount: number
   documentsCount: number
   tags: string[]
+  assignedToName: string | null
 }
 
 function formatPrice(n: number | null) {
@@ -226,9 +227,15 @@ export function DossierBulkGrid({ dossiers }: { dossiers: DossierCard[] }) {
                 </ul>
               )}
 
-              <div className="flex items-center justify-end gap-4 text-xs text-[var(--color-mute)]">
-                <span title="Afspraken">📅 {d.appointmentsCount}</span>
-                <span title="Documenten">📄 {d.documentsCount}</span>
+              <div className="flex items-center justify-between gap-3 text-xs text-[var(--color-mute)]">
+                <span className="inline-flex items-center gap-1 truncate min-w-0">
+                  <UserCog className="size-3 shrink-0" />
+                  {d.assignedToName ?? <span className="italic">Niet toegewezen</span>}
+                </span>
+                <span className="inline-flex items-center gap-3 shrink-0">
+                  <span title="Afspraken">📅 {d.appointmentsCount}</span>
+                  <span title="Documenten">📄 {d.documentsCount}</span>
+                </span>
               </div>
             </div>
           )

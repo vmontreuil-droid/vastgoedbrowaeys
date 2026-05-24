@@ -21,6 +21,7 @@ import {
   Send,
   Search,
   HelpCircle,
+  UserCog,
 } from 'lucide-react'
 import { BrandLogo } from './brand-logo'
 import { signOutAction } from '@/lib/auth/actions'
@@ -49,6 +50,7 @@ const NAV: Array<{
   { href: '/admin/notificaties', label: 'Meldingen',    icon: Bell,           badgeKey: 'notificaties' },
   { href: '/admin/nieuwsbrief',  label: 'Nieuwsbrief',  icon: Send },
   { href: '/admin/zoeken',       label: 'Zoeken',       icon: Search },
+  { href: '/admin/team',         label: 'Team',         icon: UserCog },
   { href: '/admin/instellingen', label: 'Instellingen', icon: Settings },
   { href: '/admin/help',         label: 'Handleiding',  icon: HelpCircle },
 ]

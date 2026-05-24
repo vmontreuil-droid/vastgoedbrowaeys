@@ -64,6 +64,7 @@ export async function addTeamMemberAction(formData: FormData): Promise<ActionRes
   }
 
   revalidatePath('/admin/instellingen')
+  revalidatePath('/admin/team')
   return { ok: true, message: `${firstName} ${lastName} toegevoegd als beheerder.` }
 }
 
@@ -120,6 +121,7 @@ export async function updateTeamMemberAction(
   }
 
   revalidatePath('/admin/instellingen')
+  revalidatePath('/admin/team')
   return { ok: true, message: `${firstName} ${lastName} bijgewerkt.` }
 }
 
@@ -172,6 +174,7 @@ export async function setActiveAction(
   }
 
   revalidatePath('/admin/instellingen')
+  revalidatePath('/admin/team')
   return { ok: true, message: active ? 'Account geactiveerd.' : 'Account gedeactiveerd.' }
 }
 
@@ -234,5 +237,6 @@ export async function deleteTeamMemberAction(userId: string): Promise<ActionResu
   }
 
   revalidatePath('/admin/instellingen')
+  revalidatePath('/admin/team')
   return { ok: true, message: 'Beheerder verwijderd.' }
 }
