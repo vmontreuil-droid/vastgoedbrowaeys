@@ -4,8 +4,7 @@ import { notFound } from 'next/navigation'
 import {
   ArrowLeft, ExternalLink, MapPin, Tag, Building2, User as UserIcon, Calendar,
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
-import { getMarketLead } from '@/lib/admin-db'
+import { getMarketLead, getTeamMembers } from '@/lib/admin-db'
 import { formatPrice } from '@/lib/listings'
 import { StatusControl, NotesEditor, DeleteLeadButton } from './lead-controls'
 import { BriefGenerator } from './brief-generator'
@@ -22,15 +21,22 @@ export default async function MarktLeadDetailPage({
   const lead = await getMarketLead(id)
   if (!lead) notFound()
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  const md = user?.user_metadata as Record<string, unknown> | undefined
-  const sender = {
-    name: `${(md?.first_name as string) || ''} ${(md?.last_name as string) || ''}`.trim() || user?.email || 'Vastgoed Browaeys',
-    email: user?.email ?? 'info@vastgoedbrowaeys.be',
-    phone: (md?.phone as string) || null,
-    title: (md?.title as string) || null,
-    bivNumber: (md?.biv_number as string) || null,
+  // Zaakvoerder als afzender — geen current user. Brieven naar leads
+  // moeten altijd uitgaan vanuit Stefanie, niet vanuit wie er ingelogd is.
+  const { items: team } = await getTeamMembers()
+  const zaakvoerder = team.find((m) => m.teamRole === 'zaakvoerder' && m.active)
+  const sender = zaakvoerder ? {
+    name: `${zaakvoerder.firstName} ${zaakvoerder.lastName}`.trim() || zaakvoerder.email,
+    email: zaakvoerder.email,
+    phone: zaakvoerder.phone ?? null,
+    title: zaakvoerder.title ?? null,
+    bivNumber: zaakvoerder.bivNumber ?? null,
+  } : {
+    name: 'Stephanie Browaeys',
+    email: 'stephanie@vastgoedbrowaeys.be',
+    phone: '055 59 50 10',
+    title: 'Zaakvoerder · Vastgoedmakelaar-bemiddelaar',
+    bivNumber: '504.553',
   }
 
   return (
