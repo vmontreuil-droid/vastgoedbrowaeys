@@ -84,7 +84,10 @@ export default async function TeamPage() {
             <ul className="text-xs list-disc pl-4 space-y-0.5 text-[var(--color-mute)]">
               <li>Herlaad de pagina (vaak transient).</li>
               <li>Check op <a href="https://status.supabase.com" target="_blank" rel="noopener" className="link-underline">status.supabase.com</a> of er een incident is.</li>
-              <li>Vraag Vincent om de SUPABASE_SERVICE_ROLE_KEY in Vercel te verifiëren als het blijft falen.</li>
+              <li>
+                Open <Link href="/admin/team/diagnose" className="link-underline">/admin/team/diagnose</Link>{' '}
+                om te isoleren welk record listUsers laat falen.
+              </li>
             </ul>
           </div>
         </div>
