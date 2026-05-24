@@ -25,6 +25,7 @@ const SUPPORT_TEAM = [
   {
     name: 'Kimberly Van Gansbeke',
     role: 'Administratief medewerker',
+    photo: '/team/kimberly-van-gansbeke.png',
     phone: '055/59 50 10',
     email: 'kimberly@vastgoedbrowaeys.be',
   },
@@ -32,12 +33,14 @@ const SUPPORT_TEAM = [
     name: 'Flore Vanlierde',
     role: 'Stagiair vastgoedmakelaar',
     biv: 'BIV 519.829',
+    photo: '/team/flore-vanlierde.png',
     phone: '055/59 50 10',
     email: 'flore@vastgoedbrowaeys.be',
   },
   {
     name: 'Thomas Lemmens',
     role: 'Administratief medewerker',
+    photo: '/team/thomas-lemmens.png',
     phone: '055/59 50 10',
     email: 'thomas@vastgoedbrowaeys.be',
   },
@@ -132,28 +135,39 @@ export default function OnsTeamPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {SUPPORT_TEAM.map((m) => (
               <article key={m.name}
-                className="p-6 transition-all hover:shadow-sm"
+                className="overflow-hidden transition-all hover:shadow-sm"
                 style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
-                <h3 className="text-xl" style={{ fontFamily: 'var(--font-display)' }}>{m.name}</h3>
-                <p className="mt-1.5 text-sm italic" style={{ color: 'var(--color-accent)' }}>
-                  {m.role}
-                </p>
-                {'biv' in m && m.biv && (
-                  <p className="mt-2 eyebrow text-[0.55rem]" style={{ color: 'var(--color-clay-dark)' }}>
-                    {m.biv}
+                <div className="relative aspect-[4/5] bg-[var(--color-paper-2)]">
+                  <Image
+                    src={m.photo}
+                    alt={m.name}
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl" style={{ fontFamily: 'var(--font-display)' }}>{m.name}</h3>
+                  <p className="mt-1.5 text-sm italic" style={{ color: 'var(--color-accent)' }}>
+                    {m.role}
                   </p>
-                )}
-                <div className="mt-5 flex flex-col gap-2 text-xs">
-                  <a href={`tel:${m.phone.replace(/\s|\//g, '')}`}
-                    className="inline-flex items-center gap-1.5 link-underline">
-                    <Phone className="size-3" />
-                    {m.phone}
-                  </a>
-                  <a href={`mailto:${m.email}`}
-                    className="inline-flex items-center gap-1.5 link-underline">
-                    <Mail className="size-3" />
-                    {m.email}
-                  </a>
+                  {'biv' in m && m.biv && (
+                    <p className="mt-2 eyebrow text-[0.55rem]" style={{ color: 'var(--color-clay-dark)' }}>
+                      {m.biv}
+                    </p>
+                  )}
+                  <div className="mt-5 flex flex-col gap-2 text-xs">
+                    <a href={`tel:${m.phone.replace(/\s|\//g, '')}`}
+                      className="inline-flex items-center gap-1.5 link-underline">
+                      <Phone className="size-3" />
+                      {m.phone}
+                    </a>
+                    <a href={`mailto:${m.email}`}
+                      className="inline-flex items-center gap-1.5 link-underline">
+                      <Mail className="size-3" />
+                      {m.email}
+                    </a>
+                  </div>
                 </div>
               </article>
             ))}
