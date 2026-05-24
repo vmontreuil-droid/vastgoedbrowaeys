@@ -2,7 +2,10 @@
 
 import { useEffect, useState, useTransition } from 'react'
 import NextLink from 'next/link'
-import { RefreshCw, Bookmark, Copy, Check, AlertCircle, ExternalLink } from 'lucide-react'
+import {
+  RefreshCw, Bookmark, Copy, Check, AlertCircle, ExternalLink,
+  Search, MousePointerClick, CheckCircle2, HelpCircle,
+} from 'lucide-react'
 import { regenerateMarketImportTokenAction } from './actions'
 
 export function BookmarkletCard({
@@ -159,42 +162,127 @@ export function BookmarkletCard({
       {token && (
         <section className="p-4 md:p-5"
           style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
-          <h2 className="text-base md:text-lg mb-3 flex items-center gap-2"
+          <h2 className="text-base md:text-lg mb-1 flex items-center gap-2"
             style={{ fontFamily: 'var(--font-display)' }}>
             <span className="inline-flex size-6 items-center justify-center text-xs font-medium"
               style={{ background: 'var(--color-accent)', color: '#fff', borderRadius: '50%' }}>3</span>
             Hoe gebruik je het?
           </h2>
-          <ol className="space-y-3 text-sm">
-            <li className="flex gap-3">
-              <span className="text-[var(--color-mute)] shrink-0">①</span>
-              <span>
-                Ga naar Immoweb / Zimmo / Realo / Immo Vlaanderen / Hebbes / Logic-Immo en zoek
-                naar wat je interessant vindt (bv. een resultaat-pagina met meerdere panden).
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span className="text-[var(--color-mute)] shrink-0">②</span>
-              <span>
-                Klik op de <strong>&ldquo;Import naar Browaeys&rdquo;</strong> bookmark in je
-                bookmarks-balk.
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span className="text-[var(--color-mute)] shrink-0">③</span>
-              <span>
-                Een pop-up bevestigt: bv. &ldquo;<em>3 nieuw · 1 samengevoegd · 2 reeds bekend</em>&rdquo;.
-                Alle gevonden panden staan nu in <NextLink href="/admin/marktmonitor" className="link-underline">/admin/marktmonitor</NextLink>.
-              </span>
-            </li>
-          </ol>
+          <p className="text-xs text-[var(--color-mute)] mb-5">
+            Drie stappen die je telkens herhaalt wanneer je iets interessant tegenkomt.
+          </p>
 
-          <div className="mt-5 p-3 text-xs"
-            style={{ background: 'rgba(11,79,88,0.06)', borderLeft: '3px solid var(--color-accent)' }}>
-            💡 Het werkt op zoek-resultaten (lijsten van panden) <em>en</em> op detail-pagina&apos;s
-            (1 pand). Dedup zorgt dat hetzelfde pand op verschillende sites als één lead wordt
-            getoond met alle bron-URLs.
+          <div className="grid md:grid-cols-3 gap-3">
+            {/* Stap A */}
+            <div className="p-4"
+              style={{ background: 'var(--color-paper-2)', border: '1px solid var(--color-line)' }}>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="inline-flex size-8 items-center justify-center text-sm font-medium"
+                  style={{ background: 'var(--color-accent)', color: '#fff', borderRadius: '50%' }}>A</span>
+                <Search className="size-4" style={{ color: 'var(--color-accent)' }} />
+                <span className="text-sm font-medium">Zoeken op immo-site</span>
+              </div>
+              <p className="text-xs text-[var(--color-mute)] mb-3">
+                Ga naar Immoweb (of Zimmo/Realo/…) en zoek panden in jouw streek. Filter op
+                regio, prijs, type — net zoals je normaal doet.
+              </p>
+              <div className="text-[0.65rem] font-mono px-2 py-1.5 truncate"
+                style={{ background: 'var(--color-paper)', border: '1px dashed var(--color-line)' }}>
+                immoweb.be/nl/zoeken/...
+              </div>
+            </div>
+
+            {/* Stap B */}
+            <div className="p-4"
+              style={{ background: 'var(--color-paper-2)', border: '1px solid var(--color-line)' }}>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="inline-flex size-8 items-center justify-center text-sm font-medium"
+                  style={{ background: 'var(--color-accent)', color: '#fff', borderRadius: '50%' }}>B</span>
+                <MousePointerClick className="size-4" style={{ color: 'var(--color-accent)' }} />
+                <span className="text-sm font-medium">Klik de bookmark</span>
+              </div>
+              <p className="text-xs text-[var(--color-mute)] mb-3">
+                Eén klik op &ldquo;Import naar Browaeys&rdquo; in je bookmarks-balk. Geen tabs
+                wisselen, geen URLs kopiëren — gebeurt allemaal in de achtergrond.
+              </p>
+              <div className="inline-flex items-center gap-1 px-2 py-1 text-[0.65rem]"
+                style={{ background: 'var(--color-accent)', color: '#fff' }}>
+                <Bookmark className="size-3" />
+                Import naar Browaeys
+              </div>
+            </div>
+
+            {/* Stap C */}
+            <div className="p-4"
+              style={{ background: 'var(--color-paper-2)', border: '1px solid var(--color-line)' }}>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="inline-flex size-8 items-center justify-center text-sm font-medium"
+                  style={{ background: '#16a34a', color: '#fff', borderRadius: '50%' }}>C</span>
+                <CheckCircle2 className="size-4" style={{ color: '#16a34a' }} />
+                <span className="text-sm font-medium">Bevestiging</span>
+              </div>
+              <p className="text-xs text-[var(--color-mute)] mb-3">
+                Een mini pop-up verschijnt: aantal nieuwe, samengevoegde en reeds gekende
+                panden. Daarna staan ze allemaal in je marktmonitor.
+              </p>
+              <div className="text-[0.65rem] px-2 py-1.5"
+                style={{ background: 'rgba(34,197,94,0.10)', color: '#166534', border: '1px solid rgba(34,197,94,0.3)' }}>
+                Browaeys: 3 nieuw · 1 samengevoegd · 2 reeds bekend
+              </div>
+            </div>
           </div>
+
+          {/* CTA */}
+          <NextLink
+            href="/admin/marktmonitor"
+            className="mt-5 inline-flex items-center gap-2 text-sm link-underline"
+            style={{ color: 'var(--color-accent)' }}
+          >
+            <ExternalLink className="size-3.5" />
+            Bekijk je marktmonitor
+          </NextLink>
+
+          {/* Praktische tips */}
+          <div className="mt-6 p-3 text-xs"
+            style={{ background: 'rgba(11,79,88,0.06)', borderLeft: '3px solid var(--color-accent)' }}>
+            <p className="font-medium mb-1">💡 Goed om te weten</p>
+            <ul className="space-y-1 pl-4 list-disc text-[var(--color-mute)]">
+              <li>Werkt op <strong>zoek-resultaten</strong> (lijst van panden) <em>en</em> op <strong>detail-pagina&apos;s</strong> (1 pand).</li>
+              <li><strong>Dedup</strong>: hetzelfde pand op Immoweb + Zimmo wordt automatisch één lead met beide bron-URLs.</li>
+              <li>Reeds bekende panden worden overgeslagen — je kan dus zonder zorgen meermaals klikken.</li>
+              <li>Niets te installeren op de andere sites — het is gewoon een bookmark in je browser.</li>
+            </ul>
+          </div>
+
+          {/* FAQ */}
+          <details className="mt-3 text-xs">
+            <summary className="cursor-pointer flex items-center gap-1.5 text-[var(--color-mute)] hover:text-[var(--color-ink)]">
+              <HelpCircle className="size-3" />
+              Wat als het niet werkt?
+            </summary>
+            <div className="mt-2 pl-5 space-y-2 text-[var(--color-mute)]">
+              <p>
+                <strong>&ldquo;Geen listings herkend in deze pagina&rdquo;:</strong> je staat
+                waarschijnlijk op een homepage of een algemene pagina. Voer eerst een zoekopdracht
+                uit en klik dan op de bookmark op de resultaten-pagina.
+              </p>
+              <p>
+                <strong>&ldquo;Token niet herkend&rdquo;:</strong> de oude bookmarklet werkt niet
+                meer (bv. omdat je vernieuwd hebt). Sleep de nieuwe bookmarklet hierboven naar
+                je bookmarks-balk (en vervang de oude).
+              </p>
+              <p>
+                <strong>Niets gebeurt na klikken:</strong> je bookmarks-balk is misschien
+                verborgen. Druk Ctrl+Shift+B (Windows) of ⌘+Shift+B (Mac) om hem te tonen.
+              </p>
+              <p>
+                <strong>Werkt niet op site X:</strong> we ondersteunen Immoweb, Zimmo, Realo,
+                Immo Vlaanderen, Hebbes en Logic-Immo. Andere sites geven &ldquo;geen listings herkend&rdquo;
+                — daar kan je nog steeds de URL manueel plakken op
+                <NextLink href="/admin/marktmonitor" className="link-underline mx-1">/admin/marktmonitor</NextLink>.
+              </p>
+            </div>
+          </details>
         </section>
       )}
 
