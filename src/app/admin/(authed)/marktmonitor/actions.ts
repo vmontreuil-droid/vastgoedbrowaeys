@@ -126,6 +126,16 @@ export async function deleteMarketLeadAction(id: string): Promise<SimpleResult> 
 
 export type BulkLeadResult = { ok: boolean; updated: number; error?: string }
 
+/**
+ * Batcht een lijst IDs in chunks om te voorkomen dat de PostgREST URL te
+ * lang wordt (limiet ~8KB; ~50 UUIDs zit ruim binnen die marge).
+ */
+function chunk<T>(arr: T[], size: number): T[][] {
+  const out: T[][] = []
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size))
+  return out
+}
+
 export async function bulkUpdateMarketLeadStatusAction(
   ids: string[],
   status: MarketLeadStatus,
@@ -143,14 +153,18 @@ export async function bulkUpdateMarketLeadStatusAction(
   if (status === 'benaderd') {
     update.contacted_at = new Date().toISOString()
   }
-  const { error, count } = await admin
-    .from('market_leads')
-    .update(update, { count: 'exact' })
-    .in('id', ids)
-  if (error) return { ok: false, updated: 0, error: error.message }
+
+  let totalUpdated = 0
+  for (const batch of chunk(ids, 50)) {
+    const { error } = await admin.from('market_leads').update(update).in('id', batch)
+    if (error) {
+      return { ok: false, updated: totalUpdated, error: error.message }
+    }
+    totalUpdated += batch.length
+  }
 
   revalidatePath('/admin/marktmonitor')
-  return { ok: true, updated: count ?? ids.length }
+  return { ok: true, updated: totalUpdated }
 }
 
 export async function bulkDeleteMarketLeadsAction(ids: string[]): Promise<BulkLeadResult> {
@@ -160,12 +174,16 @@ export async function bulkDeleteMarketLeadsAction(ids: string[]): Promise<BulkLe
   if (ids.length === 0) return { ok: false, updated: 0, error: 'Geen leads geselecteerd.' }
 
   const admin = createAdminClient()
-  const { error, count } = await admin
-    .from('market_leads')
-    .delete({ count: 'exact' })
-    .in('id', ids)
-  if (error) return { ok: false, updated: 0, error: error.message }
+
+  let totalDeleted = 0
+  for (const batch of chunk(ids, 50)) {
+    const { error } = await admin.from('market_leads').delete().in('id', batch)
+    if (error) {
+      return { ok: false, updated: totalDeleted, error: error.message }
+    }
+    totalDeleted += batch.length
+  }
 
   revalidatePath('/admin/marktmonitor')
-  return { ok: true, updated: count ?? ids.length }
+  return { ok: true, updated: totalDeleted }
 }
