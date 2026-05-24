@@ -54,6 +54,50 @@ export async function bulkSetDossierStatusAction(
   return { ok: true, updated: count ?? dossierIds.length }
 }
 
+export async function bulkAssignDossiersAction(
+  dossierIds: string[],
+  assigneeId: string | null,
+): Promise<BulkResult> {
+  let user
+  try { user = await requireAdmin() } catch (e) {
+    return { ok: false, updated: 0, error: e instanceof Error ? e.message : 'Geen toegang' }
+  }
+  if (dossierIds.length === 0) return { ok: false, updated: 0, error: 'Geen dossiers geselecteerd.' }
+
+  const admin = createAdminClient()
+
+  if (assigneeId) {
+    // Validatie: assignee moet admin zijn
+    const { data: existing, error: getErr } = await admin.auth.admin.getUserById(assigneeId)
+    if (getErr || !existing.user) {
+      return { ok: false, updated: 0, error: 'Werknemer niet gevonden.' }
+    }
+    if (existing.user.user_metadata?.role !== 'admin') {
+      return { ok: false, updated: 0, error: 'Alleen werknemers kunnen toegewezen worden.' }
+    }
+  }
+
+  const { error, count } = await admin
+    .from('dossiers')
+    .update({ assigned_to: assigneeId }, { count: 'exact' })
+    .in('id', dossierIds)
+  if (error) return { ok: false, updated: 0, error: error.message }
+
+  // Log naar dossier_events
+  await admin.from('dossier_events').insert(
+    dossierIds.map((dossierId) => ({
+      dossier_id: dossierId,
+      event_type: 'other',
+      title: assigneeId ? 'Toegewezen aan werknemer (bulk-actie)' : 'Toewijzing verwijderd (bulk-actie)',
+      created_by: user.id,
+    })),
+  )
+
+  revalidatePath('/admin/dossiers')
+  revalidatePath('/admin/team')
+  return { ok: true, updated: count ?? dossierIds.length }
+}
+
 export async function bulkDeleteDossiersAction(dossierIds: string[]): Promise<BulkResult> {
   try { await requireAdmin() } catch (e) {
     return { ok: false, updated: 0, error: e instanceof Error ? e.message : 'Geen toegang' }

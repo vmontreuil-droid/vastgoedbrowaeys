@@ -6,7 +6,7 @@ import {
 import { createClient } from '@/lib/supabase/server'
 import {
   getAdminClients, getAdminDossiers, getAdminAppointments, getAdminLeads, getAdminTrends,
-  getStorageStats, computeCommission, getCommissionHistory,
+  getStorageStats, computeCommission, getCommissionHistory, getTeamMembers,
 } from '@/lib/admin-db'
 import { getListings, formatPrice } from '@/lib/listings'
 import { DonutChart, TrendArea, StackedBars, SimpleLine } from '@/components/admin/charts'
@@ -56,6 +56,7 @@ export default async function AdminDashboardPage() {
     trends,
     storage,
     commissionHistory,
+    { items: team },
   ] = await Promise.all([
     getAdminClients(),
     getAdminDossiers(),
@@ -64,7 +65,27 @@ export default async function AdminDashboardPage() {
     getAdminTrends(),
     getStorageStats(),
     getCommissionHistory(12),
+    getTeamMembers(user?.id),
   ])
+
+  // Team-belasting: lopend + afgesloten dossiers per actieve werknemer
+  const teamLoad = team
+    .filter((m) => m.active)
+    .map((m) => {
+      const memberDossiers = allDossiers.filter((d) => d.assignedTo === m.id)
+      const lopend = memberDossiers.filter((d) => ['open', 'in_behandeling', 'onder_optie'].includes(d.status)).length
+      const afgesloten = memberDossiers.filter((d) => ['verkocht', 'verhuurd'].includes(d.status)).length
+      return {
+        x: m.firstName || m.email.split('@')[0],
+        Lopend: lopend,
+        Afgesloten: afgesloten,
+      }
+    })
+    .filter((row) => row.Lopend > 0 || row.Afgesloten > 0)
+    .sort((a, b) => (b.Lopend + b.Afgesloten) - (a.Lopend + a.Afgesloten))
+  const unassignedOpenCount = allDossiers
+    .filter((d) => !d.assignedTo && ['open', 'in_behandeling', 'onder_optie'].includes(d.status))
+    .length
 
 
   const openDossiers = allDossiers.filter((d) => ['open', 'in_behandeling', 'onder_optie'].includes(d.status))
@@ -234,6 +255,40 @@ export default async function AdminDashboardPage() {
             />
           ) : (
             <EmptyChart text="Nog geen gerealiseerde commissies. Sluit een dossier af als 'verkocht' of 'verhuurd' om hier verschijning te krijgen." />
+          )}
+        </ChartCard>
+      </section>
+
+      {/* === Team-belasting === */}
+      <section className="mb-10">
+        <ChartCard
+          title="Team-belasting"
+          subtitle={
+            unassignedOpenCount > 0
+              ? `Dossiers per werknemer (lopend = open / in behandeling / onder optie) — ${unassignedOpenCount} lopend dossier(s) nog niet toegewezen`
+              : 'Dossiers per werknemer (lopend = open / in behandeling / onder optie)'
+          }
+          actionHref="/admin/team"
+          actionLabel="Team-overzicht →"
+        >
+          {teamLoad.length > 0 ? (
+            <>
+              <StackedBars
+                data={teamLoad}
+                dataKeys={[
+                  { key: 'Lopend', label: 'Lopend', color: '#0b4f58' },
+                  { key: 'Afgesloten', label: 'Afgesloten', color: '#5a7a48' },
+                ]}
+                height={260}
+              />
+              {teamLoad.some((m) => m.Lopend >= 15) && (
+                <p className="mt-3 text-xs" style={{ color: '#92400e' }}>
+                  ⚠ Eén of meer werknemers hebben 15+ lopende dossiers — overweeg her te verdelen via Bulk-acties op /admin/dossiers.
+                </p>
+              )}
+            </>
+          ) : (
+            <EmptyChart text="Nog geen dossiers toegewezen aan werknemers." />
           )}
         </ChartCard>
       </section>

@@ -237,6 +237,11 @@ export default async function DossiersPage({
         </div>
       ) : (
         <DossierBulkGrid
+          assignOptions={team.map((m) => ({
+            id: m.id,
+            name: `${m.firstName} ${m.lastName}`.trim() || m.email,
+            active: m.active,
+          }))}
           dossiers={dossiers.map((d) => ({
             id: d.id,
             ref: d.ref,

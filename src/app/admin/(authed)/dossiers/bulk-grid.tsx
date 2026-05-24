@@ -3,10 +3,10 @@
 import Link from 'next/link'
 import { useState, useTransition } from 'react'
 import {
-  Hash, Check, Clock, X, Trash2, CheckSquare, Square, AlertCircle, CheckCircle2, UserCog,
+  Hash, Check, Clock, X, Trash2, CheckSquare, Square, AlertCircle, CheckCircle2, UserCog, ChevronDown,
 } from 'lucide-react'
 import {
-  bulkSetDossierStatusAction, bulkDeleteDossiersAction, type BulkStatus,
+  bulkSetDossierStatusAction, bulkDeleteDossiersAction, bulkAssignDossiersAction, type BulkStatus,
 } from './bulk-actions'
 
 const STATUS_LABEL: Record<string, string> = {
@@ -57,10 +57,19 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
-export function DossierBulkGrid({ dossiers }: { dossiers: DossierCard[] }) {
+export type BulkAssignOption = { id: string; name: string; active: boolean }
+
+export function DossierBulkGrid({
+  dossiers,
+  assignOptions = [],
+}: {
+  dossiers: DossierCard[]
+  assignOptions?: BulkAssignOption[]
+}) {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [pending, startTransition] = useTransition()
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null)
+  const [assignOpen, setAssignOpen] = useState(false)
 
   const allSelected = selected.size > 0 && selected.size === dossiers.length
 
@@ -90,6 +99,22 @@ export function DossierBulkGrid({ dossiers }: { dossiers: DossierCard[] }) {
         setSelected(new Set())
       } else {
         setResult({ ok: false, message: res.error ?? 'Bijwerken mislukt' })
+      }
+    })
+  }
+
+  function bulkAssign(assigneeId: string | null, assigneeName: string) {
+    if (selected.size === 0) return
+    setResult(null)
+    setAssignOpen(false)
+    const ids = Array.from(selected)
+    startTransition(async () => {
+      const res = await bulkAssignDossiersAction(ids, assigneeId)
+      if (res.ok) {
+        setResult({ ok: true, message: `${res.updated} dossier(s) toegewezen aan ${assigneeName}.` })
+        setSelected(new Set())
+      } else {
+        setResult({ ok: false, message: res.error ?? 'Toewijzen mislukt' })
       }
     })
   }
@@ -140,6 +165,51 @@ export function DossierBulkGrid({ dossiers }: { dossiers: DossierCard[] }) {
             <BulkBtn onClick={() => bulkStatus('verkocht')}       disabled={pending}>Verkocht</BulkBtn>
             <BulkBtn onClick={() => bulkStatus('verhuurd')}       disabled={pending}>Verhuurd</BulkBtn>
             <BulkBtn onClick={() => bulkStatus('geannuleerd')}    disabled={pending}>Geannuleerd</BulkBtn>
+            {assignOptions.length > 0 && (
+              <>
+                <span className="opacity-60 text-xs">|</span>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setAssignOpen((v) => !v)}
+                    disabled={pending}
+                    className="inline-flex items-center gap-1 px-2 py-1 text-xs disabled:opacity-50"
+                    style={{ background: 'rgba(255,255,255,0.15)', color: 'inherit' }}
+                  >
+                    <UserCog className="size-3" />
+                    Toewijzen
+                    <ChevronDown className={`size-3 transition-transform ${assignOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {assignOpen && (
+                    <ul
+                      className="absolute z-30 top-full left-0 mt-1 min-w-[180px] py-1"
+                      style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)', color: 'var(--color-ink)' }}
+                    >
+                      <li>
+                        <button
+                          type="button"
+                          onClick={() => bulkAssign(null, 'niemand')}
+                          className="w-full text-left px-3 py-1.5 text-xs hover:bg-[var(--color-paper-2)] italic text-[var(--color-mute)]"
+                        >
+                          — Niemand —
+                        </button>
+                      </li>
+                      {assignOptions.filter((o) => o.active).map((o) => (
+                        <li key={o.id}>
+                          <button
+                            type="button"
+                            onClick={() => bulkAssign(o.id, o.name)}
+                            className="w-full text-left px-3 py-1.5 text-xs hover:bg-[var(--color-paper-2)]"
+                          >
+                            {o.name}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </>
+            )}
             <span className="opacity-60 text-xs">|</span>
             <button
               type="button"

@@ -129,15 +129,18 @@ export default async function TeamPage() {
                 }}
               >
                 <Link
-                  href={`/admin/dossiers?assignee=${m.id}&status=open_lopend`}
+                  href={`/admin/team/${m.id}`}
                   className="inline-flex items-center gap-1.5 link-underline text-[var(--color-mute)] hover:text-[var(--color-ink)]"
                 >
                   <FolderOpen className="size-3" />
                   {open} lopend
                 </Link>
-                <span className="text-[var(--color-mute)]">
+                <Link
+                  href={`/admin/team/${m.id}`}
+                  className="link-underline text-[var(--color-mute)] hover:text-[var(--color-ink)]"
+                >
                   {closed} afgesloten
-                </span>
+                </Link>
               </div>
             </div>
           )
