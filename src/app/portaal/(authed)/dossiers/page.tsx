@@ -32,14 +32,14 @@ export default async function MyDossiersPage() {
     : { items: [], error: 'Niet ingelogd' }
 
   return (
-    <div className="container-px mx-auto max-w-screen-2xl py-10 md:py-14">
-      <section className="mb-10">
-        <p className="eyebrow mb-3">Klantenportaal</p>
-        <h1 className="text-3xl md:text-5xl flex items-center gap-4">
-          <FolderOpen className="size-8" style={{ color: 'var(--color-accent)' }} />
-          Mijn dossiers <span className="text-[var(--color-mute)] text-3xl">({dossiers.length})</span>
+    <div className="container-px mx-auto max-w-screen-2xl py-8 md:py-14">
+      <section className="mb-8 md:mb-10">
+        <p className="eyebrow mb-2 md:mb-3">Klantenportaal</p>
+        <h1 className="text-2xl sm:text-3xl md:text-5xl flex items-center gap-3">
+          <FolderOpen className="size-6 md:size-8 shrink-0" style={{ color: 'var(--color-accent)' }} />
+          Mijn dossiers <span className="text-[var(--color-mute)] text-xl md:text-3xl">({dossiers.length})</span>
         </h1>
-        <p className="mt-4 text-[var(--color-mute)] max-w-2xl">
+        <p className="mt-3 text-sm md:text-base text-[var(--color-mute)] max-w-2xl">
           Overzicht van uw lopende en afgesloten dossiers bij Vastgoed Browaeys.
         </p>
       </section>

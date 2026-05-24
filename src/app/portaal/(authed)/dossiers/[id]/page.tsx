@@ -1,9 +1,13 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, Hash, MapPin, FileText, Calendar, Clock, Check } from 'lucide-react'
+import {
+  ArrowLeft, Hash, MapPin, FileText, Calendar, Clock, Check, Mail, Phone, BadgeCheck,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import {
   getMyDossier, getSharedDocumentsForDossier, getAppointmentsForMyDossier, getStepsForMyDossier,
+  getDossierContactAgent,
 } from '@/lib/portal-db'
 import { formatPrice } from '@/lib/listings'
 import { PortalDocumentsList, type PortalDoc } from './portal-documents-list'
@@ -50,10 +54,11 @@ export default async function MyDossierDetailPage({
   const dossier = await getMyDossier(user.id, id)
   if (!dossier) notFound()
 
-  const [{ items: docs }, { items: appointments }, { items: steps }] = await Promise.all([
+  const [{ items: docs }, { items: appointments }, { items: steps }, contactAgent] = await Promise.all([
     getSharedDocumentsForDossier(user.id, id),
     getAppointmentsForMyDossier(user.id, id),
     getStepsForMyDossier(user.id, id),
+    getDossierContactAgent(user.id, id),
   ])
 
   const statusBadge = STATUS_BADGE[dossier.status] ?? { bg: 'rgba(115,115,115,0.18)', fg: '#525252' }
@@ -71,27 +76,27 @@ export default async function MyDossierDetailPage({
   }))
 
   return (
-    <div className="container-px mx-auto max-w-screen-2xl py-10 md:py-14">
+    <div className="container-px mx-auto max-w-screen-2xl py-8 md:py-14">
       <Link
         href="/portaal/dossiers"
-        className="inline-flex items-center gap-2 text-xs text-[var(--color-mute)] hover:text-[var(--color-ink)] mb-6"
+        className="inline-flex items-center gap-2 text-xs text-[var(--color-mute)] hover:text-[var(--color-ink)] mb-4 md:mb-6"
       >
         <ArrowLeft className="size-3.5" />
         Terug naar mijn dossiers
       </Link>
 
-      <section className="mb-8">
-        <p className="eyebrow mb-3">Mijn dossier</p>
+      <section className="mb-6 md:mb-8">
+        <p className="eyebrow mb-2 md:mb-3">Mijn dossier</p>
         <div className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.12em] text-[var(--color-mute)] mb-2">
           <Hash className="size-3" />
           {dossier.ref ?? dossier.id.slice(0, 8)}
           <span>·</span>
           <span>{TYPE_LABEL[dossier.type] ?? dossier.type}</span>
         </div>
-        <h1 className="text-3xl md:text-4xl flex items-center gap-3 flex-wrap" style={{ fontFamily: 'var(--font-display)' }}>
-          {dossier.propertyAddress || 'Zoekopdracht'}
+        <h1 className="text-xl sm:text-2xl md:text-4xl flex items-start gap-2 md:gap-3 flex-wrap" style={{ fontFamily: 'var(--font-display)' }}>
+          <span className="min-w-0">{dossier.propertyAddress || 'Zoekopdracht'}</span>
           <span
-            className="inline-block px-2 py-1 text-[0.6rem] uppercase tracking-[0.12em] font-medium"
+            className="inline-block px-2 py-1 text-[0.55rem] md:text-[0.6rem] uppercase tracking-[0.12em] font-medium shrink-0 self-start mt-1"
             style={{ background: statusBadge.bg, color: statusBadge.fg }}
           >
             {STATUS_LABEL[dossier.status] ?? dossier.status}
@@ -107,6 +112,62 @@ export default async function MyDossierDetailPage({
 
       <div className="grid lg:grid-cols-3 gap-6">
         <aside className="space-y-4">
+          {contactAgent && (
+            <section className="p-4"
+              style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
+              <h3 className="eyebrow text-[0.55rem] mb-3">Uw contactpersoon</h3>
+              <div className="flex items-start gap-3">
+                <div className="relative size-14 shrink-0 overflow-hidden"
+                  style={{ background: 'var(--color-paper-2)' }}>
+                  {contactAgent.photoUrl ? (
+                    <Image
+                      src={contactAgent.photoUrl}
+                      alt={contactAgent.name}
+                      fill
+                      sizes="56px"
+                      className="object-cover"
+                      style={{ objectPosition: 'center 20%' }}
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="absolute inset-0 grid place-items-center text-sm font-medium text-[var(--color-mute)]">
+                      {contactAgent.name.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium leading-tight">{contactAgent.name}</p>
+                  {contactAgent.title && (
+                    <p className="text-[0.7rem] italic text-[var(--color-mute)] leading-tight mt-0.5">
+                      {contactAgent.title}
+                    </p>
+                  )}
+                  {contactAgent.bivNumber && (
+                    <p className="text-[0.65rem] text-[var(--color-mute)] flex items-center gap-1 mt-1">
+                      <BadgeCheck className="size-2.5" />
+                      BIV {contactAgent.bivNumber}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="mt-3 pt-3 border-t space-y-1.5 text-xs"
+                style={{ borderColor: 'var(--color-line)' }}>
+                <a href={`mailto:${contactAgent.email}`}
+                  className="flex items-center gap-1.5 link-underline">
+                  <Mail className="size-3 shrink-0" style={{ color: 'var(--color-accent)' }} />
+                  <span className="truncate">{contactAgent.email}</span>
+                </a>
+                {contactAgent.phone && (
+                  <a href={`tel:${contactAgent.phone.replace(/\s|\/|\(0\)/g, '')}`}
+                    className="flex items-center gap-1.5 link-underline">
+                    <Phone className="size-3 shrink-0" style={{ color: 'var(--color-accent)' }} />
+                    {contactAgent.phone}
+                  </a>
+                )}
+              </div>
+            </section>
+          )}
+
           <Card title="Cijfers">
             <ul className="space-y-2 text-sm">
               {dossier.askingPrice && (
