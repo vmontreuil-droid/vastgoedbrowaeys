@@ -85,41 +85,72 @@ export type AdminAppointment = {
 
 type FetchResult<T> = { items: T[]; error?: string }
 
-/** Klanten: auth.users met role=client + profiles als fallback */
+function metadataToAdminClient(
+  id: string,
+  email: string,
+  createdAt: string,
+  md: Record<string, unknown> | null,
+): AdminClient {
+  return {
+    id,
+    email,
+    firstName: (md?.first_name as string) || '',
+    lastName: (md?.last_name as string) || '',
+    phone: (md?.phone as string) || null,
+    city: (md?.city as string) || null,
+    role: 'client' as const,
+    createdAt: createdAt || new Date().toISOString(),
+    kinds: (md?.kinds as string[]) || [],
+    status: ((md?.status as 'actief' | 'inactief' | 'lead') ?? 'actief'),
+    agent: (md?.agent as string) || null,
+    notes: (md?.notes as string) || null,
+    budget: (md?.budget as number) || null,
+    searchCity: (md?.search_city as string[]) || [],
+    searchType: (md?.search_type as string[]) || [],
+    hasAuthAccount: true,
+    newsletterOptOut: md?.newsletter_opt_out === true,
+  }
+}
+
+/** Klanten: probeert eerst list_client_users RPC (omzeilt kapotte
+ *  listUsers), valt terug op SDK listUsers, en vult aan met pure
+ *  profiles-rijen (klanten zonder auth-account). */
 export async function getAdminClients(): Promise<FetchResult<AdminClient>> {
   const admin = createAdminClient()
 
-  // 1) Haal auth.users — bevat user_metadata.role + naam
-  const { data: usersData, error: usersErr } = await admin.auth.admin.listUsers()
-  if (usersErr) {
-    return { items: [], error: `auth.listUsers: ${usersErr.message}` }
+  let clients: AdminClient[] = []
+  let listError: string | undefined
+
+  // 1) RPC-pad — werkt zelfs als Auth listUsers kapot is
+  type RpcRow = { id: string; email: string | null; raw_user_meta_data: Record<string, unknown> | null; created_at: string }
+  let rpcSuccess = false
+  try {
+    const { data: rpcRows, error: rpcErr } = await admin.rpc('list_client_users')
+    if (!rpcErr && Array.isArray(rpcRows)) {
+      clients = (rpcRows as RpcRow[])
+        .filter((r) => r.email)
+        .map((r) => metadataToAdminClient(r.id, r.email!, r.created_at, r.raw_user_meta_data))
+      rpcSuccess = true
+    } else if (rpcErr) {
+      listError = `list_client_users RPC: ${rpcErr.message}`
+    }
+  } catch (e) {
+    listError = `list_client_users RPC niet beschikbaar (${e instanceof Error ? e.message : String(e)}). Voer de SQL-migratie uit.`
   }
 
-  const clients: AdminClient[] = (usersData?.users ?? [])
-    .filter((u) => {
-      const r = u.user_metadata?.role
-      return r === 'client' || r === undefined // users zonder role tellen als client
-    })
-    .filter((u) => u.user_metadata?.role !== 'admin')
-    .map((u) => ({
-      id: u.id,
-      email: u.email ?? '',
-      firstName: (u.user_metadata?.first_name as string) || '',
-      lastName: (u.user_metadata?.last_name as string) || '',
-      phone: (u.user_metadata?.phone as string) || null,
-      city: (u.user_metadata?.city as string) || null,
-      role: 'client' as const,
-      createdAt: u.created_at || new Date().toISOString(),
-      kinds: (u.user_metadata?.kinds as string[]) || [],
-      status: ((u.user_metadata?.status as 'actief' | 'inactief' | 'lead') ?? 'actief'),
-      agent: (u.user_metadata?.agent as string) || null,
-      notes: (u.user_metadata?.notes as string) || null,
-      budget: (u.user_metadata?.budget as number) || null,
-      searchCity: (u.user_metadata?.search_city as string[]) || [],
-      searchType: (u.user_metadata?.search_type as string[]) || [],
-      hasAuthAccount: true,
-      newsletterOptOut: u.user_metadata?.newsletter_opt_out === true,
-    }))
+  // 2) SDK-pad als RPC niet werkt
+  if (!rpcSuccess) {
+    const { data: usersData, error: usersErr } = await admin.auth.admin.listUsers()
+    if (usersErr) {
+      // Beide paden faalden — geef tenminste de profiles-rijen terug
+      listError = listError ?? `auth.listUsers: ${usersErr.message}`
+    } else {
+      clients = (usersData?.users ?? [])
+        .filter((u) => u.user_metadata?.role !== 'admin' && u.email)
+        .map((u) => metadataToAdminClient(u.id, u.email!, u.created_at || '', u.user_metadata as Record<string, unknown>))
+      listError = undefined
+    }
+  }
 
   // 2) Pure profiles-rijen (zonder auth-account, gemaakt via 'klant zonder portaal')
   const knownIds = new Set(clients.map((c) => c.id))
@@ -157,7 +188,7 @@ export async function getAdminClients(): Promise<FetchResult<AdminClient>> {
   }
 
   clients.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  return { items: clients }
+  return { items: clients, error: clients.length === 0 ? listError : undefined }
 }
 
 export async function getAdminClient(id: string): Promise<AdminClient | null> {
