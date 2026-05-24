@@ -282,7 +282,7 @@ export default async function AdminDashboardPage() {
       </section>
 
       {/* === Commissie-pipeline + Storage === */}
-      <section className="grid lg:grid-cols-3 gap-6 mt-10">
+      <section className="grid lg:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
         <ChartCard
           title="Commissie-pijplijn"
           subtitle="Verwachte commissies (excl. BTW)"
@@ -346,6 +346,29 @@ export default async function AdminDashboardPage() {
               Supabase Free: 1 GB · Pro: 100 GB. Geen zorgen voorlopig.
             </p>
           </div>
+        </ChartCard>
+
+        <ChartCard
+          title="Documenten per type"
+          subtitle="Verdeling over alle dossiers"
+        >
+          {storage.documentsByCategory.length > 0 ? (
+            <DonutChart
+              data={storage.documentsByCategory.map((c, i) => ({
+                name: docCategoryLabel(c.category),
+                value: c.count,
+                color: ['#0b4f58','#c98c4f','#5a7a48','#a25b3a','#9b6e7b','#8c6b2e','#6e828b','#c4a37f','#737373'][i % 9],
+              }))}
+              total={storage.documentsCount}
+              centerLabel="documenten"
+            />
+          ) : (
+            <div className="h-56 flex items-center justify-center">
+              <p className="text-sm text-[var(--color-mute)] italic text-center max-w-xs">
+                Nog geen documenten geüpload bij dossiers.
+              </p>
+            </div>
+          )}
         </ChartCard>
 
         <ChartCard
@@ -424,6 +447,20 @@ function MiniBlock({ icon, value, label }: { icon: React.ReactNode; value: numbe
       <p className="text-[0.6rem] text-[var(--color-mute)] mt-1">{label}</p>
     </div>
   )
+}
+
+function docCategoryLabel(c: string): string {
+  return {
+    compromis: 'Compromis',
+    schatting: 'Schatting',
+    epc: 'EPC',
+    asbest: 'Asbest',
+    stedenbouw: 'Stedenbouw',
+    plaatsbeschrijving: 'Plaatsbeschr.',
+    huurcontract: 'Huurcontract',
+    foto: "Foto's",
+    overig: 'Overig',
+  }[c] ?? c
 }
 
 function formatBytes(bytes: number): string {

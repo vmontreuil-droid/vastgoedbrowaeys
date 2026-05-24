@@ -588,8 +588,10 @@ export type AdminMetrics = {
 export type StorageStats = {
   documentsCount: number
   documentsBytes: number
+  documentsByCategory: Array<{ category: string; count: number; bytes: number }>
   photosCount: number
   photosBytes: number
+  photosByListingStatus: Array<{ status: string; count: number }>
   listingsWithPhotos: number
   totalBytes: number
 }
@@ -604,25 +606,42 @@ export async function getStorageStats(): Promise<StorageStats> {
   // Documenten — uit DB-rijen (snelste, size_bytes staat erin)
   let documentsCount = 0
   let documentsBytes = 0
-  const { data: docs } = await admin.from('documents').select('size_bytes')
+  const byCategory = new Map<string, { count: number; bytes: number }>()
+  const { data: docs } = await admin.from('documents').select('size_bytes, category')
   if (docs) {
     documentsCount = docs.length
-    documentsBytes = (docs as Array<{ size_bytes: number | null }>)
-      .reduce((sum, r) => sum + (r.size_bytes ?? 0), 0)
+    for (const r of (docs as Array<{ size_bytes: number | null; category: string | null }>)) {
+      documentsBytes += r.size_bytes ?? 0
+      const cat = r.category ?? 'overig'
+      const cur = byCategory.get(cat) ?? { count: 0, bytes: 0 }
+      cur.count += 1
+      cur.bytes += r.size_bytes ?? 0
+      byCategory.set(cat, cur)
+    }
   }
+  const documentsByCategory = Array.from(byCategory.entries())
+    .map(([category, v]) => ({ category, count: v.count, bytes: v.bytes }))
+    .sort((a, b) => b.count - a.count)
 
   // Foto's — uit listings.gallery counts + storage listing voor sizes
   let photosCount = 0
   let listingsWithPhotos = 0
   let photosBytes = 0
-  const { data: listings } = await admin.from('listings').select('gallery')
+  const photosByStatusMap = new Map<string, number>()
+  const { data: listings } = await admin.from('listings').select('gallery, status')
   if (listings) {
-    for (const l of (listings as Array<{ gallery: string[] | null }>)) {
+    for (const l of (listings as Array<{ gallery: string[] | null; status: string }>)) {
       const g = l.gallery ?? []
       if (g.length > 0) listingsWithPhotos++
       photosCount += g.length
+      if (g.length > 0) {
+        photosByStatusMap.set(l.status, (photosByStatusMap.get(l.status) ?? 0) + g.length)
+      }
     }
   }
+  const photosByListingStatus = Array.from(photosByStatusMap.entries())
+    .map(([status, count]) => ({ status, count }))
+    .sort((a, b) => b.count - a.count)
 
   // Foto-bytes: list bucket via Storage API (één call per top-level folder)
   // Optioneel — kan duur zijn bij veel folders; lazy-evaluate door enkel root te listen
@@ -648,8 +667,10 @@ export async function getStorageStats(): Promise<StorageStats> {
   return {
     documentsCount,
     documentsBytes,
+    documentsByCategory,
     photosCount,
     photosBytes,
+    photosByListingStatus,
     listingsWithPhotos,
     totalBytes: documentsBytes + photosBytes,
   }

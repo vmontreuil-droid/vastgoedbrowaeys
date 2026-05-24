@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { FolderOpen, Plus, Hash, Check, Clock, X, AlertCircle } from 'lucide-react'
+import { FolderOpen, Plus, Hash, Check, Clock, X, AlertCircle, Download } from 'lucide-react'
 import { getAdminDossiers } from '@/lib/admin-db'
 import { formatPrice } from '@/lib/listings'
 import { DonutChart } from '@/components/admin/charts'
@@ -60,14 +60,25 @@ export default async function DossiersPage({
             Dossiers <span className="text-[var(--color-mute)] text-2xl">({allDossiers.length})</span>
           </h1>
         </div>
-        <Link
-          href="/admin/dossiers/nieuw"
-          className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-medium uppercase tracking-[0.1em]"
-          style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
-        >
-          <Plus className="size-3.5" />
-          Nieuw dossier
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <a
+            href={`/admin/dossiers/export?status=${encodeURIComponent(statusFilter)}`}
+            className="inline-flex items-center gap-2 px-3 py-2.5 text-xs"
+            style={{ border: '1px solid var(--color-line)' }}
+            title="Download alle gefilterde dossiers met commissies als CSV (Excel-compatibel)"
+          >
+            <Download className="size-3.5" />
+            Export CSV
+          </a>
+          <Link
+            href="/admin/dossiers/nieuw"
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-medium uppercase tracking-[0.1em]"
+            style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
+          >
+            <Plus className="size-3.5" />
+            Nieuw dossier
+          </Link>
+        </div>
       </section>
 
       {error && (

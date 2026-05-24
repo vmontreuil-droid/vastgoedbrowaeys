@@ -18,6 +18,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Bell,
+  Send,
 } from 'lucide-react'
 import { BrandLogo } from './brand-logo'
 import { signOutAction } from '@/lib/auth/actions'
@@ -44,6 +45,7 @@ const NAV: Array<{
   { href: '/admin/afspraken',    label: 'Afspraken',    icon: Calendar,       badgeKey: 'afspraken' },
   { href: '/admin/berichten',    label: 'Berichten',    icon: MessageSquare,  badgeKey: 'berichten' },
   { href: '/admin/notificaties', label: 'Meldingen',    icon: Bell,           badgeKey: 'notificaties' },
+  { href: '/admin/nieuwsbrief',  label: 'Nieuwsbrief',  icon: Send },
   { href: '/admin/instellingen', label: 'Instellingen', icon: Settings },
 ]
 
