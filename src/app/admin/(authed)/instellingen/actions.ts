@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireZaakvoerder, getEffectiveTeamRole } from '@/lib/permissions'
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -19,9 +20,9 @@ export type ActionResult =
 
 export async function addTeamMemberAction(formData: FormData): Promise<ActionResult> {
   try {
-    await requireAdmin()
+    await requireZaakvoerder()
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : 'Geen toegang' }
+    return { ok: false, error: e instanceof Error ? e.message : 'Alleen de Zaakvoerder kan werknemers toevoegen.' }
   }
 
   const email = String(formData.get('email') ?? '').trim().toLowerCase()
@@ -72,10 +73,18 @@ export async function updateTeamMemberAction(
   userId: string,
   formData: FormData,
 ): Promise<ActionResult> {
+  let me
   try {
-    await requireAdmin()
+    me = await requireAdmin()
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : 'Geen toegang' }
+  }
+  // Bewerken van anderen vereist Zaakvoerder; bewerken van zichzelf mag altijd
+  if (me.id !== userId) {
+    const teamRole = getEffectiveTeamRole(me.user_metadata as Record<string, unknown>, me.email ?? null)
+    if (teamRole !== 'zaakvoerder') {
+      return { ok: false, error: 'Alleen de Zaakvoerder kan collega-gegevens bewerken.' }
+    }
   }
 
   const firstName = String(formData.get('first_name') ?? '').trim()
@@ -131,9 +140,9 @@ export async function setActiveAction(
 ): Promise<ActionResult> {
   let currentUser
   try {
-    currentUser = await requireAdmin()
+    currentUser = await requireZaakvoerder()
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : 'Geen toegang' }
+    return { ok: false, error: e instanceof Error ? e.message : 'Alleen de Zaakvoerder kan accounts (de)activeren.' }
   }
 
   if (currentUser.id === userId && !active) {
@@ -210,9 +219,9 @@ export async function regenerateIcalTokenAction(): Promise<IcalTokenResult> {
 export async function deleteTeamMemberAction(userId: string): Promise<ActionResult> {
   let currentUser
   try {
-    currentUser = await requireAdmin()
+    currentUser = await requireZaakvoerder()
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : 'Geen toegang' }
+    return { ok: false, error: e instanceof Error ? e.message : 'Alleen de Zaakvoerder kan werknemers verwijderen.' }
   }
 
   if (currentUser.id === userId) {

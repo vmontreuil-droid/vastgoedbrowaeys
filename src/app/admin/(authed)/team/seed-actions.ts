@@ -43,6 +43,16 @@ const TEAM: SeedEntry[] = [
     skipCreate: true,
   },
   {
+    email: 'info@studio-vm.be',
+    firstName: 'Vincent',
+    lastName: 'Montreuil',
+    title: 'Webbeheerder',
+    phone: '+32 477 99 56 51',
+    photoFile: 'public/team/vincent-montreuil.jpg',
+    photoMime: 'image/jpeg',
+    skipCreate: true,
+  },
+  {
     email: 'kimberly@vastgoedbrowaeys.be',
     firstName: 'Kimberly',
     lastName: 'Van Gansbeke',

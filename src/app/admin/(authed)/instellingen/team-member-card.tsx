@@ -46,9 +46,11 @@ function getInitials(firstName: string, lastName: string, email: string): string
 export function TeamMemberCard({
   member,
   isSelf,
+  viewerIsZaakvoerder = false,
 }: {
   member: TeamMember
   isSelf: boolean
+  viewerIsZaakvoerder?: boolean
 }) {
   const [mode, setMode] = useState<'view' | 'edit' | 'confirm-delete'>('view')
   const [showPassword, setShowPassword] = useState(false)
@@ -420,18 +422,22 @@ export function TeamMemberCard({
           className="flex items-center justify-between gap-2 pt-3 mt-auto border-t"
           style={{ borderColor: 'var(--color-line)' }}
         >
-          <button
-            type="button"
-            onClick={() => setMode('edit')}
-            className="inline-flex items-center gap-1.5 text-xs text-[var(--color-mute)] hover:text-[var(--color-ink)] transition-colors"
-          >
-            <Pencil className="size-3.5" />
-            Bewerken
-          </button>
+          {(isSelf || viewerIsZaakvoerder) ? (
+            <button
+              type="button"
+              onClick={() => setMode('edit')}
+              className="inline-flex items-center gap-1.5 text-xs text-[var(--color-mute)] hover:text-[var(--color-ink)] transition-colors"
+            >
+              <Pencil className="size-3.5" />
+              Bewerken
+            </button>
+          ) : (
+            <span />
+          )}
 
           {isSelf ? (
             <span className="text-xs text-[var(--color-mute)] italic">jij</span>
-          ) : (
+          ) : viewerIsZaakvoerder ? (
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -452,7 +458,7 @@ export function TeamMemberCard({
                 Verwijderen
               </button>
             </div>
-          )}
+          ) : null}
         </div>
       )}
       </div>

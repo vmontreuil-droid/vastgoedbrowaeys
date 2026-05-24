@@ -4,6 +4,7 @@
 
 import 'server-only'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getEffectiveTeamRole } from '@/lib/permissions'
 
 export type AdminClient = {
   id: string
@@ -456,6 +457,7 @@ export type TeamMember = {
   phone?: string
   bivNumber?: string
   photoUrl?: string
+  teamRole: 'zaakvoerder' | 'makelaar' | 'assistent'
   active: boolean
 }
 
@@ -473,6 +475,7 @@ function metadataToTeamMember(
     phone: (md?.phone as string | undefined) || undefined,
     bivNumber: (md?.biv_number as string | undefined) || undefined,
     photoUrl: (md?.photo_url as string | undefined) || undefined,
+    teamRole: getEffectiveTeamRole(md, email),
     active: md?.active !== false,
   }
 }

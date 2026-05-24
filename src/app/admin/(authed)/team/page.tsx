@@ -1,10 +1,12 @@
 import Link from 'next/link'
-import { UserCog, Crown, FolderOpen, Award, AlertCircle } from 'lucide-react'
+import { UserCog, FolderOpen, Award, AlertCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { getAdminDossiers, getTeamMembers } from '@/lib/admin-db'
+import { getEffectiveTeamRole } from '@/lib/permissions'
 import { TeamMemberCard } from '../instellingen/team-member-card'
 import { AddTeamMemberForm } from '../instellingen/add-team-member-form'
 import { SeedTeamButton } from './seed-button'
+import { RoleBadge } from './role-badge'
 
 export const metadata = {
   title: 'Admin · Team',
@@ -18,6 +20,11 @@ export default async function TeamPage() {
     getTeamMembers(currentUser?.id),
     getAdminDossiers(),
   ])
+
+  const currentRole = currentUser
+    ? getEffectiveTeamRole(currentUser.user_metadata as Record<string, unknown>, currentUser.email ?? null)
+    : 'assistent'
+  const isZaakvoerder = currentRole === 'zaakvoerder'
 
   const openDossiersByMember = new Map<string, number>()
   const closedDossiersByMember = new Map<string, number>()
@@ -100,22 +107,15 @@ export default async function TeamPage() {
         {team.map((m) => {
           const open = openDossiersByMember.get(m.id) ?? 0
           const closed = closedDossiersByMember.get(m.id) ?? 0
-          const isOwner = m.email === 'stephanie@vastgoedbrowaeys.be'
+          const canEditRole = isZaakvoerder && m.id !== currentUser?.id
           return (
             <div key={m.id} className="relative flex flex-col h-full">
-              {isOwner && (
-                <span
-                  className="absolute -top-2 left-3 inline-flex items-center gap-1 px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.12em] font-medium z-10"
-                  style={{ background: 'var(--color-accent)', color: '#fff' }}
-                >
-                  <Crown className="size-2.5" />
-                  Zaakvoerder
-                </span>
-              )}
+              <RoleBadge userId={m.id} initialRole={m.teamRole} canEdit={canEditRole} />
               <div className="flex-1 flex flex-col">
                 <TeamMemberCard
                   member={m}
                   isSelf={currentUser?.id === m.id}
+                  viewerIsZaakvoerder={isZaakvoerder}
                 />
               </div>
               <div
@@ -144,7 +144,13 @@ export default async function TeamPage() {
         })}
       </section>
 
-      <AddTeamMemberForm />
+      {isZaakvoerder ? (
+        <AddTeamMemberForm />
+      ) : (
+        <p className="text-xs text-[var(--color-mute)] italic">
+          Alleen de Zaakvoerder kan werknemers toevoegen of beheren.
+        </p>
+      )}
     </div>
   )
 }
