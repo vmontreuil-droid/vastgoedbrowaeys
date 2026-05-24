@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { UserCog, FolderOpen, Award, AlertCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { getAdminDossiers, getTeamMembers } from '@/lib/admin-db'
-import { getEffectiveTeamRole } from '@/lib/permissions'
+import { getEffectiveTeamRole, hasFullAccess } from '@/lib/permissions'
 import { TeamMemberCard } from '../instellingen/team-member-card'
 import { AddTeamMemberForm } from '../instellingen/add-team-member-form'
 import { SeedTeamButton } from './seed-button'
@@ -24,7 +24,7 @@ export default async function TeamPage() {
   const currentRole = currentUser
     ? getEffectiveTeamRole(currentUser.user_metadata as Record<string, unknown>, currentUser.email ?? null)
     : 'assistent'
-  const isZaakvoerder = currentRole === 'zaakvoerder'
+  const canManageTeam = hasFullAccess(currentRole)
 
   const openDossiersByMember = new Map<string, number>()
   const closedDossiersByMember = new Map<string, number>()
@@ -107,7 +107,7 @@ export default async function TeamPage() {
         {team.map((m) => {
           const open = openDossiersByMember.get(m.id) ?? 0
           const closed = closedDossiersByMember.get(m.id) ?? 0
-          const canEditRole = isZaakvoerder && m.id !== currentUser?.id
+          const canEditRole = canManageTeam && m.id !== currentUser?.id
           return (
             <div key={m.id} className="relative flex flex-col h-full">
               <RoleBadge userId={m.id} initialRole={m.teamRole} canEdit={canEditRole} />
@@ -115,7 +115,7 @@ export default async function TeamPage() {
                 <TeamMemberCard
                   member={m}
                   isSelf={currentUser?.id === m.id}
-                  viewerIsZaakvoerder={isZaakvoerder}
+                  viewerCanManage={canManageTeam}
                 />
               </div>
               <div
@@ -144,7 +144,7 @@ export default async function TeamPage() {
         })}
       </section>
 
-      {isZaakvoerder ? (
+      {canManageTeam ? (
         <AddTeamMemberForm />
       ) : (
         <p className="text-xs text-[var(--color-mute)] italic">

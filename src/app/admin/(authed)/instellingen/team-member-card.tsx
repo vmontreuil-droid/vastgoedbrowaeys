@@ -46,11 +46,11 @@ function getInitials(firstName: string, lastName: string, email: string): string
 export function TeamMemberCard({
   member,
   isSelf,
-  viewerIsZaakvoerder = false,
+  viewerCanManage = false,
 }: {
   member: TeamMember
   isSelf: boolean
-  viewerIsZaakvoerder?: boolean
+  viewerCanManage?: boolean
 }) {
   const [mode, setMode] = useState<'view' | 'edit' | 'confirm-delete'>('view')
   const [showPassword, setShowPassword] = useState(false)
@@ -422,7 +422,7 @@ export function TeamMemberCard({
           className="flex items-center justify-between gap-2 pt-3 mt-auto border-t"
           style={{ borderColor: 'var(--color-line)' }}
         >
-          {(isSelf || viewerIsZaakvoerder) ? (
+          {(isSelf || viewerCanManage) ? (
             <button
               type="button"
               onClick={() => setMode('edit')}
@@ -437,7 +437,7 @@ export function TeamMemberCard({
 
           {isSelf ? (
             <span className="text-xs text-[var(--color-mute)] italic">jij</span>
-          ) : viewerIsZaakvoerder ? (
+          ) : viewerCanManage ? (
             <div className="flex items-center gap-3">
               <button
                 type="button"

@@ -1,25 +1,30 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Crown, BadgeCheck, User, ChevronDown, AlertCircle } from 'lucide-react'
+import { Crown, BadgeCheck, User, Wrench, ChevronDown, AlertCircle } from 'lucide-react'
 import { setTeamRoleAction } from './role-actions'
 
-type TeamRole = 'zaakvoerder' | 'makelaar' | 'assistent'
+type TeamRole = 'zaakvoerder' | 'webbeheerder' | 'makelaar' | 'assistent'
 
 const LABEL: Record<TeamRole, string> = {
-  zaakvoerder: 'Zaakvoerder',
-  makelaar: 'Makelaar',
-  assistent: 'Assistent',
+  zaakvoerder:  'Zaakvoerder',
+  webbeheerder: 'Webbeheerder',
+  makelaar:     'Makelaar',
+  assistent:    'Assistent',
 }
 
 const BG: Record<TeamRole, string> = {
-  zaakvoerder: '#0b4f58',
-  makelaar:    '#a25b3a',
-  assistent:   '#5a7a48',
+  zaakvoerder:  '#0b4f58',
+  webbeheerder: '#525252',
+  makelaar:     '#a25b3a',
+  assistent:    '#5a7a48',
 }
+
+const ROLE_ORDER: TeamRole[] = ['zaakvoerder', 'webbeheerder', 'makelaar', 'assistent']
 
 function IconFor({ role }: { role: TeamRole }) {
   if (role === 'zaakvoerder') return <Crown className="size-2.5" />
+  if (role === 'webbeheerder') return <Wrench className="size-2.5" />
   if (role === 'makelaar') return <BadgeCheck className="size-2.5" />
   return <User className="size-2.5" />
 }
@@ -91,7 +96,7 @@ export function RoleBadge({
           className="absolute top-full left-0 mt-1 min-w-[150px] py-1 z-30"
           style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
         >
-          {(['zaakvoerder', 'makelaar', 'assistent'] as TeamRole[]).map((r) => (
+          {ROLE_ORDER.map((r) => (
             <li key={r}>
               <button
                 type="button"

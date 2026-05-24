@@ -457,7 +457,7 @@ export type TeamMember = {
   phone?: string
   bivNumber?: string
   photoUrl?: string
-  teamRole: 'zaakvoerder' | 'makelaar' | 'assistent'
+  teamRole: 'zaakvoerder' | 'webbeheerder' | 'makelaar' | 'assistent'
   active: boolean
 }
 

@@ -2,20 +2,29 @@ import 'server-only'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-export type TeamRole = 'zaakvoerder' | 'makelaar' | 'assistent'
+export type TeamRole = 'zaakvoerder' | 'webbeheerder' | 'makelaar' | 'assistent'
 
-export const TEAM_ROLES: TeamRole[] = ['zaakvoerder', 'makelaar', 'assistent']
+export const TEAM_ROLES: TeamRole[] = ['zaakvoerder', 'webbeheerder', 'makelaar', 'assistent']
 
 export const TEAM_ROLE_LABEL: Record<TeamRole, string> = {
-  zaakvoerder: 'Zaakvoerder',
-  makelaar: 'Makelaar',
-  assistent: 'Assistent',
+  zaakvoerder:  'Zaakvoerder',
+  webbeheerder: 'Webbeheerder',
+  makelaar:     'Makelaar',
+  assistent:    'Assistent',
 }
 
 export const TEAM_ROLE_COLOR: Record<TeamRole, string> = {
-  zaakvoerder: '#0b4f58',
-  makelaar:    '#a25b3a',
-  assistent:   '#5a7a48',
+  zaakvoerder:  '#0b4f58',
+  webbeheerder: '#525252',
+  makelaar:     '#a25b3a',
+  assistent:    '#5a7a48',
+}
+
+/** Rollen die het team mogen beheren (werknemers toevoegen/verwijderen, rollen wijzigen). */
+const FULL_ACCESS_ROLES: TeamRole[] = ['zaakvoerder', 'webbeheerder']
+
+export function hasFullAccess(role: TeamRole): boolean {
+  return FULL_ACCESS_ROLES.includes(role)
 }
 
 /**
@@ -34,7 +43,7 @@ export function getEffectiveTeamRole(
     return explicit as TeamRole
   }
   if (email === 'stephanie@vastgoedbrowaeys.be') return 'zaakvoerder'
-  if (email === 'info@studio-vm.be') return 'zaakvoerder'
+  if (email === 'info@studio-vm.be') return 'webbeheerder'
   return 'assistent'
 }
 
@@ -49,14 +58,17 @@ export async function getCurrentTeamRole() {
   return { user, teamRole }
 }
 
-/** Guard: alleen Zaakvoerder-rol mag verder. Returnt volledige Supabase user. */
-export async function requireZaakvoerder() {
+/** Guard: alleen Zaakvoerder/Webbeheerder-rol mag verder. Returnt volledige Supabase user. */
+export async function requireFullAccess() {
   const { user, teamRole } = await getCurrentTeamRole()
-  if (teamRole !== 'zaakvoerder') {
-    throw new Error('Alleen de zaakvoerder kan deze actie uitvoeren.')
+  if (!hasFullAccess(teamRole)) {
+    throw new Error('Alleen de Zaakvoerder of Webbeheerder kan deze actie uitvoeren.')
   }
   return user
 }
+
+/** Backwards-compat alias — gebruik liever requireFullAccess. */
+export const requireZaakvoerder = requireFullAccess
 
 /**
  * Tel het aantal Zaakvoerders. Voorkomt dat de laatste Zaakvoerder
