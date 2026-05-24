@@ -5,9 +5,10 @@ import {
   FolderOpen, ExternalLink,
 } from 'lucide-react'
 import {
-  getAdminDossier, getAdminAppointments, getAdminClient,
+  getAdminDossier, getAdminAppointments, getAdminClient, getAdminDocumentsForDossier,
 } from '@/lib/admin-db'
 import { formatPrice } from '@/lib/listings'
+import { DocumentsPanel, type DocumentRow } from './documents-panel'
 
 export const metadata = {
   title: 'Admin · Dossier',
@@ -63,13 +64,24 @@ export default async function DossierDetailPage({
   const dossier = await getAdminDossier(id)
   if (!dossier) notFound()
 
-  const [client, { items: allAppointments }] = await Promise.all([
+  const [client, { items: allAppointments }, { items: documents }] = await Promise.all([
     getAdminClient(dossier.clientId),
     getAdminAppointments(),
+    getAdminDocumentsForDossier(dossier.id),
   ])
   const appointments = allAppointments
     .filter((a) => a.dossierId === dossier.id)
     .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime())
+
+  const documentRows: DocumentRow[] = documents.map((d) => ({
+    id: d.id,
+    name: d.name,
+    category: d.category,
+    storagePath: d.storagePath,
+    sizeBytes: d.sizeBytes,
+    mimeType: d.mimeType,
+    uploadedAt: d.createdAt,
+  }))
 
   const statusBadge = STATUS_BADGE[dossier.status] ?? { bg: 'rgba(115,115,115,0.18)', fg: '#525252' }
   const steps = defaultSteps(dossier.type)
@@ -165,7 +177,7 @@ export default async function DossierDetailPage({
               </li>
               <li className="flex items-center justify-between">
                 <span className="text-[var(--color-mute)] text-xs">Documenten</span>
-                <span>{dossier.documentsCount}</span>
+                <span>{documents.length}</span>
               </li>
             </ul>
           </Card>
@@ -250,6 +262,8 @@ export default async function DossierDetailPage({
               </ul>
             )}
           </section>
+
+          <DocumentsPanel dossierId={dossier.id} initialDocuments={documentRows} />
 
           {dossier.notes && (
             <section>

@@ -256,6 +256,45 @@ export async function getAdminAppointment(id: string): Promise<AdminAppointment 
   return list.items.find((a) => a.id === id) ?? null
 }
 
+export type AdminDocument = {
+  id: string
+  dossierId: string
+  name: string
+  category: 'compromis' | 'schatting' | 'epc' | 'asbest' | 'stedenbouw' | 'plaatsbeschrijving' | 'huurcontract' | 'foto' | 'overig'
+  storagePath: string
+  sizeBytes: number | null
+  mimeType: string | null
+  uploadedBy: string | null
+  createdAt: string
+}
+
+export async function getAdminDocumentsForDossier(dossierId: string): Promise<FetchResult<AdminDocument>> {
+  const admin = createAdminClient()
+  const { data, error } = await admin
+    .from('documents')
+    .select('*')
+    .eq('dossier_id', dossierId)
+    .order('created_at', { ascending: false })
+  if (error) return { items: [], error: error.message }
+
+  const items: AdminDocument[] = ((data ?? []) as Array<{
+    id: string; dossier_id: string; name: string; category: AdminDocument['category'];
+    storage_path: string; size_bytes: number | null; mime_type: string | null;
+    uploaded_by: string | null; created_at: string;
+  }>).map((r) => ({
+    id: r.id,
+    dossierId: r.dossier_id,
+    name: r.name,
+    category: r.category,
+    storagePath: r.storage_path,
+    sizeBytes: r.size_bytes,
+    mimeType: r.mime_type,
+    uploadedBy: r.uploaded_by,
+    createdAt: r.created_at,
+  }))
+  return { items }
+}
+
 export type AdminLead = {
   id: string
   fromName: string
