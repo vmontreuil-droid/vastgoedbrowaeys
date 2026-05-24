@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Users, Plus, Search, Filter, Mail, Phone, MapPin, ArrowRight, AlertCircle, Download } from 'lucide-react'
+import { OptOutToggle } from './opt-out-toggle'
 import { getAdminClients, getAdminDossiers } from '@/lib/admin-db'
 import { DonutChart } from '@/components/admin/charts'
 
@@ -162,6 +163,7 @@ export default async function ClientsPage({
                 <th className="text-left px-4 py-3 eyebrow text-[0.55rem] hidden md:table-cell">Stad</th>
                 <th className="text-left px-4 py-3 eyebrow text-[0.55rem] hidden md:table-cell">Aangemaakt</th>
                 <th className="text-right px-4 py-3 eyebrow text-[0.55rem]">Dossiers</th>
+                <th className="text-center px-2 eyebrow text-[0.55rem]" title="Nieuwsbrief opt-in/opt-out">📬</th>
                 <th></th>
               </tr>
             </thead>
@@ -219,6 +221,9 @@ export default async function ClientsPage({
                         <span className="text-[var(--color-mute)] text-xs">—</span>
                       )}
                     </td>
+                    <td className="px-2 text-center">
+                      <OptOutToggle userId={c.id} initialOptOut={c.newsletterOptOut} />
+                    </td>
                     <td className="pr-4">
                       <Link href={`/admin/klanten/${c.id}`}>
                         <ArrowRight className="size-4 text-[var(--color-mute)] hover:text-[var(--color-ink)]" />
@@ -229,7 +234,7 @@ export default async function ClientsPage({
               })}
               {clients.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-sm text-[var(--color-mute)]">
+                  <td colSpan={9} className="px-4 py-10 text-center text-sm text-[var(--color-mute)]">
                     {allClients.length === 0
                       ? 'Nog geen klanten. Maak er een aan via "+ Nieuwe klant".'
                       : 'Geen klanten gevonden voor deze filters.'}

@@ -23,6 +23,7 @@ export type AdminClient = {
   searchCity: string[]
   searchType: string[]
   hasAuthAccount: boolean
+  newsletterOptOut: boolean
 }
 
 export type AdminDossier = {
@@ -113,6 +114,7 @@ export async function getAdminClients(): Promise<FetchResult<AdminClient>> {
       searchCity: (u.user_metadata?.search_city as string[]) || [],
       searchType: (u.user_metadata?.search_type as string[]) || [],
       hasAuthAccount: true,
+      newsletterOptOut: u.user_metadata?.newsletter_opt_out === true,
     }))
 
   // 2) Pure profiles-rijen (zonder auth-account, gemaakt via 'klant zonder portaal')
@@ -145,6 +147,7 @@ export async function getAdminClients(): Promise<FetchResult<AdminClient>> {
         searchCity: [],
         searchType: [],
         hasAuthAccount: false,
+        newsletterOptOut: false,
       })
     }
   }

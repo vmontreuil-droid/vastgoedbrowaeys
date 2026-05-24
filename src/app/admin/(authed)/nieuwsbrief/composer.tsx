@@ -12,6 +12,7 @@ export type Audience = {
   kinds: string[]
   status: 'actief' | 'inactief' | 'lead'
   city: string | null
+  unsubscribeUrl: string
 }
 
 const KIND_OPTIONS = [
@@ -35,8 +36,9 @@ export function NewsletterComposer({ audiences }: { audiences: Audience[] }) {
   const [cityFilter, setCityFilter] = useState('')
   const [subject, setSubject] = useState('Nieuws van Vastgoed Browaeys')
   const [body, setBody] = useState(
-    `Beste,\n\n[Schrijf hier je bericht.]\n\nVriendelijke groeten,\nVastgoed Browaeys\n055 / 59 50 10\ninfo@vastgoedbrowaeys.be`,
+    `Beste,\n\n[Schrijf hier je bericht.]\n\nVriendelijke groeten,\nVastgoed Browaeys\n055 / 59 50 10\ninfo@vastgoedbrowaeys.be\n\n—\nMaakt u liever geen deel meer uit van onze mailing? Reageer op deze e-mail met "uitschrijven", of bezoek https://vastgoedbrowaeys.vercel.app/uitschrijven`,
   )
+  const [personalisedSend, setPersonalisedSend] = useState(false)
   const [copied, setCopied] = useState<string | null>(null)
 
   // Filter audience
@@ -81,6 +83,16 @@ export function NewsletterComposer({ audiences }: { audiences: Audience[] }) {
     window.location.href = href
   }
 
+  function openMailClientPersonalised(index: number) {
+    const recipient = matched[index]
+    if (!recipient) return
+    const personalisedBody = body
+      .replace('Beste,', `Beste ${recipient.name},`)
+      .replace('https://vastgoedbrowaeys.vercel.app/uitschrijven', recipient.unsubscribeUrl)
+    const href = `mailto:${encodeURIComponent(recipient.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(personalisedBody)}`
+    window.location.href = href
+  }
+
   async function copyAddresses() {
     try {
       await navigator.clipboard.writeText(matched.map((a) => a.email).join(', '))
@@ -90,8 +102,8 @@ export function NewsletterComposer({ audiences }: { audiences: Audience[] }) {
   }
 
   function downloadCsv() {
-    const header = ['Naam', 'E-mail', 'Stad', 'Status', 'Types']
-    const rows = matched.map((a) => [a.name, a.email, a.city ?? '', a.status, a.kinds.join(', ')])
+    const header = ['Naam', 'E-mail', 'Stad', 'Status', 'Types', 'Persoonlijke uitschrijflink']
+    const rows = matched.map((a) => [a.name, a.email, a.city ?? '', a.status, a.kinds.join(', '), a.unsubscribeUrl])
     const escape = (v: string) =>
       v.includes(';') || v.includes('"') || v.includes('\n')
         ? `"${v.replace(/"/g, '""')}"`

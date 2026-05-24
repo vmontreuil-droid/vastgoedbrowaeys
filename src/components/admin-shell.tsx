@@ -20,6 +20,7 @@ import {
   Bell,
   Send,
   Search,
+  HelpCircle,
 } from 'lucide-react'
 import { BrandLogo } from './brand-logo'
 import { signOutAction } from '@/lib/auth/actions'
@@ -49,6 +50,7 @@ const NAV: Array<{
   { href: '/admin/nieuwsbrief',  label: 'Nieuwsbrief',  icon: Send },
   { href: '/admin/zoeken',       label: 'Zoeken',       icon: Search },
   { href: '/admin/instellingen', label: 'Instellingen', icon: Settings },
+  { href: '/admin/help',         label: 'Handleiding',  icon: HelpCircle },
 ]
 
 const STORAGE_KEY = 'vb-admin-sidebar-collapsed'
