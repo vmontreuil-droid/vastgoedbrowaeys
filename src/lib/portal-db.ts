@@ -134,6 +134,45 @@ export type PortalAppointment = {
   status: 'planned' | 'confirmed' | 'completed' | 'cancelled'
 }
 
+export type PortalStep = {
+  id: string
+  label: string
+  status: 'pending' | 'done' | 'skipped'
+  doneAt: string | null
+  orderIndex: number
+}
+
+export async function getStepsForMyDossier(userId: string, dossierId: string): Promise<Result<PortalStep>> {
+  const admin = createAdminClient()
+  const { data: dossier } = await admin
+    .from('dossiers')
+    .select('client_id')
+    .eq('id', dossierId)
+    .single()
+  if (!dossier || (dossier as { client_id: string }).client_id !== userId) {
+    return { items: [], error: 'Geen toegang tot dit dossier.' }
+  }
+
+  const { data, error } = await admin
+    .from('dossier_steps')
+    .select('*')
+    .eq('dossier_id', dossierId)
+    .order('order_index', { ascending: true })
+  if (error) return { items: [], error: error.message }
+
+  const items: PortalStep[] = ((data ?? []) as Array<{
+    id: string; label: string; status: PortalStep['status'];
+    done_at: string | null; order_index: number;
+  }>).map((r) => ({
+    id: r.id,
+    label: r.label,
+    status: r.status,
+    doneAt: r.done_at,
+    orderIndex: r.order_index,
+  }))
+  return { items }
+}
+
 export async function getAppointmentsForMyDossier(userId: string, dossierId: string): Promise<Result<PortalAppointment>> {
   const admin = createAdminClient()
   const { data: dossier } = await admin

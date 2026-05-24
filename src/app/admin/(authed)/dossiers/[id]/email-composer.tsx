@@ -66,13 +66,22 @@ export function EmailComposer({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.4)' }}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 overflow-y-auto"
+      style={{
+        background: 'rgba(0,0,0,0.4)',
+        paddingTop: 'max(env(safe-area-inset-top), 1rem)',
+        paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)',
+      }}
       onClick={() => setOpen(false)}
     >
       <div
-        className="w-full max-w-2xl p-6"
-        style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
+        className="w-full max-w-2xl p-5 sm:p-6"
+        style={{
+          background: 'var(--color-paper)',
+          border: '1px solid var(--color-line)',
+          maxHeight: 'calc(100dvh - 2rem)',
+          overflowY: 'auto',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         <header className="flex items-start justify-between mb-4">
@@ -129,16 +138,16 @@ export function EmailComposer({
           </label>
         </div>
 
-        <div className="flex items-center justify-between gap-2 pt-3 border-t" style={{ borderColor: 'var(--color-line)' }}>
-          <p className="text-[0.65rem] text-[var(--color-mute)]">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t" style={{ borderColor: 'var(--color-line)' }}>
+          <p className="text-[0.65rem] text-[var(--color-mute)] order-2 sm:order-1">
             💡 Auto-verzending komt later via Resend. Klik nu eerst <strong>Open e-mailclient</strong>, verstuur,
-            klik dan <strong>Markeer als verzonden</strong> om het te loggen in de historiek.
+            klik dan <strong>Markeer als verzonden</strong>.
           </p>
-          <div className="flex gap-2 shrink-0">
+          <div className="flex gap-2 shrink-0 order-1 sm:order-2">
             <button
               type="button"
               onClick={openMailClient}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs"
               style={{ border: '1px solid var(--color-line)' }}
             >
               <Mail className="size-3.5" />
@@ -148,7 +157,7 @@ export function EmailComposer({
               type="button"
               onClick={markSent}
               disabled={pending || !clientEmail}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium disabled:opacity-50"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium disabled:opacity-50"
               style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
             >
               <Send className="size-3.5" />

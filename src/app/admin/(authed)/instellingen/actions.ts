@@ -175,6 +175,35 @@ export async function setActiveAction(
   return { ok: true, message: active ? 'Account geactiveerd.' : 'Account gedeactiveerd.' }
 }
 
+export type IcalTokenResult =
+  | { ok: true; token: string }
+  | { ok: false; error: string }
+
+export async function regenerateIcalTokenAction(): Promise<IcalTokenResult> {
+  let currentUser
+  try {
+    currentUser = await requireAdmin()
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : 'Geen toegang' }
+  }
+
+  // Genereer 32-char random token
+  const arr = new Uint8Array(24)
+  crypto.getRandomValues(arr)
+  const token = Array.from(arr)
+    .map((b) => b.toString(36).padStart(2, '0'))
+    .join('')
+    .slice(0, 32)
+
+  const admin = createAdminClient()
+  const { error } = await admin.auth.admin.updateUserById(currentUser.id, {
+    user_metadata: { ...(currentUser.user_metadata || {}), ical_token: token },
+  })
+  if (error) return { ok: false, error: error.message }
+
+  return { ok: true, token }
+}
+
 export async function deleteTeamMemberAction(userId: string): Promise<ActionResult> {
   let currentUser
   try {

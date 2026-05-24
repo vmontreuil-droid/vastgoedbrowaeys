@@ -6,12 +6,13 @@ import {
 } from 'lucide-react'
 import {
   getAdminDossier, getAdminAppointments, getAdminClient, getAdminDocumentsForDossier,
-  getDossierEvents,
+  getDossierEvents, getDossierSteps,
 } from '@/lib/admin-db'
 import { formatPrice } from '@/lib/listings'
 import { DocumentsPanel, type DocumentRow } from './documents-panel'
 import { EmailComposer } from './email-composer'
 import { DossierTimeline } from './dossier-timeline'
+import { StepsPanel, type StepRow } from './steps-panel'
 
 export const metadata = {
   title: 'Admin · Dossier',
@@ -42,22 +43,6 @@ const STATUS_BADGE: Record<string, { bg: string; fg: string }> = {
   geannuleerd:    { bg: 'rgba(115,115,115,0.18)',fg: '#525252' },
 }
 
-// Default-stappen per dossier-type (zolang er nog geen dossier_steps DB-rij is)
-function defaultSteps(type: string): string[] {
-  switch (type) {
-    case 'verkoop':
-      return ['Plaatsbezoek + schatting', 'Verkoopopdracht ondertekend', 'Foto-presentatie', 'Online publicatie', 'Bod onderhandelen + acceptatie', 'Compromis bij notaris', 'Aktedatum']
-    case 'verhuur':
-      return ['Plaatsbezoek', 'Verhuuropdracht ondertekend', 'EPC + plaatsbeschrijving', 'Online publicatie', 'Bezichtigingen', 'Kandidaat-huurder geselecteerd', 'Huurcontract']
-    case 'koop_zoeker':
-      return ['Intake-gesprek', 'Zoekcriteria vastgelegd', 'Auto-meldingen geactiveerd', 'Eerste bezichtigingen', 'Bod uitbrengen']
-    case 'huur_zoeker':
-      return ['Intake-gesprek', 'Zoekcriteria vastgelegd', 'Bezichtigingen', 'Huurcontract']
-    default:
-      return []
-  }
-}
-
 export default async function DossierDetailPage({
   params,
 }: {
@@ -67,11 +52,12 @@ export default async function DossierDetailPage({
   const dossier = await getAdminDossier(id)
   if (!dossier) notFound()
 
-  const [client, { items: allAppointments }, { items: documents }, { items: events }] = await Promise.all([
+  const [client, { items: allAppointments }, { items: documents }, { items: events }, { items: steps }] = await Promise.all([
     getAdminClient(dossier.clientId),
     getAdminAppointments(),
     getAdminDocumentsForDossier(dossier.id),
     getDossierEvents(dossier.id),
+    getDossierSteps(dossier.id, dossier.type),
   ])
   const appointments = allAppointments
     .filter((a) => a.dossierId === dossier.id)
@@ -89,7 +75,6 @@ export default async function DossierDetailPage({
   }))
 
   const statusBadge = STATUS_BADGE[dossier.status] ?? { bg: 'rgba(115,115,115,0.18)', fg: '#525252' }
-  const steps = defaultSteps(dossier.type)
 
   return (
     <div className="container-px mx-auto max-w-screen-2xl py-8 md:py-10">
@@ -209,28 +194,16 @@ export default async function DossierDetailPage({
         </aside>
 
         <div className="lg:col-span-2 space-y-6">
-          {steps.length > 0 && (
-            <section>
-              <h2 className="text-xl mb-4" style={{ fontFamily: 'var(--font-display)' }}>Stappen</h2>
-              <ol className="p-5 space-y-3"
-                style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
-                {steps.map((label, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-sm">
-                    <span
-                      className="mt-0.5 size-5 rounded-full grid place-items-center shrink-0 text-[0.65rem]"
-                      style={{ background: 'var(--color-paper-2)', color: 'var(--color-mute)' }}
-                    >
-                      {idx + 1}
-                    </span>
-                    <span className="text-[var(--color-mute)]">{label}</span>
-                  </li>
-                ))}
-              </ol>
-              <p className="text-xs text-[var(--color-mute)] mt-2 italic">
-                Stappen-tracking per dossier komt binnenkort (dossier_steps tabel).
-              </p>
-            </section>
-          )}
+          <StepsPanel
+            dossierId={dossier.id}
+            initialSteps={steps.map<StepRow>((s) => ({
+              id: s.id,
+              label: s.label,
+              status: s.status,
+              doneAt: s.doneAt,
+              orderIndex: s.orderIndex,
+            }))}
+          />
 
           <section>
             <div className="flex items-end justify-between mb-3">

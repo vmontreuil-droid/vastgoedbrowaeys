@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, Hash, MapPin, FileText, Calendar, Clock } from 'lucide-react'
+import { ArrowLeft, Hash, MapPin, FileText, Calendar, Clock, Check } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { getMyDossier, getSharedDocumentsForDossier, getAppointmentsForMyDossier } from '@/lib/portal-db'
+import {
+  getMyDossier, getSharedDocumentsForDossier, getAppointmentsForMyDossier, getStepsForMyDossier,
+} from '@/lib/portal-db'
 import { formatPrice } from '@/lib/listings'
 import { PortalDocumentsList, type PortalDoc } from './portal-documents-list'
 
@@ -35,21 +37,6 @@ const STATUS_BADGE: Record<string, { bg: string; fg: string }> = {
   geannuleerd:    { bg: 'rgba(115,115,115,0.18)',fg: '#525252' },
 }
 
-function defaultSteps(type: string): string[] {
-  switch (type) {
-    case 'verkoop':
-      return ['Plaatsbezoek + schatting', 'Verkoopopdracht ondertekend', 'Foto-presentatie', 'Online publicatie', 'Bod onderhandelen', 'Compromis bij notaris', 'Aktedatum']
-    case 'verhuur':
-      return ['Plaatsbezoek', 'Verhuuropdracht ondertekend', 'EPC + plaatsbeschrijving', 'Online publicatie', 'Bezichtigingen', 'Kandidaat-huurder', 'Huurcontract']
-    case 'koop_zoeker':
-      return ['Intake-gesprek', 'Zoekcriteria vastgelegd', 'Auto-meldingen geactiveerd', 'Eerste bezichtigingen', 'Bod uitbrengen']
-    case 'huur_zoeker':
-      return ['Intake-gesprek', 'Zoekcriteria vastgelegd', 'Bezichtigingen', 'Huurcontract']
-    default:
-      return []
-  }
-}
-
 export default async function MyDossierDetailPage({
   params,
 }: {
@@ -63,13 +50,17 @@ export default async function MyDossierDetailPage({
   const dossier = await getMyDossier(user.id, id)
   if (!dossier) notFound()
 
-  const [{ items: docs }, { items: appointments }] = await Promise.all([
+  const [{ items: docs }, { items: appointments }, { items: steps }] = await Promise.all([
     getSharedDocumentsForDossier(user.id, id),
     getAppointmentsForMyDossier(user.id, id),
+    getStepsForMyDossier(user.id, id),
   ])
 
   const statusBadge = STATUS_BADGE[dossier.status] ?? { bg: 'rgba(115,115,115,0.18)', fg: '#525252' }
-  const steps = defaultSteps(dossier.type)
+  const doneSteps = steps.filter((s) => s.status === 'done').length
+  const skippedSteps = steps.filter((s) => s.status === 'skipped').length
+  const totalActiveSteps = steps.length - skippedSteps
+  const progress = totalActiveSteps === 0 ? 0 : Math.round((doneSteps / totalActiveSteps) * 100)
   const docRows: PortalDoc[] = docs.map((d) => ({
     id: d.id,
     name: d.name,
@@ -143,21 +134,55 @@ export default async function MyDossierDetailPage({
         <div className="lg:col-span-2 space-y-6">
           {steps.length > 0 && (
             <section>
-              <h2 className="text-xl mb-4 flex items-center gap-2" style={{ fontFamily: 'var(--font-display)' }}>
-                <Clock className="size-5" style={{ color: 'var(--color-accent)' }} />
-                Stappen
-              </h2>
+              <div className="flex items-end justify-between mb-3">
+                <h2 className="text-xl flex items-center gap-2" style={{ fontFamily: 'var(--font-display)' }}>
+                  <Clock className="size-5" style={{ color: 'var(--color-accent)' }} />
+                  Voortgang
+                </h2>
+                <span className="text-xs text-[var(--color-mute)]">
+                  {doneSteps} van {totalActiveSteps} ({progress}%)
+                </span>
+              </div>
+
+              <div className="h-2 w-full mb-4" style={{ background: 'var(--color-paper-2)' }}>
+                <div
+                  className="h-full transition-all"
+                  style={{ width: `${progress}%`, background: 'var(--color-accent)' }}
+                />
+              </div>
+
               <ol className="p-5 space-y-3"
                 style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
-                {steps.map((label, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-sm">
-                    <span className="mt-0.5 size-5 rounded-full grid place-items-center shrink-0 text-[0.65rem]"
-                      style={{ background: 'var(--color-paper-2)', color: 'var(--color-mute)' }}>
-                      {idx + 1}
-                    </span>
-                    <span className="text-[var(--color-mute)]">{label}</span>
-                  </li>
-                ))}
+                {steps.map((step, idx) => {
+                  const isDone = step.status === 'done'
+                  const isSkipped = step.status === 'skipped'
+                  return (
+                    <li key={step.id} className="flex items-start gap-3 text-sm">
+                      <span
+                        className="mt-0.5 size-5 grid place-items-center shrink-0"
+                        style={{
+                          background: isDone ? 'var(--color-accent)' : 'transparent',
+                          border: `2px solid ${isDone ? 'var(--color-accent)' : isSkipped ? 'var(--color-line)' : 'var(--color-mute)'}`,
+                          color: '#fff',
+                        }}
+                      >
+                        {isDone && <Check className="size-3" />}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className={isDone ? 'line-through text-[var(--color-mute)]' : isSkipped ? 'text-[var(--color-mute)] italic' : ''}>
+                          <span className="text-[0.65rem] text-[var(--color-mute)] mr-2">{idx + 1}.</span>
+                          {step.label}
+                          {isSkipped && <span className="ml-2 text-[0.6rem] uppercase tracking-[0.1em]">overgeslagen</span>}
+                        </p>
+                        {step.doneAt && isDone && (
+                          <p className="text-[0.65rem] text-[var(--color-mute)] mt-0.5">
+                            voltooid op {new Date(step.doneAt).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </p>
+                        )}
+                      </div>
+                    </li>
+                  )
+                })}
               </ol>
             </section>
           )}

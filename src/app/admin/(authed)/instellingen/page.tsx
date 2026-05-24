@@ -1,8 +1,10 @@
+import { headers } from 'next/headers'
 import { Users } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { AddTeamMemberForm } from './add-team-member-form'
 import { TeamMemberCard, type TeamMember } from './team-member-card'
+import { IcalPanel } from './ical-panel'
 
 export const metadata = {
   title: 'Admin · Instellingen',
@@ -35,6 +37,12 @@ export default async function InstellingenPage() {
       return a.lastName.localeCompare(b.lastName, 'nl-BE')
     })
 
+  const hdr = await headers()
+  const host = hdr.get('host') ?? 'vastgoedbrowaeys.vercel.app'
+  const proto = hdr.get('x-forwarded-proto') ?? 'https'
+  const baseUrl = `${proto}://${host}`
+  const icalToken = (currentUser?.user_metadata?.ical_token as string | undefined) ?? null
+
   return (
     <div className="container-px mx-auto max-w-screen-2xl py-10 md:py-14">
       <section className="mb-12">
@@ -44,6 +52,8 @@ export default async function InstellingenPage() {
           Beheer de medewerkers met toegang tot het beheerderspaneel.
         </p>
       </section>
+
+      <IcalPanel initialToken={icalToken} baseUrl={baseUrl} />
 
       <section className="mb-10">
         <div className="flex items-end justify-between mb-5">

@@ -297,6 +297,63 @@ export async function getAdminDocumentsForDossier(dossierId: string): Promise<Fe
   return { items }
 }
 
+export type DossierStep = {
+  id: string
+  dossierId: string
+  label: string
+  status: 'pending' | 'done' | 'skipped'
+  doneAt: string | null
+  orderIndex: number
+  createdAt: string
+}
+
+const DEFAULT_STEPS_BY_TYPE: Record<string, string[]> = {
+  verkoop:     ['Plaatsbezoek + schatting', 'Verkoopopdracht ondertekend', 'Foto-presentatie', 'Online publicatie', 'Bod onderhandelen + acceptatie', 'Compromis bij notaris', 'Aktedatum'],
+  verhuur:     ['Plaatsbezoek', 'Verhuuropdracht ondertekend', 'EPC + plaatsbeschrijving', 'Online publicatie', 'Bezichtigingen', 'Kandidaat-huurder geselecteerd', 'Huurcontract'],
+  koop_zoeker: ['Intake-gesprek', 'Zoekcriteria vastgelegd', 'Auto-meldingen geactiveerd', 'Eerste bezichtigingen', 'Bod uitbrengen'],
+  huur_zoeker: ['Intake-gesprek', 'Zoekcriteria vastgelegd', 'Bezichtigingen', 'Huurcontract'],
+}
+
+export async function getDossierSteps(dossierId: string, dossierType?: string): Promise<FetchResult<DossierStep>> {
+  const admin = createAdminClient()
+  const { data, error } = await admin
+    .from('dossier_steps')
+    .select('*')
+    .eq('dossier_id', dossierId)
+    .order('order_index', { ascending: true })
+  if (error) return { items: [], error: error.message }
+
+  let rows = (data ?? []) as Array<{
+    id: string; dossier_id: string; label: string;
+    status: DossierStep['status']; done_at: string | null;
+    order_index: number; created_at: string;
+  }>
+
+  // Lazy-seed: als nog geen stappen + dossier_type bekend → seed defaults
+  if (rows.length === 0 && dossierType && DEFAULT_STEPS_BY_TYPE[dossierType]) {
+    const defaults = DEFAULT_STEPS_BY_TYPE[dossierType]
+    const insertRows = defaults.map((label, i) => ({
+      dossier_id: dossierId,
+      label,
+      status: 'pending' as const,
+      order_index: i,
+    }))
+    const { data: inserted } = await admin.from('dossier_steps').insert(insertRows).select('*')
+    rows = (inserted ?? []) as typeof rows
+  }
+
+  const items: DossierStep[] = rows.map((r) => ({
+    id: r.id,
+    dossierId: r.dossier_id,
+    label: r.label,
+    status: r.status,
+    doneAt: r.done_at,
+    orderIndex: r.order_index,
+    createdAt: r.created_at,
+  }))
+  return { items }
+}
+
 export type DossierEvent = {
   id: string
   dossierId: string
