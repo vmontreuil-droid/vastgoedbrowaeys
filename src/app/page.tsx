@@ -8,7 +8,16 @@ import { getListings, formatPrice, listingHref } from '@/lib/listings'
 
 export default function HomePage() {
   // 12 slides in de hero, 6 panden in het "uitgelicht aanbod"-blok eronder.
-  const newest = getListings({ status: ['te-koop'], sortBy: 'newest', limit: 12 })
+  // Bouwgronden uitsluiten uit de hero — die technische tekeningen verstoren
+  // de editorial sfeer. Karaktervolle rijwoning Horebeke (id 4340985) gepind
+  // als opening — Stefanie's favoriet pand.
+  const HERO_PINNED_FIRST_ID = '4340985'
+  const allTekoop = getListings({ status: ['te-koop'], sortBy: 'newest' })
+  const heroPool = allTekoop.filter((l) => l.type !== 'bouwgrond')
+  const pinned = heroPool.find((l) => l.id === HERO_PINNED_FIRST_ID)
+  const others = heroPool.filter((l) => l.id !== HERO_PINNED_FIRST_ID)
+  const newest = (pinned ? [pinned, ...others] : others).slice(0, 12)
+
   const featured = getListings({ status: ['te-koop'], sortBy: 'newest', limit: 6 })
 
   const heroSlides: HeroSlide[] = newest.map((l) => ({

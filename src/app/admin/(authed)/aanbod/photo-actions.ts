@@ -87,13 +87,3 @@ export async function deleteListingPhotoAction(path: string): Promise<{ ok: bool
   }
   return { ok: true }
 }
-
-/**
- * Extract het storage-pad uit een publieke URL.
- * URL: https://xxx.supabase.co/storage/v1/object/public/listing-photos/folder/file.jpg
- * Returns: folder/file.jpg
- */
-export function extractPathFromUrl(url: string): string | null {
-  const match = url.match(/\/storage\/v1\/object\/public\/listing-photos\/(.+)$/)
-  return match?.[1] ?? null
-}

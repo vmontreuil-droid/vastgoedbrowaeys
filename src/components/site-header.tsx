@@ -86,28 +86,32 @@ export function SiteHeader() {
           </nav>
 
           {/* === Rechtse acties — desktop === */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2">
             <Link
               href="/portaal/login"
               data-active={pathname.startsWith('/portaal') || undefined}
-              className="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium uppercase tracking-[0.14em] transition-colors data-[active=true]:bg-[var(--color-paper-2)]"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[0.65rem] font-medium uppercase tracking-[0.12em] transition-colors data-[active=true]:bg-[var(--color-paper-2)]"
               style={{ color: 'var(--color-mute)', border: '1px solid var(--color-line)' }}
             >
-              <Lock className="size-3.5" />
+              <Lock className="size-3" />
               <span>Klantenportaal</span>
             </Link>
             <Link
               href="/admin"
               data-active={pathname.startsWith('/admin') || undefined}
-              className="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium uppercase tracking-[0.14em] transition-colors data-[active=true]:bg-[var(--color-paper-2)]"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[0.65rem] font-medium uppercase tracking-[0.12em] transition-colors data-[active=true]:bg-[var(--color-paper-2)]"
               style={{ color: 'var(--color-mute)', border: '1px solid var(--color-line)' }}
             >
-              <Settings className="size-3.5" />
+              <Settings className="size-3" />
               <span>Admin</span>
             </Link>
-            <Link href="/gratis-schatting" className="pill-cta">
+            <Link
+              href="/gratis-schatting"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[0.65rem] font-medium uppercase tracking-[0.12em] transition-opacity hover:opacity-90"
+              style={{ background: 'var(--color-accent)', color: 'var(--color-paper)' }}
+            >
               Gratis schatting
-              <ArrowRight className="size-3.5" />
+              <ArrowRight className="size-3" />
             </Link>
           </div>
 
@@ -148,11 +152,13 @@ export function SiteHeader() {
             right: 0,
             bottom: 0,
             width: '100vw',
-            height: '100vh',
+            height: '100dvh', // dvh werkt correct op iOS Safari (in tegenstelling tot vh)
             backgroundColor: '#faf8f4',
             zIndex: 9999,
             overflowY: 'auto',
             WebkitOverflowScrolling: 'touch',
+            overscrollBehavior: 'contain',
+            paddingBottom: 'env(safe-area-inset-bottom)',
           }}
         >
           {/* Header */}
@@ -231,6 +237,25 @@ export function SiteHeader() {
                 >
                   <Lock size={16} style={{ opacity: 0.6 }} />
                   Klantenportaal
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/admin"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '16px 0',
+                    fontSize: '20px',
+                    color: pathname.startsWith('/admin') ? '#0b4f58' : '#1a1a1a',
+                    fontFamily: "'Fraunces', Georgia, serif",
+                    borderBottom: '1px solid #e6e1d7',
+                    textDecoration: 'none',
+                  }}
+                >
+                  <Settings size={16} style={{ opacity: 0.6 }} />
+                  Admin
                 </Link>
               </li>
             </ul>

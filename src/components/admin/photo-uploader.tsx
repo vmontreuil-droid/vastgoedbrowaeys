@@ -6,8 +6,8 @@ import { Upload, X, AlertCircle, Star, Loader2, ImageOff } from 'lucide-react'
 import {
   uploadListingPhotoAction,
   deleteListingPhotoAction,
-  extractPathFromUrl,
 } from '@/app/admin/(authed)/aanbod/photo-actions'
+import { extractPathFromUrl } from '@/lib/listing-photo-utils'
 
 type Photo = {
   url: string
