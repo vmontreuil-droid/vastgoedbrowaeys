@@ -33,6 +33,7 @@ export default async function DossiersPage({
   const params = await searchParams
   const statusFilter = (params.status as string | undefined) ?? 'open_lopend'
   const typeFilter = (params.type as string | undefined) ?? 'alle'
+  const tagFilter = (params.tag as string | undefined) ?? ''
 
   const { items: allDossiers, error } = await getAdminDossiers()
 
@@ -43,6 +44,14 @@ export default async function DossiersPage({
     dossiers = dossiers.filter((d) => d.status === statusFilter)
   }
   if (typeFilter !== 'alle') dossiers = dossiers.filter((d) => d.type === typeFilter)
+  if (tagFilter) dossiers = dossiers.filter((d) => d.tags.includes(tagFilter))
+
+  const tagCounts = new Map<string, number>()
+  for (const d of allDossiers) {
+    for (const t of d.tags) tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1)
+  }
+  const allTags = Array.from(tagCounts.entries())
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
 
   const byType = [
     { name: 'Verkoop',     value: allDossiers.filter((d) => d.type === 'verkoop').length,     color: '#0b4f58' },
@@ -126,7 +135,7 @@ export default async function DossiersPage({
           ]}
           current={statusFilter}
           queryKey="status"
-          otherKeyValues={{ type: typeFilter }}
+          otherKeyValues={{ type: typeFilter, tag: tagFilter }}
         />
         <FilterPills
           label="Type"
@@ -139,8 +148,51 @@ export default async function DossiersPage({
           ]}
           current={typeFilter}
           queryKey="type"
-          otherKeyValues={{ status: statusFilter }}
+          otherKeyValues={{ status: statusFilter, tag: tagFilter }}
         />
+        {allTags.length > 0 && (
+          <div className="inline-flex items-center gap-1 flex-wrap basis-full mt-1">
+            <span className="text-[0.55rem] uppercase tracking-[0.16em] text-[var(--color-mute)] mr-1">Tag:</span>
+            <Link
+              href={(() => {
+                const p = new URLSearchParams()
+                if (statusFilter !== 'alle') p.set('status', statusFilter)
+                if (typeFilter !== 'alle') p.set('type', typeFilter)
+                return `?${p.toString()}`
+              })()}
+              className="px-2 py-1 text-[0.65rem] transition-colors"
+              style={{
+                background: tagFilter === '' ? 'var(--color-ink)' : 'transparent',
+                color: tagFilter === '' ? 'var(--color-paper)' : 'var(--color-mute)',
+                border: tagFilter === '' ? '1px solid var(--color-ink)' : '1px solid var(--color-line)',
+              }}
+            >
+              Alle
+            </Link>
+            {allTags.map(([t, n]) => {
+              const p = new URLSearchParams()
+              if (statusFilter !== 'alle') p.set('status', statusFilter)
+              if (typeFilter !== 'alle') p.set('type', typeFilter)
+              p.set('tag', t)
+              const active = tagFilter === t
+              return (
+                <Link
+                  key={t}
+                  href={`?${p.toString()}`}
+                  className="px-2 py-1 text-[0.65rem] transition-colors inline-flex items-center gap-1"
+                  style={{
+                    background: active ? 'var(--color-ink)' : 'transparent',
+                    color: active ? 'var(--color-paper)' : 'var(--color-mute)',
+                    border: active ? '1px solid var(--color-ink)' : '1px solid var(--color-line)',
+                  }}
+                >
+                  {t}
+                  <span className="opacity-60">({n})</span>
+                </Link>
+              )
+            })}
+          </div>
+        )}
       </section>
 
       {/* List */}
@@ -165,6 +217,7 @@ export default async function DossiersPage({
             openedAt: d.openedAt,
             appointmentsCount: d.appointmentsCount,
             documentsCount: d.documentsCount,
+            tags: d.tags,
           }))}
         />
       )}

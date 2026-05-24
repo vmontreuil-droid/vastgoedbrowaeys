@@ -14,14 +14,18 @@ async function requireAdmin() {
 }
 
 export type TemplateResult = { ok: boolean; error?: string }
+export type TemplateCategory = 'algemeen' | 'verkoop' | 'verhuur' | 'koop_zoeker' | 'huur_zoeker'
 
-export async function addTemplateAction(input: { label: string; text: string }): Promise<TemplateResult> {
+const VALID_CATEGORIES: TemplateCategory[] = ['algemeen', 'verkoop', 'verhuur', 'koop_zoeker', 'huur_zoeker']
+
+export async function addTemplateAction(input: { label: string; text: string; category: TemplateCategory }): Promise<TemplateResult> {
   let user
   try { user = await requireAdmin() } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : 'Geen toegang' }
   }
   const label = input.label.trim()
   const text = input.text.trim()
+  const category = VALID_CATEGORIES.includes(input.category) ? input.category : 'algemeen'
   if (!label || !text) return { ok: false, error: 'Naam en tekst zijn verplicht.' }
 
   const admin = createAdminClient()
@@ -33,7 +37,7 @@ export async function addTemplateAction(input: { label: string; text: string }):
   const nextIndex = ((existing?.[0] as { order_index: number } | undefined)?.order_index ?? -1) + 1
 
   const { error } = await admin.from('note_templates').insert({
-    label, text, order_index: nextIndex, created_by: user.id,
+    label, text, category, order_index: nextIndex, created_by: user.id,
   })
   if (error) return { ok: false, error: error.message }
 
@@ -41,16 +45,17 @@ export async function addTemplateAction(input: { label: string; text: string }):
   return { ok: true }
 }
 
-export async function updateTemplateAction(id: string, input: { label: string; text: string }): Promise<TemplateResult> {
+export async function updateTemplateAction(id: string, input: { label: string; text: string; category: TemplateCategory }): Promise<TemplateResult> {
   try { await requireAdmin() } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : 'Geen toegang' }
   }
   const label = input.label.trim()
   const text = input.text.trim()
+  const category = VALID_CATEGORIES.includes(input.category) ? input.category : 'algemeen'
   if (!label || !text) return { ok: false, error: 'Naam en tekst zijn verplicht.' }
 
   const admin = createAdminClient()
-  const { error } = await admin.from('note_templates').update({ label, text }).eq('id', id)
+  const { error } = await admin.from('note_templates').update({ label, text, category }).eq('id', id)
   if (error) return { ok: false, error: error.message }
 
   revalidatePath('/admin/instellingen')

@@ -14,6 +14,7 @@ import { EmailComposer } from './email-composer'
 import { DossierTimeline } from './dossier-timeline'
 import { StepsPanel, type StepRow } from './steps-panel'
 import { CommissionPanel } from './commission-panel'
+import { TagsPanel } from './tags-panel'
 
 export const metadata = {
   title: 'Admin · Dossier',
@@ -205,6 +206,8 @@ export default async function DossierDetailPage({
               askingPrice: dossier.askingPrice,
             }}
           />
+
+          <TagsPanel dossierId={dossier.id} initialTags={dossier.tags} />
         </aside>
 
         <div className="lg:col-span-2 space-y-6">
@@ -268,7 +271,9 @@ export default async function DossierDetailPage({
           <DossierTimeline
             dossierId={dossier.id}
             events={events}
-            templates={templates.map((t) => ({ id: t.id, label: t.label, text: t.text }))}
+            templates={templates
+              .filter((t) => t.category === 'algemeen' || t.category === dossier.type)
+              .map((t) => ({ id: t.id, label: t.label, text: t.text }))}
           />
 
           {dossier.notes && (

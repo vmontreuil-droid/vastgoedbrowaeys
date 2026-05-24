@@ -47,6 +47,7 @@ export type AdminDossier = {
   commissionFixed: number | null
   commissionVatIncluded: boolean
   commissionNotes: string | null
+  tags: string[]
 }
 
 /**
@@ -180,6 +181,7 @@ export async function getAdminDossiers(): Promise<FetchResult<AdminDossier>> {
     commission_fixed?: number | null;
     commission_vat_included?: boolean | null;
     commission_notes?: string | null;
+    tags?: string[] | null;
   }>
 
   // Resolve clientName lazy via profiles + auth in één keer
@@ -225,6 +227,7 @@ export async function getAdminDossiers(): Promise<FetchResult<AdminDossier>> {
     commissionFixed: d.commission_fixed ?? null,
     commissionVatIncluded: d.commission_vat_included === true,
     commissionNotes: d.commission_notes ?? null,
+    tags: Array.isArray(d.tags) ? d.tags : [],
   }))
 
   return { items }
@@ -412,10 +415,13 @@ export type AdminSearchHit = {
   createdAt: string
 }
 
+export type NoteTemplateCategory = 'algemeen' | 'verkoop' | 'verhuur' | 'koop_zoeker' | 'huur_zoeker'
+
 export type NoteTemplate = {
   id: string
   label: string
   text: string
+  category: NoteTemplateCategory
   orderIndex: number
   createdAt: string
   updatedAt: string
@@ -426,15 +432,17 @@ export async function getNoteTemplates(): Promise<FetchResult<NoteTemplate>> {
   const { data, error } = await admin
     .from('note_templates')
     .select('*')
+    .order('category', { ascending: true })
     .order('order_index', { ascending: true })
   if (error) return { items: [], error: error.message }
   const items: NoteTemplate[] = ((data ?? []) as Array<{
-    id: string; label: string; text: string; order_index: number;
-    created_at: string; updated_at: string;
+    id: string; label: string; text: string; category: NoteTemplateCategory | null;
+    order_index: number; created_at: string; updated_at: string;
   }>).map((r) => ({
     id: r.id,
     label: r.label,
     text: r.text,
+    category: (r.category ?? 'algemeen') as NoteTemplateCategory,
     orderIndex: r.order_index,
     createdAt: r.created_at,
     updatedAt: r.updated_at,

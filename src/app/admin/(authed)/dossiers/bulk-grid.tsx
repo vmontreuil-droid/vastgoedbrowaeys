@@ -30,6 +30,7 @@ export type DossierCard = {
   openedAt: string
   appointmentsCount: number
   documentsCount: number
+  tags: string[]
 }
 
 function formatPrice(n: number | null) {
@@ -212,6 +213,18 @@ export function DossierBulkGrid({ dossiers }: { dossiers: DossierCard[] }) {
                 <Stat label={d.type === 'verkoop' || d.type === 'verhuur' ? 'Vraagprijs' : 'Budget'} value={formatPrice(d.askingPrice)} />
                 <Stat label="Geopend" value={new Date(d.openedAt).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short' })} />
               </div>
+
+              {d.tags.length > 0 && (
+                <ul className="flex flex-wrap gap-1 mb-2">
+                  {d.tags.map((t) => (
+                    <li key={t}
+                      className="inline-block px-1.5 py-0.5 text-[0.6rem]"
+                      style={{ background: 'var(--color-paper-2)', border: '1px solid var(--color-line)', color: 'var(--color-mute)' }}>
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              )}
 
               <div className="flex items-center justify-end gap-4 text-xs text-[var(--color-mute)]">
                 <span title="Afspraken">📅 {d.appointmentsCount}</span>
