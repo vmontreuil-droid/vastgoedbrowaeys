@@ -1,9 +1,25 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { Check, AlertCircle, X, MapPin, Building2, Plus } from 'lucide-react'
+import { Check, AlertCircle, X, MapPin, Building2, Plus, Map as MapIcon } from 'lucide-react'
 import { createRegionAction, updateRegionAction, type RegionInput } from '../regions-actions'
+import type { BePostcode } from '@/lib/be-postcodes'
+import { MatchedPostcodesList } from './region-map'
+
+// Lazy-load: react-leaflet vereist window.
+const RegionMapPicker = dynamic(
+  () => import('./region-map').then((m) => m.RegionMapPicker),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full grid place-items-center" style={{ height: 380, background: 'var(--color-paper-2)' }}>
+        <p className="text-sm text-[var(--color-mute)]">Kaart laden…</p>
+      </div>
+    ),
+  },
+)
 
 const PROPERTY_TYPES = [
   { value: 'house', label: 'Huis' },
@@ -35,6 +51,14 @@ export function RegionForm({
   const [enabled, setEnabled] = useState(initial.enabled)
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [mapMatched, setMapMatched] = useState<BePostcode[]>([])
+
+  function applyMatchedToZone(matched: BePostcode[]) {
+    const newPcs = matched.map((m) => m.postcode).filter((p) => !postcodes.includes(p))
+    const newCities = matched.map((m) => m.city).filter((c) => !cities.some((x) => x.toLowerCase() === c.toLowerCase()))
+    if (newPcs.length > 0) setPostcodes([...postcodes, ...newPcs])
+    if (newCities.length > 0) setCities([...cities, ...newCities])
+  }
 
   function addPostcode() {
     const p = postcodeInput.trim()
@@ -123,6 +147,27 @@ export function RegionForm({
           Korte titel die je herkent in het overzicht.
         </p>
       </label>
+
+      <fieldset>
+        <legend className="eyebrow text-[0.6rem] mb-2 flex items-center gap-1.5">
+          <MapIcon className="size-3" />
+          Zone op kaart aanduiden
+        </legend>
+        <p className="text-[0.65rem] text-[var(--color-mute)] mb-2">
+          Klik op de kaart of sleep de pin om het centrum te zetten. Stel de straal in
+          en klik &ldquo;Voeg toe aan zone&rdquo; om alle gevonden gemeenten in één keer over te nemen.
+        </p>
+        <RegionMapPicker onChange={(v) => setMapMatched(v.matchedPostcodes)} />
+        <div className="mt-3">
+          <MatchedPostcodesList matched={mapMatched} onApply={applyMatchedToZone} />
+        </div>
+      </fieldset>
+
+      <div className="text-center text-[0.65rem] uppercase tracking-[0.2em] text-[var(--color-mute)] flex items-center gap-3">
+        <span className="flex-1 h-px" style={{ background: 'var(--color-line)' }} />
+        Of manueel
+        <span className="flex-1 h-px" style={{ background: 'var(--color-line)' }} />
+      </div>
 
       <fieldset>
         <legend className="eyebrow text-[0.6rem] mb-2">Postcodes</legend>
