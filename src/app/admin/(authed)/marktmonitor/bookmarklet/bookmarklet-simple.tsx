@@ -35,7 +35,17 @@ export function BookmarkletSimple({
     const body = `(async()=>{try{
       var host=location.hostname.replace(/^www\\./,'');
       var fetchHeaders={'Authorization':'Bearer ${token}'};
-      var listRes=await fetch(${JSON.stringify(`${apiBase}/api/market-leads/unenriched?limit=10&host=`)}+encodeURIComponent(host),{headers:fetchHeaders});
+      var listUrl=${JSON.stringify(`${apiBase}/api/market-leads/unenriched?limit=10&host=`)}+encodeURIComponent(host);
+      var listRes;
+      try{
+        listRes=await fetch(listUrl,{headers:fetchHeaders,mode:'cors'});
+      }catch(fetchErr){
+        // CSP-blokkade of network-fail. Geef duidelijke melding + alternatieve workflow.
+        alert('Browaeys: kan geen verbinding maken met vastgoedbrowaeys.vercel.app vanaf '+host+'.\\n\\nMogelijke oorzaak: '+host+' blokkeert cross-origin requests via Content Security Policy.\\n\\nWorkaround: open elk pand individueel in een tab en klik op de gewone bookmarklet \"Import naar Browaeys\" — dat werkt wel.\\n\\nFout: '+fetchErr.message);
+        return;
+      }
+      if(!listRes.ok){alert('Browaeys: HTTP '+listRes.status+' bij ophalen lijst. '+(listRes.statusText||''));return;}
+      var listData=await listRes.json();
       var listData=await listRes.json();
       if(!listData.ok){alert('Browaeys: '+(listData.error||'kon lijst niet ophalen'));return;}
       var leads=listData.leads||[];
