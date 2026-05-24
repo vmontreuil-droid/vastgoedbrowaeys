@@ -4,8 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState, useTransition } from 'react'
 import {
-  Building2, MapPin, Tag, User as UserIcon, Layers, CheckSquare, Square,
-  X, Trash2, AlertCircle, CheckCircle2,
+  Building2, User as UserIcon, Layers, CheckSquare, Square,
+  X, Trash2, AlertCircle, CheckCircle2, ExternalLink,
 } from 'lucide-react'
 import { formatPrice } from '@/lib/listings'
 import type { MarketLead, MarketLeadStatus } from '@/lib/admin-db'
@@ -192,6 +192,24 @@ function LeadCard({ lead, selected, onToggle }: { lead: MarketLead; selected: bo
         {selected ? <CheckSquare className="size-3" /> : <Square className="size-3" />}
       </button>
 
+      {/* Externe link naar origineel zoekertje (verrijking-workflow) */}
+      <a
+        href={lead.sourceUrl}
+        target="_blank"
+        rel="noopener"
+        onClick={(e) => e.stopPropagation()}
+        className="absolute top-1 right-1 z-10 size-6 grid place-items-center"
+        style={{
+          background: 'rgba(255,255,255,0.9)',
+          color: 'var(--color-accent)',
+          backdropFilter: 'blur(6px)',
+        }}
+        title="Open op origineel zoekertje (om foto's en details binnen te halen via bookmark)"
+        aria-label="Open op originele site"
+      >
+        <ExternalLink className="size-3" />
+      </a>
+
       <Link
         href={`/admin/marktmonitor/${lead.id}`}
         className="block overflow-hidden transition-shadow hover:shadow-sm h-full"
@@ -217,7 +235,7 @@ function LeadCard({ lead, selected, onToggle }: { lead: MarketLead; selected: bo
           )}
           {/* Mini-status-pill */}
           <span
-            className="absolute top-1 right-1 inline-block px-1.5 py-0.5 text-[0.5rem] uppercase tracking-[0.08em] font-medium"
+            className="absolute top-1 left-1/2 -translate-x-1/2 inline-block px-1.5 py-0.5 text-[0.5rem] uppercase tracking-[0.08em] font-medium"
             style={{ background: statusColor.bg, color: statusColor.fg, backdropFilter: 'blur(8px)' }}
           >
             {STATUS_LABEL[lead.status].slice(0, 8)}

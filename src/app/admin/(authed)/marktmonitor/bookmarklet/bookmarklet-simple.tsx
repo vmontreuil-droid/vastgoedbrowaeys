@@ -28,9 +28,12 @@ export function BookmarkletSimple({
   const [pending, startTransition] = useTransition()
   const [copied, setCopied] = useState(false)
 
-  // Batch-bookmarklet: haalt onverrijkte leads op, fetcht detail-pagina's
-  // vanuit Stefanie's browser (geen Cloudflare-issue), POST't enrichment.
-  const batchBookmarkletJs = useMemo(() => {
+  // VERWIJDERD — werkt niet door Content Security Policy van Immoweb/Zimmo
+  // (cross-origin fetches naar onze API worden geblokkeerd). De manuele
+  // workflow via filter 'Onverrijkt' + per pand klikken werkt wel.
+  // Code blijft staan voor referentie maar wordt niet meer gerenderd.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _unusedBatchJs = useMemo(() => {
     const apiBase = origin
     const body = `(async()=>{try{
       var host=location.hostname.replace(/^www\\./,'');
@@ -402,36 +405,25 @@ export function BookmarkletSimple({
         </p>
       </section>
 
-      {/* === Verrijk-batch bookmarklet === */}
-      <section className="p-6 md:p-8 text-center"
-        style={{ background: 'var(--color-paper)', border: '2px dashed #16a34a' }}>
-        <p className="text-base md:text-lg mb-2">
-          <strong>Bonus:</strong> Verrijk batch
+      {/* === Verrijking workflow === */}
+      <section className="p-5 md:p-6"
+        style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
+        <h3 className="text-base md:text-lg mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+          🖼️ Foto&apos;s + beschrijving ophalen
+        </h3>
+        <p className="text-xs text-[var(--color-mute)] mb-3">
+          Wanneer je een specifiek pand interessant vindt en de volledige fotogallery + kenmerken
+          + beschrijving wil binnenhalen:
         </p>
-        <p className="text-xs text-[var(--color-mute)] mb-4 max-w-md mx-auto">
-          Sleep deze tweede knop ook naar je favorieten-balk. Klik erop wanneer je op een Immoweb-,
-          Zimmo- of Realo-pagina staat — hij haalt automatisch detail-info (foto&apos;s, beschrijving,
-          kenmerken) op voor 10 leads tegelijk.
-        </p>
-
-        <div className="flex items-center justify-center gap-4 my-4">
-          <div
-            dangerouslySetInnerHTML={{
-              __html: `<a
-                href="${escapeHtmlAttr(batchBookmarkletJs)}"
-                draggable="true"
-                onclick="event.preventDefault();alert('Sleep deze knop naar je favorieten-balk in plaats van te klikken.');return false;"
-                title="Sleep mij naar je favorieten-balk"
-                style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.2rem;font-size:0.9rem;background:#16a34a;color:#fff;cursor:grab;user-select:none;text-decoration:none;font-family:inherit;"
-              ><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>Verrijk Browaeys batch</a>`
-            }}
-          />
-        </div>
-
-        <p className="text-[0.65rem] text-[var(--color-mute)] italic">
-          💡 Tip: klik meerdere keren na elkaar — telkens 10 nieuwe leads worden verrijkt tot de
-          lijst leeg is.
-        </p>
+        <ol className="space-y-2 text-sm pl-5 list-decimal text-[var(--color-mute)]">
+          <li>
+            Ga naar <Link href="/admin/marktmonitor" className="link-underline text-[var(--color-ink)]">je marktmonitor</Link>{' '}
+            en filter op &ldquo;Onverrijkt&rdquo;
+          </li>
+          <li>Klik op het externe-link-icoon (↗) op een card → opent het pand op Immoweb</li>
+          <li>Klik op de bookmark hierboven (&ldquo;Import naar Browaeys&rdquo;) op die pagina</li>
+          <li>Sluit de tab → alle foto&apos;s + kenmerken staan nu in Browaeys</li>
+        </ol>
       </section>
 
       {/* === En dan? === */}

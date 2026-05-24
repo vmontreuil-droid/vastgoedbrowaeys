@@ -39,6 +39,7 @@ export default async function MarktmonitorPage({
   const statusFilter = (params.status as string | undefined) ?? 'open'
   const cityFilter = (params.city as string | undefined) ?? ''
   const typeFilter = (params.type as string | undefined) ?? 'alle'
+  const enrichFilter = (params.enrich as string | undefined) ?? 'alle'
 
   const { items: allLeads, error } = await getMarketLeads()
 
@@ -56,6 +57,11 @@ export default async function MarktmonitorPage({
     )
   }
   if (typeFilter !== 'alle') leads = leads.filter((l) => l.listingType === typeFilter)
+  if (enrichFilter === 'onverrijkt') {
+    leads = leads.filter((l) => !l.enrichedAt)
+  } else if (enrichFilter === 'verrijkt') {
+    leads = leads.filter((l) => !!l.enrichedAt)
+  }
 
   // Gemeenten-suggesties (top 8 op aantal)
   const cityCounts = new Map<string, number>()
@@ -152,7 +158,7 @@ export default async function MarktmonitorPage({
           ]}
           current={statusFilter}
           queryKey="status"
-          otherKeyValues={{ city: cityFilter, type: typeFilter }}
+          otherKeyValues={{ city: cityFilter, type: typeFilter, enrich: enrichFilter }}
         />
         <FilterPills
           label="Type"
@@ -164,7 +170,18 @@ export default async function MarktmonitorPage({
           ]}
           current={typeFilter}
           queryKey="type"
-          otherKeyValues={{ status: statusFilter, city: cityFilter }}
+          otherKeyValues={{ status: statusFilter, city: cityFilter, enrich: enrichFilter }}
+        />
+        <FilterPills
+          label="Verrijking"
+          options={[
+            { value: 'alle', label: 'Alle' },
+            { value: 'verrijkt', label: 'Verrijkt' },
+            { value: 'onverrijkt', label: 'Onverrijkt' },
+          ]}
+          current={enrichFilter}
+          queryKey="enrich"
+          otherKeyValues={{ status: statusFilter, type: typeFilter, city: cityFilter }}
         />
         {topCities.length > 0 && (
           <div className="inline-flex items-center gap-1 flex-wrap basis-full mt-1">
