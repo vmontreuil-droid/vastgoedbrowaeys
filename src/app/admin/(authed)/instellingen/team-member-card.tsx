@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useRef, useState, useTransition } from 'react'
 import {
   Mail,
@@ -12,12 +13,15 @@ import {
   EyeOff,
   Check,
   Power,
+  Camera,
+  X as XIcon,
 } from 'lucide-react'
 import {
   updateTeamMemberAction,
   deleteTeamMemberAction,
   setActiveAction,
 } from './actions'
+import { uploadTeamPhotoAction, removeTeamPhotoAction } from './photo-actions'
 
 export type TeamMember = {
   id: string
@@ -27,7 +31,16 @@ export type TeamMember = {
   title?: string
   phone?: string
   bivNumber?: string
+  photoUrl?: string
   active: boolean
+}
+
+function getInitials(firstName: string, lastName: string, email: string): string {
+  const first = firstName?.[0] || ''
+  const last = lastName?.[0] || ''
+  const fromName = (first + last).toUpperCase()
+  if (fromName) return fromName
+  return (email[0] || '?').toUpperCase()
 }
 
 export function TeamMemberCard({
@@ -41,7 +54,35 @@ export function TeamMemberCard({
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
+  const [photoBusy, setPhotoBusy] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
+  const photoInputRef = useRef<HTMLInputElement>(null)
+
+  function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setError(null)
+    setPhotoBusy(true)
+    const fd = new FormData()
+    fd.append('file', file)
+    startTransition(async () => {
+      const res = await uploadTeamPhotoAction(member.id, fd)
+      setPhotoBusy(false)
+      if (!res.ok) setError(res.error)
+      if (photoInputRef.current) photoInputRef.current.value = ''
+    })
+  }
+
+  function handlePhotoRemove() {
+    if (!confirm('Foto verwijderen?')) return
+    setError(null)
+    setPhotoBusy(true)
+    startTransition(async () => {
+      const res = await removeTeamPhotoAction(member.id)
+      setPhotoBusy(false)
+      if (!res.ok) setError(res.error ?? 'Verwijderen mislukt')
+    })
+  }
 
   function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -207,7 +248,83 @@ export function TeamMemberCard({
   }
 
   return (
-    <article className="p-5" style={cardStyle}>
+    <article className="overflow-hidden" style={cardStyle}>
+      <input
+        ref={photoInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={handlePhotoUpload}
+      />
+
+      {/* Foto-banner */}
+      <div
+        className="relative aspect-[4/3] group"
+        style={{ background: 'var(--color-paper-2)' }}
+      >
+        {member.photoUrl ? (
+          <Image
+            src={member.photoUrl}
+            alt={`${member.firstName} ${member.lastName}`}
+            fill
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover"
+            unoptimized
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span
+              className="text-4xl"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--color-mute)' }}
+            >
+              {getInitials(member.firstName, member.lastName, member.email)}
+            </span>
+          </div>
+        )}
+
+        {/* Hover-overlay met upload/wis-knoppen */}
+        <div
+          className="absolute inset-0 flex items-center justify-center gap-2 transition-opacity opacity-0 group-hover:opacity-100"
+          style={{ background: 'color-mix(in srgb, #1a1a1a 60%, transparent)' }}
+        >
+          <button
+            type="button"
+            onClick={() => photoInputRef.current?.click()}
+            disabled={pending || photoBusy}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs disabled:opacity-50"
+            style={{ background: 'var(--color-paper)', color: 'var(--color-ink)' }}
+            title={member.photoUrl ? 'Foto vervangen' : 'Foto uploaden'}
+          >
+            <Camera className="size-3.5" />
+            {member.photoUrl ? 'Vervang' : 'Upload'}
+          </button>
+          {member.photoUrl && (
+            <button
+              type="button"
+              onClick={handlePhotoRemove}
+              disabled={pending || photoBusy}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs disabled:opacity-50"
+              style={{ background: 'rgba(239,68,68,0.9)', color: '#fff' }}
+              title="Foto verwijderen"
+            >
+              <XIcon className="size-3.5" />
+              Wis
+            </button>
+          )}
+        </div>
+
+        {photoBusy && (
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ background: 'color-mix(in srgb, #1a1a1a 50%, transparent)' }}
+          >
+            <span className="text-white text-xs">Bezig…</span>
+          </div>
+        )}
+      </div>
+
+      <div className="p-5">
+
       {error && (
         <div
           className="flex items-start gap-2 p-2 mb-3 text-xs"
@@ -337,6 +454,7 @@ export function TeamMemberCard({
           )}
         </div>
       )}
+      </div>
     </article>
   )
 }

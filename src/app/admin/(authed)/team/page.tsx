@@ -97,7 +97,7 @@ export default async function TeamPage() {
         {team.map((m) => {
           const open = openDossiersByMember.get(m.id) ?? 0
           const closed = closedDossiersByMember.get(m.id) ?? 0
-          const isOwner = m.email === 'stefanie@vastgoedbrowaeys.be'
+          const isOwner = m.email === 'stephanie@vastgoedbrowaeys.be'
           return (
             <div key={m.id} className="relative">
               {isOwner && (

@@ -455,6 +455,7 @@ export type TeamMember = {
   title?: string
   phone?: string
   bivNumber?: string
+  photoUrl?: string
   active: boolean
 }
 
@@ -471,6 +472,7 @@ function metadataToTeamMember(
     title: (md?.title as string | undefined) || undefined,
     phone: (md?.phone as string | undefined) || undefined,
     bivNumber: (md?.biv_number as string | undefined) || undefined,
+    photoUrl: (md?.photo_url as string | undefined) || undefined,
     active: md?.active !== false,
   }
 }
