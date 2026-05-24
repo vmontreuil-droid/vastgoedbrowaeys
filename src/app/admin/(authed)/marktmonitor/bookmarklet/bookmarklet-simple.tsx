@@ -30,31 +30,78 @@ export function BookmarkletSimple({
 
   const bookmarkletJs = useMemo(() => {
     const apiUrl = `${origin}/api/market-leads/import-listings`
-    // DOM-extractie in de browser (na hydration zijn alle Vue/React listings zichtbaar).
-    // Pakt alle links die naar zoekertjes/te-koop/te-huur wijzen, voor elke link
-    // de omliggende card-context voor prijs/foto/adres.
+    // DOM-extractie + auto-paginering. Werkt vanuit Stefanie's browser
+    // (geen Cloudflare-blokkade want zij is een echte gebruiker met cookies).
+    // Stap 1: extract uit huidige DOM.
+    // Stap 2: detect totaal aantal pagina's uit de paginering.
+    // Stap 3: fetch elke pagina via fetch(), parse de gestreamde HTML in
+    //         een DOMParser, herhaal de extractie.
+    // Stap 4: alles in 1 POST naar onze API.
     const body = `(async()=>{try{
-      var lst=[],seen={};
-      var sels=['a[href*="/zoekertje/"]','a[href*="/classified/"]','a[href*="/te-koop/"]','a[href*="/te-huur/"]'];
-      var links=[];
-      sels.forEach(function(s){document.querySelectorAll(s).forEach(function(a){links.push(a)})});
-      for(var i=0;i<links.length;i++){
-        var a=links[i];
-        var u=a.href;
-        if(!u||seen[u])continue;
-        seen[u]=1;
-        // Filter top-nav 'algemene' links zonder ID-segment
-        if(!/\\d{4,}/.test(u))continue;
-        var card=a.closest('article,li,[class*=card],[class*=result],[class*=listing]')||a.parentElement;
-        var img=card&&card.querySelector('img');
-        var t=(card&&card.innerText)||a.innerText||'';
-        var pm=t.match(/\\u20AC\\s*[\\d\\.\\s]+/);
-        var p=pm?parseInt(pm[0].replace(/[^\\d]/g,'')):null;
-        var am=t.match(/\\b\\d{4}\\s+[A-Za-z\\u00C0-\\u017F][A-Za-z\\u00C0-\\u017F\\s\\-']{1,40}/);
-        lst.push({url:u,title:a.title||(t.split(/\\n/)[0]||'').slice(0,80),imageUrl:img?(img.src||img.dataset.src||null):null,price:p,addressLine:am?am[0].trim():null});
+      function extract(doc){
+        var lst=[],seen={};
+        var sels=['a[href*="/zoekertje/"]','a[href*="/classified/"]','a[href*="/te-koop/"]','a[href*="/te-huur/"]'];
+        var links=[];
+        sels.forEach(function(s){doc.querySelectorAll(s).forEach(function(a){links.push(a)})});
+        for(var i=0;i<links.length;i++){
+          var a=links[i];
+          var u=a.href||a.getAttribute('href');
+          if(!u)continue;
+          if(u.indexOf('http')!==0)u=new URL(u,location.origin).href;
+          if(seen[u])continue;
+          seen[u]=1;
+          if(!/\\d{4,}/.test(u))continue;
+          var card=a.closest('article,li,[class*=card],[class*=result],[class*=listing]')||a.parentElement;
+          var img=card&&card.querySelector('img');
+          var t=(card&&card.textContent)||a.textContent||'';
+          var pm=t.match(/\\u20AC\\s*[\\d\\.\\s]+/);
+          var p=pm?parseInt(pm[0].replace(/[^\\d]/g,'')):null;
+          var am=t.match(/\\b\\d{4}\\s+[A-Za-z\\u00C0-\\u017F][A-Za-z\\u00C0-\\u017F\\s\\-']{1,40}/);
+          lst.push({url:u,title:a.title||(t.split(/\\n/)[0]||'').slice(0,80).trim(),imageUrl:img?(img.src||img.dataset.src||null):null,price:p,addressLine:am?am[0].trim():null});
+        }
+        return lst;
       }
-      if(lst.length===0){alert('Browaeys: geen panden gevonden op deze pagina. Sta je op een zoekresultaten-pagina?');return;}
-      var r=await fetch(${JSON.stringify(apiUrl)},{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer ${token}'},body:JSON.stringify({url:location.href,listings:lst})});
+      function maxPage(doc){
+        // Immoweb: pages staan in <a> met href page=N, en max link is laatste
+        var pages=new Set();
+        doc.querySelectorAll('a[href*="page="]').forEach(function(a){
+          var m=(a.href||a.getAttribute('href')||'').match(/[?&]page=(\\d+)/);
+          if(m)pages.add(parseInt(m[1]));
+        });
+        if(pages.size===0)return 1;
+        return Math.min(20,Math.max.apply(null,Array.from(pages)));
+      }
+      function pageUrl(n){
+        var u=new URL(location.href);
+        u.searchParams.set('page',String(n));
+        return u.href;
+      }
+
+      var current=extract(document);
+      var max=maxPage(document);
+      var all=current.slice();
+      if(max>1){
+        if(!confirm('Detecteer '+max+' pagina\\'s ('+current.length+' op huidige pagina). Wil je alle pagina\\'s importeren? Kan 10-30s duren.')){
+          // Alleen huidige pagina sturen
+        }else{
+          // Begin bij pagina 2 (huidige is meestal pagina 1)
+          var cur=new URL(location.href).searchParams.get('page');
+          var startPage=cur?parseInt(cur)+1:2;
+          for(var p=startPage;p<=max;p++){
+            try{
+              var res=await fetch(pageUrl(p),{credentials:'include'});
+              if(!res.ok)continue;
+              var html=await res.text();
+              var doc=new DOMParser().parseFromString(html,'text/html');
+              var more=extract(doc);
+              all=all.concat(more);
+            }catch(_){}
+          }
+        }
+      }
+
+      if(all.length===0){alert('Browaeys: geen panden gevonden op deze pagina. Sta je op een zoekresultaten-pagina?');return;}
+      var r=await fetch(${JSON.stringify(apiUrl)},{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer ${token}'},body:JSON.stringify({url:location.href,listings:all})});
       var d=await r.json();
       alert('Browaeys: '+(d.message||d.error||'klaar'));
     }catch(e){alert('Browaeys fout: '+e.message);}})();`
