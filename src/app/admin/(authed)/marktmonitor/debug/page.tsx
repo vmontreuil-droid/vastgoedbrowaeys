@@ -25,21 +25,27 @@ export default async function DebugPage() {
   if (snap?.htmlSnippet) {
     const html = snap.htmlSnippet
     const patterns: Array<[string, RegExp]> = [
-      ['__NEXT_DATA__ blok', /<script\s+id="__NEXT_DATA__"/],
-      ['Self.__next_f.push', /self\.__next_f\.push/],
+      ['<script id="__NEXT_DATA__">', /<script\s+id="__NEXT_DATA__"/],
+      ['self.__next_f.push (Next.js 13+ RSC)', /self\.__next_f\.push/g],
       ['window.__INITIAL_STATE__', /window\.__INITIAL_STATE__/],
-      ['JSON-LD type RealEstateListing', /"@type":\s*"RealEstateListing"/],
-      ['JSON-LD type Product', /"@type":\s*"Product"/],
-      ['JSON-LD type Place', /"@type":\s*"Place"/],
-      ['data-test-id attributes', /data-test(?:id|-id)="[^"]+"/g],
+      ['<template id> hydration', /<template\s+id=/g],
+      ['JSON-LD scripts', /<script[^>]+application\/ld\+json/g],
+      ['@type RealEstateListing', /"@type":\s*"RealEstateListing"/g],
+      ['@type Apartment / House / Place / Product', /"@type":\s*"(Apartment|House|Place|Product|Offer|SingleFamilyResidence)"/g],
+      ['data-testid attributes', /data-testid="[^"]+"/g],
+      ['data-test attributes', /data-test="[^"]+"/g],
       ['data-cy attributes', /data-cy="[^"]+"/g],
-      ['data-testid op cards', /data-testid="card/g],
-      ['article elements', /<article\b/g],
-      ['Class card--result', /class="[^"]*card--result/g],
-      ['Class search-result', /class="[^"]*search-result/g],
+      ['<article> elementen', /<article\b/g],
+      ['class card-result', /class="[^"]*card-result/g],
+      ['class search-result', /class="[^"]*search-result/g],
       ['/zoekertje/ links', /\/zoekertje\//g],
       ['/te-koop/ links', /\/te-koop\//g],
-      ['property + transaction velden', /"property"[\s\S]{0,500}"transaction"/g],
+      ['/te-huur/ links', /\/te-huur\//g],
+      ['"property" velden', /"property":\s*\{/g],
+      ['"transaction" velden', /"transaction":\s*\{/g],
+      ['"price" velden', /"price":\s*\d/g],
+      ['"@id" /classifieds/', /"@id":\s*"[^"]*classifieds/g],
+      ['data-cypress refs', /data-cypress="[^"]+"/g],
     ]
     for (const [label, re] of patterns) {
       const m = html.match(re)

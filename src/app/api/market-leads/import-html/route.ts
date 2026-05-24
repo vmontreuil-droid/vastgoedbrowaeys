@@ -122,8 +122,8 @@ export async function POST(request: Request) {
             timestamp: new Date().toISOString(),
             htmlSize: html.length,
             hints,
-            // Bewaar eerste 30KB — meestal genoeg om de head + eerste body-elements te zien
-            htmlSnippet: html.slice(0, 30000),
+            // Bewaar eerste 300KB — bij Next.js 13+ sites zit data verder in de stream
+            htmlSnippet: html.slice(0, 300000),
           },
         },
       })
