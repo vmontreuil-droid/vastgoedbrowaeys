@@ -41,3 +41,16 @@ export async function regenerateMarketImportTokenAction(): Promise<TokenResult> 
   revalidatePath('/admin/marktmonitor/bookmarklet')
   return { ok: true, token }
 }
+
+/** Genereert een token alleen als de gebruiker er nog geen heeft. Stil. */
+export async function ensureMarketImportTokenAction(): Promise<TokenResult> {
+  let user
+  try { user = await requireAdmin() } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : 'Geen toegang' }
+  }
+
+  const existing = user.user_metadata?.market_import_token as string | undefined
+  if (existing && existing.length > 10) return { ok: true, token: existing }
+
+  return regenerateMarketImportTokenAction()
+}
