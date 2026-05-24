@@ -66,7 +66,7 @@ export default async function DossierDetailPage({
     getDossierEvents(dossier.id),
     getDossierSteps(dossier.id, dossier.type),
     getNoteTemplates(),
-    getTeamMembers(),
+    getTeamMembers(currentUser?.id),
   ])
   const appointments = allAppointments
     .filter((a) => a.dossierId === dossier.id)

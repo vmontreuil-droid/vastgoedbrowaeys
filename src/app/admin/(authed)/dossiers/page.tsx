@@ -42,7 +42,7 @@ export default async function DossiersPage({
 
   const [{ items: allDossiers, error }, { items: team }] = await Promise.all([
     getAdminDossiers(),
-    getTeamMembers(),
+    getTeamMembers(currentUser?.id),
   ])
 
   let dossiers = [...allDossiers]

@@ -458,10 +458,53 @@ export type TeamMember = {
   active: boolean
 }
 
-export async function getTeamMembers(): Promise<FetchResult<TeamMember>> {
+/**
+ * Haalt werknemers via auth.admin.listUsers(). Supabase Auth kan af en toe
+ * een "Database error finding users" gooien — typisch transient. We doen
+ * 1 retry. Bij volledige fail, valt de aanroeper terug op fallbackUserId
+ * zodat de pagina nooit volledig leeg is voor de ingelogde admin.
+ */
+export async function getTeamMembers(fallbackUserId?: string): Promise<FetchResult<TeamMember>> {
   const admin = createAdminClient()
-  const { data, error } = await admin.auth.admin.listUsers()
-  if (error) return { items: [], error: error.message }
+
+  async function tryListUsers() {
+    return await admin.auth.admin.listUsers()
+  }
+
+  let { data, error } = await tryListUsers()
+  if (error) {
+    await new Promise((r) => setTimeout(r, 400))
+    ;({ data, error } = await tryListUsers())
+  }
+
+  if (error) {
+    // Volledige fail — probeer minstens de ingelogde gebruiker terug te
+    // geven zodat de team-pagina niet leeg is.
+    if (fallbackUserId) {
+      try {
+        const { data: single } = await admin.auth.admin.getUserById(fallbackUserId)
+        const u = single?.user
+        if (u && u.user_metadata?.role === 'admin' && u.email) {
+          return {
+            items: [{
+              id: u.id,
+              email: u.email,
+              firstName: (u.user_metadata?.first_name as string) || '',
+              lastName: (u.user_metadata?.last_name as string) || '',
+              title: (u.user_metadata?.title as string | undefined) || undefined,
+              phone: (u.user_metadata?.phone as string | undefined) || undefined,
+              bivNumber: (u.user_metadata?.biv_number as string | undefined) || undefined,
+              active: u.user_metadata?.active !== false,
+            }],
+            error: `Volledige team-lijst niet beschikbaar (${error.message}). Alleen jouw account wordt getoond.`,
+          }
+        }
+      } catch {
+        // negeer — return de listUsers-error
+      }
+    }
+    return { items: [], error: error.message }
+  }
 
   const team: TeamMember[] = (data?.users ?? [])
     .filter((u) => u.user_metadata?.role === 'admin' && u.email)

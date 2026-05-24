@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { UserCog, Crown, FolderOpen, Award } from 'lucide-react'
+import { UserCog, Crown, FolderOpen, Award, AlertCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { getAdminDossiers, getTeamMembers } from '@/lib/admin-db'
 import { TeamMemberCard } from '../instellingen/team-member-card'
@@ -14,7 +14,7 @@ export default async function TeamPage() {
   const { data: { user: currentUser } } = await supabase.auth.getUser()
 
   const [{ items: team, error: teamErr }, { items: dossiers }] = await Promise.all([
-    getTeamMembers(),
+    getTeamMembers(currentUser?.id),
     getAdminDossiers(),
   ])
 
@@ -73,9 +73,21 @@ export default async function TeamPage() {
       </section>
 
       {teamErr && (
-        <p className="text-sm text-red-700 mb-4">
-          Kon team-lijst niet ophalen: {teamErr}
-        </p>
+        <div
+          className="flex items-start gap-3 p-4 mb-6 text-sm"
+          style={{ background: 'rgba(239, 68, 68, 0.08)', color: '#b91c1c', border: '1px solid rgba(239, 68, 68, 0.25)' }}
+        >
+          <AlertCircle className="size-4 mt-0.5 shrink-0" />
+          <div className="space-y-2">
+            <p className="font-medium">Kon team-lijst niet volledig ophalen</p>
+            <p className="text-xs">{teamErr}</p>
+            <ul className="text-xs list-disc pl-4 space-y-0.5 text-[var(--color-mute)]">
+              <li>Herlaad de pagina (vaak transient).</li>
+              <li>Check op <a href="https://status.supabase.com" target="_blank" rel="noopener" className="link-underline">status.supabase.com</a> of er een incident is.</li>
+              <li>Vraag Vincent om de SUPABASE_SERVICE_ROLE_KEY in Vercel te verifiëren als het blijft falen.</li>
+            </ul>
+          </div>
+        </div>
       )}
 
       <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
