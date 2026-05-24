@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import {
-  Radar, MapPin, Tag, Building2, User as UserIcon, Settings, Layers,
+  Radar, MapPin, Tag, Building2, User as UserIcon, Settings, Layers, Stethoscope,
 } from 'lucide-react'
 import { getMarketLeads, type MarketLead, type MarketLeadStatus } from '@/lib/admin-db'
 import { formatPrice } from '@/lib/listings'
@@ -96,6 +96,15 @@ export default async function MarktmonitorPage({
           >
             <Settings className="size-3.5" />
             Mijn zones
+          </Link>
+          <Link
+            href="/admin/marktmonitor/diagnose"
+            className="inline-flex items-center gap-2 px-3 py-2.5 text-xs"
+            style={{ border: '1px solid var(--color-line)' }}
+            title="Test of de scrapers werken vanaf de server"
+          >
+            <Stethoscope className="size-3.5" />
+            Diagnose
           </Link>
           <ScanAllButton />
         </div>
