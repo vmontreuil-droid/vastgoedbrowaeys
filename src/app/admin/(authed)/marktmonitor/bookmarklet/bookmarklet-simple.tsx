@@ -28,6 +28,81 @@ export function BookmarkletSimple({
   const [pending, startTransition] = useTransition()
   const [copied, setCopied] = useState(false)
 
+  // Batch-bookmarklet: haalt onverrijkte leads op, fetcht detail-pagina's
+  // vanuit Stefanie's browser (geen Cloudflare-issue), POST't enrichment.
+  const batchBookmarkletJs = useMemo(() => {
+    const apiBase = origin
+    const body = `(async()=>{try{
+      var host=location.hostname.replace(/^www\\./,'');
+      var fetchHeaders={'Authorization':'Bearer ${token}'};
+      var listRes=await fetch(${JSON.stringify(`${apiBase}/api/market-leads/unenriched?limit=10&host=`)}+encodeURIComponent(host),{headers:fetchHeaders});
+      var listData=await listRes.json();
+      if(!listData.ok){alert('Browaeys: '+(listData.error||'kon lijst niet ophalen'));return;}
+      var leads=listData.leads||[];
+      if(leads.length===0){alert('Browaeys: alle leads zijn al verrijkt voor '+host+'!');return;}
+      if(!confirm(leads.length+' leads gevonden op '+host+' zonder detail-data. Verrijken? Kan 20-60s duren.'))return;
+
+      function parseDetail(doc,baseUrl){
+        var imgs=[],imgSeen={};
+        doc.querySelectorAll('main img, [class*=gallery] img, [class*=carousel] img, [class*=swiper] img, picture source').forEach(function(el){
+          var src=el.src||el.getAttribute('data-src')||el.getAttribute('data-original')||'';
+          if(!src){var ss=el.getAttribute('srcset')||el.getAttribute('data-srcset');if(ss)src=ss.split(',')[0].trim().split(' ')[0];}
+          if(!src||src.indexOf('data:')===0)return;
+          if(/logo|icon|avatar|brand|favicon/i.test(src))return;
+          if(el.closest('nav,header,footer'))return;
+          src=src.replace(/_small\\.|_thumb\\.|_thumbnail\\./,'_large.');
+          if(src.indexOf('http')!==0){try{src=new URL(src,baseUrl).href}catch(_){}}
+          if(imgSeen[src])return;
+          imgSeen[src]=1;imgs.push(src);
+        });
+        var desc=null,maxLen=0;
+        doc.querySelectorAll('[class*="description"] p, [class*="description"], article > section, main > section, main p').forEach(function(el){
+          var txt=(el.textContent||'').trim();
+          if(txt.length>maxLen&&txt.length>80&&txt.length<5000){maxLen=txt.length;desc=txt.slice(0,2000);}
+        });
+        var features={};
+        doc.querySelectorAll('dl,table,[class*="feature"],[class*="characteristic"]').forEach(function(c){
+          var dts=c.querySelectorAll('dt');
+          for(var k=0;k<dts.length;k++){
+            var dd=dts[k].nextElementSibling;
+            if(dd&&dd.tagName==='DD'){var key=(dts[k].textContent||'').trim().toLowerCase().slice(0,60);var val=(dd.textContent||'').trim().slice(0,200);if(key&&val)features[key]=val;}
+          }
+          c.querySelectorAll('tr').forEach(function(tr){
+            var cells=tr.querySelectorAll('th,td');
+            if(cells.length===2){var k2=(cells[0].textContent||'').trim().toLowerCase().slice(0,60);var v2=(cells[1].textContent||'').trim().slice(0,200);if(k2&&v2)features[k2]=v2;}
+          });
+        });
+        var bodyText=doc.body?doc.body.textContent:'';
+        var pm=(bodyText||'').match(/\\u20AC\\s*([\\d]{1,3}(?:[.\\s]\\d{3})+)/);
+        var price=pm?parseInt(pm[1].replace(/[^\\d]/g,'')):null;
+        if(price&&(price<100||price>50000000))price=null;
+        var am=(bodyText||'').match(/\\b([1-9]\\d{3})\\s+([A-Za-z\\u00C0-\\u017F][A-Za-z\\u00C0-\\u017F\\s\\-']{1,40})/);
+        return{images:imgs.slice(0,30),description:desc,features:features,price:price,addressLine:am?am[0].trim():null};
+      }
+
+      var ok=0,fail=0;
+      for(var i=0;i<leads.length;i++){
+        try{
+          var res=await fetch(leads[i].url,{credentials:'include'});
+          if(!res.ok){fail++;continue;}
+          var html=await res.text();
+          var doc=new DOMParser().parseFromString(html,'text/html');
+          var detail=parseDetail(doc,leads[i].url);
+          await fetch(${JSON.stringify(`${apiBase}/api/market-leads/import-listings`)},{
+            method:'POST',
+            headers:{'Content-Type':'application/json','Authorization':'Bearer ${token}'},
+            body:JSON.stringify({url:leads[i].url,listings:[{url:leads[i].url,title:null,imageUrl:detail.images[0]||null,price:detail.price,addressLine:detail.addressLine,images:detail.images,description:detail.description,features:detail.features}],detail:true})
+          });
+          ok++;
+          // Wees lief tegen de site
+          await new Promise(function(r){setTimeout(r,800)});
+        }catch(_){fail++;}
+      }
+      alert('Browaeys: '+ok+' lead(s) verrijkt, '+fail+' mislukt. Klik nogmaals voor volgende batch.');
+    }catch(e){alert('Browaeys batch-fout: '+e.message);}})();`
+    return `javascript:${encodeURIComponent(body)}`
+  }, [origin, token])
+
   const bookmarkletJs = useMemo(() => {
     const apiUrl = `${origin}/api/market-leads/import-listings`
     // DOM-extractie + auto-paginering. Werkt vanuit Stefanie's browser
@@ -285,6 +360,38 @@ export function BookmarkletSimple({
           <kbd className="px-1.5 py-0.5 text-[0.7rem]"
             style={{ background: 'var(--color-paper-2)', border: '1px solid var(--color-line)' }}>B</kbd>{' '}
           om hem te tonen.
+        </p>
+      </section>
+
+      {/* === Verrijk-batch bookmarklet === */}
+      <section className="p-6 md:p-8 text-center"
+        style={{ background: 'var(--color-paper)', border: '2px dashed #16a34a' }}>
+        <p className="text-base md:text-lg mb-2">
+          <strong>Bonus:</strong> Verrijk batch
+        </p>
+        <p className="text-xs text-[var(--color-mute)] mb-4 max-w-md mx-auto">
+          Sleep deze tweede knop ook naar je favorieten-balk. Klik erop wanneer je op een Immoweb-,
+          Zimmo- of Realo-pagina staat — hij haalt automatisch detail-info (foto&apos;s, beschrijving,
+          kenmerken) op voor 10 leads tegelijk.
+        </p>
+
+        <div className="flex items-center justify-center gap-4 my-4">
+          <div
+            dangerouslySetInnerHTML={{
+              __html: `<a
+                href="${escapeHtmlAttr(batchBookmarkletJs)}"
+                draggable="true"
+                onclick="event.preventDefault();alert('Sleep deze knop naar je favorieten-balk in plaats van te klikken.');return false;"
+                title="Sleep mij naar je favorieten-balk"
+                style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.2rem;font-size:0.9rem;background:#16a34a;color:#fff;cursor:grab;user-select:none;text-decoration:none;font-family:inherit;"
+              ><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>Verrijk Browaeys batch</a>`
+            }}
+          />
+        </div>
+
+        <p className="text-[0.65rem] text-[var(--color-mute)] italic">
+          💡 Tip: klik meerdere keren na elkaar — telkens 10 nieuwe leads worden verrijkt tot de
+          lijst leeg is.
         </p>
       </section>
 
