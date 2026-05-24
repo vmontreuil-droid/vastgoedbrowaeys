@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Users, Plus, Search, Filter, Mail, Phone, MapPin, ArrowRight, AlertCircle } from 'lucide-react'
+import { Users, Plus, Search, Filter, Mail, Phone, MapPin, ArrowRight, AlertCircle, Download } from 'lucide-react'
 import { getAdminClients, getAdminDossiers } from '@/lib/admin-db'
 import { DonutChart } from '@/components/admin/charts'
 
@@ -50,14 +50,25 @@ export default async function ClientsPage({
             Klanten <span className="text-[var(--color-mute)] text-2xl">({allClients.length})</span>
           </h1>
         </div>
-        <Link
-          href="/admin/klanten/nieuw"
-          className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-medium uppercase tracking-[0.1em]"
-          style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
-        >
-          <Plus className="size-3.5" />
-          Nieuwe klant
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <a
+            href={`/admin/klanten/export?status=${encodeURIComponent(statusFilter)}&kind=${encodeURIComponent(kindFilter)}`}
+            className="inline-flex items-center gap-2 px-3 py-2.5 text-xs"
+            style={{ border: '1px solid var(--color-line)' }}
+            title="Download de huidige gefilterde klantenlijst als CSV (Excel-compatibel, GDPR-data)"
+          >
+            <Download className="size-3.5" />
+            Export CSV
+          </a>
+          <Link
+            href="/admin/klanten/nieuw"
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-medium uppercase tracking-[0.1em]"
+            style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
+          >
+            <Plus className="size-3.5" />
+            Nieuwe klant
+          </Link>
+        </div>
       </section>
 
       {clientsErr && (

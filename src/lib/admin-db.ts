@@ -397,6 +397,122 @@ export type DossierEvent = {
   createdAt: string
 }
 
+export type AdminSearchHit = {
+  type: 'dossier_notes' | 'dossier_event' | 'commission_notes' | 'client_notes'
+  dossierId: string | null
+  dossierRef: string | null
+  clientId: string | null
+  clientName: string | null
+  matchText: string
+  fullText: string
+  href: string
+  createdAt: string
+}
+
+/**
+ * Full-text zoeken doorheen alle vrije-tekst velden van het admin systeem:
+ * dossier notities, dossier events, commissie notities, klant notities.
+ * Case-insensitive substring match.
+ */
+export async function searchAdminNotes(query: string): Promise<AdminSearchHit[]> {
+  const q = query.trim().toLowerCase()
+  if (q.length < 2) return []
+
+  const admin = createAdminClient()
+  const hits: AdminSearchHit[] = []
+
+  // 1) dossier.notes + dossier.commission_notes
+  const { items: dossiers } = await getAdminDossiers()
+  for (const d of dossiers) {
+    if (d.notes && d.notes.toLowerCase().includes(q)) {
+      hits.push({
+        type: 'dossier_notes',
+        dossierId: d.id,
+        dossierRef: d.ref,
+        clientId: d.clientId,
+        clientName: d.clientName,
+        matchText: snippet(d.notes, q),
+        fullText: d.notes,
+        href: `/admin/dossiers/${d.id}`,
+        createdAt: d.openedAt,
+      })
+    }
+    if (d.commissionNotes && d.commissionNotes.toLowerCase().includes(q)) {
+      hits.push({
+        type: 'commission_notes',
+        dossierId: d.id,
+        dossierRef: d.ref,
+        clientId: d.clientId,
+        clientName: d.clientName,
+        matchText: snippet(d.commissionNotes, q),
+        fullText: d.commissionNotes,
+        href: `/admin/dossiers/${d.id}`,
+        createdAt: d.openedAt,
+      })
+    }
+  }
+
+  // 2) dossier_events bodies
+  const { data: eventsData } = await admin
+    .from('dossier_events')
+    .select('id, dossier_id, event_type, title, body, created_at')
+    .order('created_at', { ascending: false })
+    .limit(2000)
+  if (eventsData) {
+    const byDossier = new Map(dossiers.map((d) => [d.id, d]))
+    for (const e of (eventsData as Array<{
+      id: string; dossier_id: string; event_type: string; title: string;
+      body: string | null; created_at: string;
+    }>)) {
+      const fullText = [e.title, e.body].filter(Boolean).join(' — ')
+      if (!fullText.toLowerCase().includes(q)) continue
+      const dossier = byDossier.get(e.dossier_id)
+      hits.push({
+        type: 'dossier_event',
+        dossierId: e.dossier_id,
+        dossierRef: dossier?.ref ?? null,
+        clientId: dossier?.clientId ?? null,
+        clientName: dossier?.clientName ?? null,
+        matchText: snippet(fullText, q),
+        fullText,
+        href: `/admin/dossiers/${e.dossier_id}`,
+        createdAt: e.created_at,
+      })
+    }
+  }
+
+  // 3) Klant-notities uit user_metadata
+  const { items: clients } = await getAdminClients()
+  for (const c of clients) {
+    if (c.notes && c.notes.toLowerCase().includes(q)) {
+      hits.push({
+        type: 'client_notes',
+        dossierId: null,
+        dossierRef: null,
+        clientId: c.id,
+        clientName: `${c.firstName} ${c.lastName}`.trim() || c.email,
+        matchText: snippet(c.notes, q),
+        fullText: c.notes,
+        href: `/admin/klanten/${c.id}`,
+        createdAt: c.createdAt,
+      })
+    }
+  }
+
+  hits.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  return hits
+}
+
+function snippet(text: string, q: string, contextChars = 80): string {
+  const idx = text.toLowerCase().indexOf(q.toLowerCase())
+  if (idx < 0) return text.slice(0, 200)
+  const start = Math.max(0, idx - contextChars)
+  const end = Math.min(text.length, idx + q.length + contextChars)
+  const prefix = start > 0 ? '…' : ''
+  const suffix = end < text.length ? '…' : ''
+  return prefix + text.slice(start, end) + suffix
+}
+
 export async function getDossierEvents(dossierId: string, limit = 50): Promise<FetchResult<DossierEvent>> {
   const admin = createAdminClient()
   const { data, error } = await admin
@@ -700,6 +816,36 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
     leadsUnread: leads.items.filter((l) => !l.readAt).length,
     leadsTotal: leads.items.length,
   }
+}
+
+/**
+ * Gerealiseerde commissies per maand (laatste N maanden).
+ * Bucketing op closed_at; alleen dossiers met status verkocht/verhuurd.
+ */
+export async function getCommissionHistory(months = 12): Promise<Array<{ x: string; Gerealiseerd: number; Aantal: number }>> {
+  const { items: dossiers } = await getAdminDossiers()
+  const now = new Date()
+  const monthLabels = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec']
+  const buckets: Array<{ start: Date; end: Date; label: string }> = []
+  for (let i = months - 1; i >= 0; i--) {
+    const start = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 1)
+    const yearSuffix = start.getFullYear() !== now.getFullYear() ? ` '${String(start.getFullYear()).slice(-2)}` : ''
+    buckets.push({ start, end, label: `${monthLabels[start.getMonth()]}${yearSuffix}` })
+  }
+  const closed = dossiers.filter((d) => (d.status === 'verkocht' || d.status === 'verhuurd') && d.closedAt)
+  return buckets.map((b) => {
+    let total = 0
+    let count = 0
+    for (const d of closed) {
+      const closedAt = new Date(d.closedAt!).getTime()
+      if (closedAt >= b.start.getTime() && closedAt < b.end.getTime()) {
+        total += computeCommission(d)
+        count += 1
+      }
+    }
+    return { x: b.label, Gerealiseerd: total, Aantal: count }
+  })
 }
 
 /**

@@ -6,10 +6,10 @@ import {
 import { createClient } from '@/lib/supabase/server'
 import {
   getAdminClients, getAdminDossiers, getAdminAppointments, getAdminLeads, getAdminTrends,
-  getStorageStats, computeCommission,
+  getStorageStats, computeCommission, getCommissionHistory,
 } from '@/lib/admin-db'
 import { getListings, formatPrice } from '@/lib/listings'
-import { DonutChart, TrendArea, StackedBars } from '@/components/admin/charts'
+import { DonutChart, TrendArea, StackedBars, SimpleLine } from '@/components/admin/charts'
 
 export const metadata = {
   title: 'Admin · Overzicht',
@@ -55,6 +55,7 @@ export default async function AdminDashboardPage() {
     { items: allLeads },
     trends,
     storage,
+    commissionHistory,
   ] = await Promise.all([
     getAdminClients(),
     getAdminDossiers(),
@@ -62,6 +63,7 @@ export default async function AdminDashboardPage() {
     getAdminLeads(),
     getAdminTrends(),
     getStorageStats(),
+    getCommissionHistory(12),
   ])
 
 
@@ -212,6 +214,26 @@ export default async function AdminDashboardPage() {
             ]} />
           ) : (
             <EmptyChart text="Nog geen dossiers in de laatste 6 maanden" />
+          )}
+        </ChartCard>
+      </section>
+
+      {/* === Commissie-historiek (laatste 12 maanden) === */}
+      <section className="mb-10">
+        <ChartCard
+          title="Commissie-historiek"
+          subtitle={`Gerealiseerde commissies per maand (excl. BTW) — laatste 12 maanden · totaal ${formatPrice(commissionHistory.reduce((s, m) => s + m.Gerealiseerd, 0))}`}
+          actionHref="/admin/dossiers/export?status=gerealiseerd"
+          actionLabel="Export CSV →"
+        >
+          {commissionHistory.some((m) => m.Gerealiseerd > 0) ? (
+            <SimpleLine
+              data={commissionHistory}
+              dataKeys={[{ key: 'Gerealiseerd', label: 'Commissie € (excl BTW)', color: '#0b4f58' }]}
+              height={260}
+            />
+          ) : (
+            <EmptyChart text="Nog geen gerealiseerde commissies. Sluit een dossier af als 'verkocht' of 'verhuurd' om hier verschijning te krijgen." />
           )}
         </ChartCard>
       </section>
