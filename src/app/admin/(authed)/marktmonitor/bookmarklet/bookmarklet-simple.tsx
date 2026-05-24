@@ -29,34 +29,8 @@ export function BookmarkletSimple({
   const [copied, setCopied] = useState(false)
 
   const bookmarkletJs = useMemo(() => {
-    const apiUrl = `${origin}/api/market-leads/import-listings`
-    // DOM-extractor: vindt listing-cards in de gehydrateerde DOM en stuurt
-    // gestructureerde data. Werkt op Immoweb (Laravel+Vue), Zimmo, Realo,
-    // Logic-Immo en andere sites die /zoekertje/, /detail/ of /immo/ URLs gebruiken.
-    const body = `(async()=>{try{
-const SEL='a[href*="/zoekertje/"],a[href*="/classified/"],a[href*="/detail/"],a[href*="/immo/"],a[href*="/maison/"],a[href*="/huis/"],a[href*="/appartement/"]';
-const seen=new Set();const items=[];
-document.querySelectorAll(SEL).forEach(a=>{
-  let url=a.href;if(!url||seen.has(url))return;
-  // skip nav-links / generieke "te koop" pages
-  if(!/\\d/.test(url))return;
-  if(/zoeken|recherche|search\\b/.test(url))return;
-  seen.add(url);
-  const card=a.closest('article,li,[class*="card"],[class*="result"],[class*="search-item"]')||a.parentElement;
-  const text=(card?.innerText||'').replace(/\\s+/g,' ');
-  const pm=text.match(/€\\s*([\\d.\\s]+\\d)(?:\\s*\\/?\\s*(maand|mois|month))?/);
-  const price=pm?parseInt(pm[1].replace(/[^\\d]/g,'')):null;
-  const img=card?.querySelector('img');
-  const imageUrl=img?(img.currentSrc||img.src||img.dataset?.src||null):null;
-  const lines=text.split(/\\s*[\\n·•|]\\s*/).map(s=>s.trim()).filter(Boolean);
-  const addrLine=lines.find(l=>/\\b[1-9]\\d{3}\\b/.test(l))||null;
-  const title=a.getAttribute('title')||a.textContent?.trim()?.slice(0,200)||null;
-  items.push({url,title,imageUrl,price,addressLine:addrLine});
-});
-if(items.length===0){alert('Browaeys: geen panden gevonden op deze pagina. Open een zoek-resultatenlijst (niet de homepage).');return;}
-const r=await fetch(${JSON.stringify(apiUrl)},{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer ${token}'},body:JSON.stringify({url:location.href,listings:items})});
-const d=await r.json();alert('Browaeys: '+(d.message||d.error||'klaar'));
-}catch(e){alert('Browaeys fout: '+e.message);}})();`
+    const apiUrl = `${origin}/api/market-leads/import-html`
+    const body = `(async()=>{try{const r=await fetch(${JSON.stringify(apiUrl)},{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer ${token}'},body:JSON.stringify({url:location.href,html:document.documentElement.outerHTML})});const d=await r.json();alert('Browaeys: '+(d.message||d.error||'klaar'));}catch(e){alert('Browaeys fout: '+e.message);}})();`
     return `javascript:${encodeURIComponent(body)}`
   }, [origin, token])
 
