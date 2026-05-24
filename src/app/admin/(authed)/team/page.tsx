@@ -102,7 +102,7 @@ export default async function TeamPage() {
           const closed = closedDossiersByMember.get(m.id) ?? 0
           const isOwner = m.email === 'stephanie@vastgoedbrowaeys.be'
           return (
-            <div key={m.id} className="relative">
+            <div key={m.id} className="relative flex flex-col h-full">
               {isOwner && (
                 <span
                   className="absolute -top-2 left-3 inline-flex items-center gap-1 px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.12em] font-medium z-10"
@@ -112,10 +112,12 @@ export default async function TeamPage() {
                   Zaakvoerder
                 </span>
               )}
-              <TeamMemberCard
-                member={m}
-                isSelf={currentUser?.id === m.id}
-              />
+              <div className="flex-1 flex flex-col">
+                <TeamMemberCard
+                  member={m}
+                  isSelf={currentUser?.id === m.id}
+                />
+              </div>
               <div
                 className="flex items-center justify-between gap-3 px-5 py-2.5 text-xs"
                 style={{

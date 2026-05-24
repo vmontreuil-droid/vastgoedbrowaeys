@@ -248,7 +248,7 @@ export function TeamMemberCard({
   }
 
   return (
-    <article className="overflow-hidden" style={cardStyle}>
+    <article className="overflow-hidden h-full flex flex-col" style={cardStyle}>
       <input
         ref={photoInputRef}
         type="file"
@@ -259,7 +259,7 @@ export function TeamMemberCard({
 
       {/* Foto-banner */}
       <div
-        className="relative aspect-[4/3] group"
+        className="relative aspect-[3/4] group"
         style={{ background: 'var(--color-paper-2)' }}
       >
         {member.photoUrl ? (
@@ -269,6 +269,7 @@ export function TeamMemberCard({
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
             className="object-cover"
+            style={{ objectPosition: 'center 20%' }}
             unoptimized
           />
         ) : (
@@ -323,7 +324,7 @@ export function TeamMemberCard({
         )}
       </div>
 
-      <div className="p-5">
+      <div className="p-5 flex-1 flex flex-col">
 
       {error && (
         <div
@@ -416,7 +417,7 @@ export function TeamMemberCard({
         </div>
       ) : (
         <div
-          className="flex items-center justify-between gap-2 pt-3 border-t"
+          className="flex items-center justify-between gap-2 pt-3 mt-auto border-t"
           style={{ borderColor: 'var(--color-line)' }}
         >
           <button
