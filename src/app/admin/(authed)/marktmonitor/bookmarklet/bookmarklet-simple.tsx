@@ -29,8 +29,35 @@ export function BookmarkletSimple({
   const [copied, setCopied] = useState(false)
 
   const bookmarkletJs = useMemo(() => {
-    const apiUrl = `${origin}/api/market-leads/import-html`
-    const body = `(async()=>{try{const r=await fetch(${JSON.stringify(apiUrl)},{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer ${token}'},body:JSON.stringify({url:location.href,html:document.documentElement.outerHTML})});const d=await r.json();alert('Browaeys: '+(d.message||d.error||'klaar'));}catch(e){alert('Browaeys fout: '+e.message);}})();`
+    const apiUrl = `${origin}/api/market-leads/import-listings`
+    // DOM-extractie in de browser (na hydration zijn alle Vue/React listings zichtbaar).
+    // Pakt alle links die naar zoekertjes/te-koop/te-huur wijzen, voor elke link
+    // de omliggende card-context voor prijs/foto/adres.
+    const body = `(async()=>{try{
+      var lst=[],seen={};
+      var sels=['a[href*="/zoekertje/"]','a[href*="/classified/"]','a[href*="/te-koop/"]','a[href*="/te-huur/"]'];
+      var links=[];
+      sels.forEach(function(s){document.querySelectorAll(s).forEach(function(a){links.push(a)})});
+      for(var i=0;i<links.length;i++){
+        var a=links[i];
+        var u=a.href;
+        if(!u||seen[u])continue;
+        seen[u]=1;
+        // Filter top-nav 'algemene' links zonder ID-segment
+        if(!/\\d{4,}/.test(u))continue;
+        var card=a.closest('article,li,[class*=card],[class*=result],[class*=listing]')||a.parentElement;
+        var img=card&&card.querySelector('img');
+        var t=(card&&card.innerText)||a.innerText||'';
+        var pm=t.match(/\\u20AC\\s*[\\d\\.\\s]+/);
+        var p=pm?parseInt(pm[0].replace(/[^\\d]/g,'')):null;
+        var am=t.match(/\\b\\d{4}\\s+[A-Za-z\\u00C0-\\u017F][A-Za-z\\u00C0-\\u017F\\s\\-']{1,40}/);
+        lst.push({url:u,title:a.title||(t.split(/\\n/)[0]||'').slice(0,80),imageUrl:img?(img.src||img.dataset.src||null):null,price:p,addressLine:am?am[0].trim():null});
+      }
+      if(lst.length===0){alert('Browaeys: geen panden gevonden op deze pagina. Sta je op een zoekresultaten-pagina?');return;}
+      var r=await fetch(${JSON.stringify(apiUrl)},{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer ${token}'},body:JSON.stringify({url:location.href,listings:lst})});
+      var d=await r.json();
+      alert('Browaeys: '+(d.message||d.error||'klaar'));
+    }catch(e){alert('Browaeys fout: '+e.message);}})();`
     return `javascript:${encodeURIComponent(body)}`
   }, [origin, token])
 
