@@ -8,6 +8,7 @@ import {
   getAdminClient, getAdminDossiers, getAdminAppointments,
 } from '@/lib/admin-db'
 import { formatPrice } from '@/lib/listings'
+import { InviteButton } from './invite-button'
 
 export const metadata = {
   title: 'Admin · Klant',
@@ -91,6 +92,12 @@ export default async function ClientDetailPage({
           )}
         </div>
         <div className="flex flex-wrap gap-2">
+          <InviteButton
+            clientId={client.id}
+            clientEmail={client.email}
+            clientName={displayName}
+            alreadyHasAccount={client.hasAuthAccount}
+          />
           <Link
             href={`/admin/dossiers/nieuw?client_id=${client.id}`}
             className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium uppercase tracking-[0.1em]"

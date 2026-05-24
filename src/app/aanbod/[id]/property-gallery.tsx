@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight, X, Expand } from 'lucide-react'
 
@@ -18,6 +18,25 @@ export function PropertyGallery({
 
   const next = () => setIdx((i) => (i + 1) % images.length)
   const prev = () => setIdx((i) => (i - 1 + images.length) % images.length)
+
+  // Keyboard shortcuts wanneer lightbox open is: Esc sluit, ← / → navigeren
+  // + scroll-lock op body
+  useEffect(() => {
+    if (!lightbox) return
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setLightbox(false)
+      else if (e.key === 'ArrowRight') next()
+      else if (e.key === 'ArrowLeft') prev()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = originalOverflow
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [lightbox])
 
   return (
     <>

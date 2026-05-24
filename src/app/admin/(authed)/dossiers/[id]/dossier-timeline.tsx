@@ -1,11 +1,27 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useRef, useState, useTransition } from 'react'
 import {
-  Clock, Mail, FileText, FilePlus, FolderClock, Eye, AlertCircle, MessageSquare, ChevronDown, ChevronUp,
+  Clock, Mail, FileText, FilePlus, FolderClock, Eye, AlertCircle, MessageSquare,
+  ChevronDown, ChevronUp, Zap,
 } from 'lucide-react'
 import { addNoteAction } from './event-actions'
 import type { DossierEvent } from '@/lib/admin-db'
+
+const NOTE_TEMPLATES: Array<{ label: string; text: string }> = [
+  { label: 'Gebeld — geen antwoord',     text: 'Klant gebeld, geen antwoord. Voicemail ingesproken.' },
+  { label: 'Gebeld — kort gesproken',    text: 'Kort gesproken aan de telefoon — terugbellen op een rustiger moment.' },
+  { label: 'Bezichtiging bevestigd',     text: 'Bezichtiging bevestigd voor [datum] om [uur].' },
+  { label: 'Bezichtiging — interesse',   text: 'Bezichtiging gedaan — klant toonde duidelijke interesse, vraagt nog bedenktijd.' },
+  { label: 'Bezichtiging — geen match',  text: 'Bezichtiging gedaan — pand past niet bij de zoekfiche.' },
+  { label: 'Bod ontvangen',              text: 'Bod ontvangen van € [bedrag] — voorgelegd aan verkoper.' },
+  { label: 'Bod aanvaard',               text: 'Bod van € [bedrag] aanvaard door verkoper. Compromis in voorbereiding.' },
+  { label: 'Compromis opgemaakt',        text: 'Compromis-document opgemaakt en doorgestuurd voor nazicht.' },
+  { label: 'EPC ontvangen',              text: 'EPC-attest ontvangen en opgeladen in het dossier.' },
+  { label: 'Documenten compleet',        text: 'Alle wettelijk verplichte documenten zijn beschikbaar voor publicatie/akte.' },
+  { label: 'Foto-shoot ingepland',       text: 'Foto-presentatie ingepland voor [datum].' },
+  { label: 'Online gepubliceerd',        text: 'Pand vandaag online gezet op eigen site + Immoweb + Zimmo.' },
+]
 
 const TYPE_COLOR: Record<DossierEvent['eventType'], string> = {
   email_sent:           '#0b4f58',
@@ -40,6 +56,14 @@ export function DossierTimeline({
   const [error, setError] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
   const [optimisticEvents, setOptimisticEvents] = useState<DossierEvent[]>([])
+  const [templatesOpen, setTemplatesOpen] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  function applyTemplate(text: string) {
+    setNote((prev) => (prev.trim() ? `${prev}\n\n${text}` : text))
+    setTemplatesOpen(false)
+    setTimeout(() => textareaRef.current?.focus(), 0)
+  }
 
   const all = [...optimisticEvents, ...events]
 
@@ -78,24 +102,67 @@ export function DossierTimeline({
       </h2>
 
       <form onSubmit={submitNote}
-        className="p-3 mb-4 flex items-start gap-2"
+        className="p-3 mb-4"
         style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
-        <textarea
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="Notitie toevoegen aan dit dossier…"
-          rows={2}
-          className="flex-1 px-3 py-2 text-sm bg-transparent focus:outline-none"
-          style={{ border: '1px solid var(--color-line)' }}
-        />
-        <button
-          type="submit"
-          disabled={pending || !note.trim()}
-          className="self-stretch inline-flex items-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50 shrink-0"
-          style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
-        >
-          {pending ? 'Bezig…' : 'Bewaren'}
-        </button>
+        <div className="flex items-start gap-2 mb-2">
+          <textarea
+            ref={textareaRef}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Notitie toevoegen aan dit dossier…"
+            rows={2}
+            className="flex-1 px-3 py-2 text-sm bg-transparent focus:outline-none"
+            style={{ border: '1px solid var(--color-line)' }}
+          />
+          <button
+            type="submit"
+            disabled={pending || !note.trim()}
+            className="self-stretch inline-flex items-center gap-1.5 px-3 text-xs font-medium disabled:opacity-50 shrink-0"
+            style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
+          >
+            {pending ? 'Bezig…' : 'Bewaren'}
+          </button>
+        </div>
+
+        {/* Sjabloon-knoppen */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setTemplatesOpen((v) => !v)}
+            className="inline-flex items-center gap-1.5 text-[0.65rem] uppercase tracking-[0.12em] text-[var(--color-mute)] hover:text-[var(--color-ink)]"
+          >
+            <Zap className="size-3" />
+            Sjablonen
+            <ChevronDown className={`size-3 transition-transform ${templatesOpen ? 'rotate-180' : ''}`} />
+          </button>
+          {templatesOpen && (
+            <div
+              className="absolute z-20 mt-2 left-0 right-0 sm:right-auto sm:min-w-[420px] p-2"
+              style={{ background: 'var(--color-paper-2)', border: '1px solid var(--color-line)' }}
+            >
+              <p className="text-[0.6rem] uppercase tracking-[0.12em] text-[var(--color-mute)] px-2 py-1">
+                Klik om bij de notitie te voegen
+              </p>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                {NOTE_TEMPLATES.map((t) => (
+                  <li key={t.label}>
+                    <button
+                      type="button"
+                      onClick={() => applyTemplate(t.text)}
+                      title={t.text}
+                      className="w-full text-left px-2 py-1.5 text-xs hover:bg-[var(--color-paper)] transition-colors"
+                    >
+                      {t.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[0.6rem] text-[var(--color-mute)] px-2 py-1.5 mt-1 border-t" style={{ borderColor: 'var(--color-line)' }}>
+                💡 Plaatshouders zoals [datum], [bedrag] vervang je nog manueel.
+              </p>
+            </div>
+          )}
+        </div>
       </form>
 
       {error && (
