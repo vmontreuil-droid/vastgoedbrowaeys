@@ -22,6 +22,7 @@ import {
   Search,
   HelpCircle,
   UserCog,
+  Radar,
 } from 'lucide-react'
 import { BrandLogo } from './brand-logo'
 import { signOutAction } from '@/lib/auth/actions'
@@ -49,6 +50,7 @@ const NAV: Array<{
   { href: '/admin/berichten',    label: 'Berichten',    icon: MessageSquare,  badgeKey: 'berichten' },
   { href: '/admin/notificaties', label: 'Meldingen',    icon: Bell,           badgeKey: 'notificaties' },
   { href: '/admin/nieuwsbrief',  label: 'Nieuwsbrief',  icon: Send },
+  { href: '/admin/marktmonitor', label: 'Marktmonitor', icon: Radar },
   { href: '/admin/zoeken',       label: 'Zoeken',       icon: Search },
   { href: '/admin/team',         label: 'Team',         icon: UserCog },
   { href: '/admin/instellingen', label: 'Instellingen', icon: Settings },

@@ -533,6 +533,74 @@ function sortTeam(team: TeamMember[]): TeamMember[] {
  * Bij totale fail wordt minstens `fallbackUserId` (de ingelogde admin)
  * via getUserById opgehaald zodat de pagina niet leeg is.
  */
+export type MarketLeadStatus = 'prospect' | 'benaderd' | 'afspraak' | 'klant' | 'niet_geinteresseerd' | 'reeds_verkocht'
+
+export type MarketLead = {
+  id: string
+  sourceUrl: string
+  sourceSite: string | null
+  title: string | null
+  street: string | null
+  city: string | null
+  postcode: string | null
+  price: number | null
+  propertyType: string | null
+  listingType: 'verkoop' | 'verhuur' | 'onbekend'
+  imageUrl: string | null
+  isParticulier: boolean
+  agentName: string | null
+  status: MarketLeadStatus
+  notes: string | null
+  contactedAt: string | null
+  createdBy: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export async function getMarketLeads(): Promise<FetchResult<MarketLead>> {
+  const admin = createAdminClient()
+  const { data, error } = await admin
+    .from('market_leads')
+    .select('*')
+    .order('created_at', { ascending: false })
+  if (error) return { items: [], error: error.message }
+
+  const items: MarketLead[] = ((data ?? []) as Array<{
+    id: string; source_url: string; source_site: string | null;
+    title: string | null; street: string | null; city: string | null; postcode: string | null;
+    price: number | null; property_type: string | null; listing_type: MarketLead['listingType'];
+    image_url: string | null; is_particulier: boolean | null; agent_name: string | null;
+    status: MarketLeadStatus; notes: string | null; contacted_at: string | null;
+    created_by: string | null; created_at: string; updated_at: string;
+  }>).map((r) => ({
+    id: r.id,
+    sourceUrl: r.source_url,
+    sourceSite: r.source_site,
+    title: r.title,
+    street: r.street,
+    city: r.city,
+    postcode: r.postcode,
+    price: r.price,
+    propertyType: r.property_type,
+    listingType: r.listing_type,
+    imageUrl: r.image_url,
+    isParticulier: r.is_particulier === true,
+    agentName: r.agent_name,
+    status: r.status,
+    notes: r.notes,
+    contactedAt: r.contacted_at,
+    createdBy: r.created_by,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+  }))
+  return { items }
+}
+
+export async function getMarketLead(id: string): Promise<MarketLead | null> {
+  const list = await getMarketLeads()
+  return list.items.find((m) => m.id === id) ?? null
+}
+
 /** True als 'now' binnen de afwezigheidsperiode van een teamlid valt. */
 export function isOutOfOfficeNow(m: TeamMember, now = new Date()): boolean {
   if (!m.outOfOfficeFrom || !m.outOfOfficeUntil) return false

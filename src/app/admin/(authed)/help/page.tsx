@@ -3,7 +3,7 @@ import {
   HelpCircle, Users, FolderOpen, Home, Calendar, MessageSquare, Bell, Send,
   Calculator, Image as ImageIcon, Search, Settings, Lock,
   UserCog, Tag, Zap, Sparkles, LayoutDashboard, Stethoscope, AlertTriangle,
-  Target, CalendarOff,
+  Target, CalendarOff, Radar,
 } from 'lucide-react'
 
 export const metadata = {
@@ -257,6 +257,68 @@ export default function HelpPage() {
           overgeslagen. Onderaan elke nieuwsbrief-mail staat automatisch een
           uitschrijf-link. Je kan een klant ook manueel uit/in zetten via het 📬-icoon op
           de Klanten-lijst.
+        </p>
+      </Step>
+
+      <Step id="marktmonitor" icon={<Radar className="size-4" />} title="9b. Marktmonitor (acquisitie)">
+        <p>
+          Houd panden in je streek bij die je interessant vindt voor toekomstige acquisitie of
+          marktinzicht. Open <Link href="/admin/marktmonitor" className="link-underline">/admin/marktmonitor</Link>.
+        </p>
+
+        <h4>Pand toevoegen</h4>
+        <ol>
+          <li>Open Immoweb / Zimmo / Realo / Hebbes / Logic-Immo / Immoscoop in een ander tabblad.</li>
+          <li>Kopieer de URL van het zoekertje.</li>
+          <li>Plak in het &ldquo;URL toevoegen&rdquo;-vak en klik <em>Toevoegen</em>.</li>
+          <li>Het systeem leest publieke meta-data (titel, foto, prijs, adres) en voegt de lead toe.</li>
+        </ol>
+
+        <h4>Statussen</h4>
+        <ul>
+          <li><strong>Prospect</strong> — net toegevoegd, nog geen actie.</li>
+          <li><strong>Benaderd</strong> — brief/mail/telefoon verstuurd. Datum wordt automatisch geregistreerd.</li>
+          <li><strong>Afspraak gepland</strong> — eigenaar reageerde positief.</li>
+          <li><strong>Klant geworden</strong> — gewonnen!</li>
+          <li><strong>Niet geïnteresseerd</strong> — afgesloten zonder resultaat.</li>
+          <li><strong>Reeds verkocht</strong> — pand intussen verkocht (vaak door anderen).</li>
+        </ul>
+
+        <h4>Brief-generator</h4>
+        <p>Op de detail-pagina van een lead:</p>
+        <ul>
+          <li>Kies een template (kennismaking, schatting aanbieden, sneller verkopen, mandaat-overstap).</li>
+          <li>Onderwerp + tekst worden automatisch gevuld met de pand-gegevens en jouw contactinfo.</li>
+          <li>Drie acties: <em>Kopieer</em> naar klembord, <em>Open in mail-app</em> (mailto:), of <em>Print als brief</em> (A4 PDF via browser).</li>
+        </ul>
+
+        <h4>Filters</h4>
+        <ul>
+          <li>Status (open default = prospect / benaderd / afspraak).</li>
+          <li>Type (verkoop / verhuur).</li>
+          <li>Gemeente (top 8 op aantal leads).</li>
+        </ul>
+
+        <h4>Particulier vs makelaar</h4>
+        <p>
+          Het systeem detecteert automatisch of een pand door een particulier wordt aangeboden of
+          door een makelaar (op basis van trefwoorden + JSON-LD). Particuliere leads krijgen een
+          groene &ldquo;Particulier&rdquo;-badge.
+        </p>
+
+        <Tip>
+          <strong>BIV-deontologie:</strong> Stefanie krijgt een waarschuwing op de detail-pagina
+          als ze een brief wil opstellen voor een pand van een collega-makelaar. Art. 18 van de
+          plichtenleer verbiedt het ronselen van klanten van andere BIV-makelaars. Gebruik de
+          brief-templates dus vooral voor particuliere verkopers, of pas de tekst zelf aan tot
+          een algemene marktbenadering. Beslissing en verantwoordelijkheid blijven bij jou.
+        </Tip>
+
+        <h4>Beperkingen (fase 1)</h4>
+        <p>
+          Op dit moment moet je URLs zelf plakken. In fase 2 kunnen we (tegen betaalde scraper-API)
+          een nachtelijke automatische import opzetten voor een geselecteerde regio. Vraag dat
+          gerust als de tool nuttig blijkt.
         </p>
       </Step>
 
@@ -556,6 +618,7 @@ function Toc() {
     { id: 'berichten',           label: '7. Berichten',        icon: <MessageSquare className="size-3.5" /> },
     { id: 'meldingen',           label: '8. Meldingen',        icon: <Bell className="size-3.5" /> },
     { id: 'nieuwsbrief',         label: '9. Nieuwsbrief',      icon: <Send className="size-3.5" /> },
+    { id: 'marktmonitor',        label: '9b. Marktmonitor',    icon: <Radar className="size-3.5" /> },
     { id: 'zoeken',              label: '10. Zoeken',          icon: <Search className="size-3.5" /> },
     { id: 'team',                label: '11. Team',            icon: <UserCog className="size-3.5" /> },
     { id: 'targets',             label: '11b. Targets',        icon: <Target className="size-3.5" /> },
