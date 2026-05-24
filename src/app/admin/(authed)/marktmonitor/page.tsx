@@ -258,7 +258,9 @@ function LeadCard({ lead }: { lead: MarketLead }) {
             </p>
           )}
           <p className="mt-1 text-sm truncate">
-            {[lead.street, lead.postcode, lead.city].filter(Boolean).join(' · ') || lead.title || 'Adres onbekend'}
+            {[lead.street, lead.postcode, lead.city].filter(Boolean).join(' · ')
+              || (lead.title && lead.title.length > 4 && !/^(ai|nieuw|new|huis|appartement)$/i.test(lead.title.trim()) ? lead.title : null)
+              || 'Adres onbekend'}
           </p>
           <div className="mt-2 flex items-center justify-between text-[0.65rem] text-[var(--color-mute)]">
             <span className="inline-flex items-center gap-1 truncate">

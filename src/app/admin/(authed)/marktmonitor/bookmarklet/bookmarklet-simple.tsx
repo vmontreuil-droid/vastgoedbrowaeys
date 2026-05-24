@@ -48,16 +48,44 @@ export function BookmarkletSimple({
           var u=a.href||a.getAttribute('href');
           if(!u)continue;
           if(u.indexOf('http')!==0)u=new URL(u,location.origin).href;
+          // Strip alleen tracking-params, behoud rest van URL
+          u=u.split('#')[0];
           if(seen[u])continue;
           seen[u]=1;
           if(!/\\d{4,}/.test(u))continue;
           var card=a.closest('article,li,[class*=card],[class*=result],[class*=listing]')||a.parentElement;
+          // Image: probeer src, data-src, data-original, srcset (eerste url)
           var img=card&&card.querySelector('img');
-          var t=(card&&card.textContent)||a.textContent||'';
-          var pm=t.match(/\\u20AC\\s*[\\d\\.\\s]+/);
-          var p=pm?parseInt(pm[0].replace(/[^\\d]/g,'')):null;
-          var am=t.match(/\\b\\d{4}\\s+[A-Za-z\\u00C0-\\u017F][A-Za-z\\u00C0-\\u017F\\s\\-']{1,40}/);
-          lst.push({url:u,title:a.title||(t.split(/\\n/)[0]||'').slice(0,80).trim(),imageUrl:img?(img.src||img.dataset.src||null):null,price:p,addressLine:am?am[0].trim():null});
+          var imgUrl=null;
+          if(img){
+            imgUrl=img.src||img.getAttribute('data-src')||img.getAttribute('data-original');
+            if(!imgUrl||imgUrl.indexOf('data:')===0){
+              var ss=img.getAttribute('srcset')||img.getAttribute('data-srcset');
+              if(ss){imgUrl=ss.split(',')[0].trim().split(' ')[0];}
+            }
+            // Soms zit echte foto in <picture><source srcset>
+            if((!imgUrl||imgUrl.indexOf('data:')===0)&&img.parentElement){
+              var src=img.parentElement.querySelector('source[srcset]');
+              if(src){imgUrl=(src.getAttribute('srcset')||'').split(',')[0].trim().split(' ')[0];}
+            }
+            if(imgUrl&&imgUrl.indexOf('data:')===0)imgUrl=null;
+          }
+          // Text: gebruik innerText (respecteert display:none) waar mogelijk
+          var t=(card&&(card.innerText||card.textContent))||a.innerText||a.textContent||'';
+          // Prijs: pak alleen het EERSTE prijs-blok, stop bij niet-cijfer-of-punt
+          var pm=t.match(/\\u20AC\\s*([\\d]{1,3}(?:[.\\s]\\d{3})+)/);
+          if(!pm)pm=t.match(/\\u20AC\\s*([\\d]{3,7})/);
+          var p=pm?parseInt(pm[1].replace(/[^\\d]/g,'')):null;
+          // Sanity-check: prijzen tussen 100 en 50.000.000
+          if(p!==null&&(p<100||p>50000000))p=null;
+          // Adres
+          var am=t.match(/\\b([1-9]\\d{3})\\s+([A-Za-z\\u00C0-\\u017F][A-Za-z\\u00C0-\\u017F\\s\\-']{1,40})/);
+          var addressLine=am?(am[0].trim()):null;
+          // Title: vermijd Immoweb's AI/eco/sponsor-badges (te kort, geen adres)
+          var aLabel=a.getAttribute('aria-label')||a.title||'';
+          var firstLine=(t.split(/\\n/).map(function(s){return s.trim()}).filter(function(s){return s&&s.length>3&&!/^(ai|nieuw|new|eco|sponsor|featured)$/i.test(s)})[0])||'';
+          var title=(aLabel.length>5?aLabel:firstLine).slice(0,120).trim()||addressLine||null;
+          lst.push({url:u,title:title,imageUrl:imgUrl,price:p,addressLine:addressLine});
         }
         return lst;
       }

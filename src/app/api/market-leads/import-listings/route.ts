@@ -115,8 +115,23 @@ function mapToScraped(raw: RawListing, pageUrl: string): ScrapedListing | null {
   // Skip als we niks zinvols hebben
   if (!price && !addr.postcode && !title) return null
 
+  // Strip enkel #anchor en tracking-params (utm_*, ref, _ga) maar behoud essentiële query
+  let cleanUrl = raw.url.split('#')[0]
+  try {
+    const u = new URL(cleanUrl)
+    const trackingPrefixes = ['utm_', 'fbclid', 'gclid', 'mc_', '_ga']
+    const toDelete: string[] = []
+    u.searchParams.forEach((_, key) => {
+      if (trackingPrefixes.some((p) => key.toLowerCase().startsWith(p))) toDelete.push(key)
+    })
+    toDelete.forEach((k) => u.searchParams.delete(k))
+    cleanUrl = u.href
+  } catch {
+    // ignore — gebruik raw
+  }
+
   return {
-    sourceUrl: raw.url.split('?')[0].split('#')[0],
+    sourceUrl: cleanUrl,
     sourceSite,
     title,
     street: addr.street,

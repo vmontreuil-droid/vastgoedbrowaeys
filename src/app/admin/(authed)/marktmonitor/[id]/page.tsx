@@ -65,7 +65,16 @@ export default async function MarktLeadDetailPage({
           )}
         </div>
         <h1 className="text-xl sm:text-2xl md:text-4xl" style={{ fontFamily: 'var(--font-display)' }}>
-          {lead.title || lead.street || 'Pand zonder titel'}
+          {(() => {
+            // Adres is meestal nuttiger dan ruwe "title" uit DOM-extractie
+            const address = [lead.street, [lead.postcode, lead.city].filter(Boolean).join(' ')]
+              .filter(Boolean).join(', ')
+            if (address) return address
+            if (lead.title && lead.title.length > 4 && !/^(ai|nieuw|new)$/i.test(lead.title.trim())) {
+              return lead.title
+            }
+            return lead.propertyType ?? 'Pand zonder adres'
+          })()}
         </h1>
         {lead.price && (
           <p className="mt-2 text-xl md:text-2xl italic" style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-display)' }}>
