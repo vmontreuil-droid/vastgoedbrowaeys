@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getAdminDossiers, getTeamMembers } from '@/lib/admin-db'
 import { TeamMemberCard } from '../instellingen/team-member-card'
 import { AddTeamMemberForm } from '../instellingen/add-team-member-form'
+import { SeedTeamButton } from './seed-button'
 
 export const metadata = {
   title: 'Admin · Team',
@@ -71,6 +72,8 @@ export default async function TeamPage() {
           icon={<Award className="size-4" style={{ color: 'var(--color-accent)' }} />}
         />
       </section>
+
+      {team.length < 4 && <SeedTeamButton />}
 
       {teamErr && (
         <div
