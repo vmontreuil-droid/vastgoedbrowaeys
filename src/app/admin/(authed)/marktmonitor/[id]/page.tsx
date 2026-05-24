@@ -9,6 +9,7 @@ import { getMarketLead } from '@/lib/admin-db'
 import { formatPrice } from '@/lib/listings'
 import { StatusControl, NotesEditor, DeleteLeadButton } from './lead-controls'
 import { BriefGenerator } from './brief-generator'
+import { ConvertToListingButton } from './convert-button'
 
 export const metadata = {
   title: 'Admin · Marktlead',
@@ -137,6 +138,29 @@ export default async function MarktLeadDetailPage({
               </p>
             )}
           </Card>
+
+          {/* Converteer naar aanbod */}
+          {(lead.status === 'afspraak' || lead.status === 'klant') && (
+            <Card title="Converteer naar mijn aanbod">
+              <ConvertToListingButton leadId={lead.id} />
+            </Card>
+          )}
+
+          {/* Extra bron-URLs (dedup) */}
+          {lead.extraSourceUrls.length > 0 && (
+            <Card title={`Ook gevonden op ${lead.extraSourceUrls.length} andere site${lead.extraSourceUrls.length === 1 ? '' : 's'}`}>
+              <ul className="space-y-1.5 text-xs">
+                {lead.extraSourceUrls.map((u, i) => (
+                  <li key={i}>
+                    <a href={u} target="_blank" rel="noopener" className="link-underline text-[var(--color-mute)] hover:text-[var(--color-ink)] inline-flex items-center gap-1 truncate">
+                      <ExternalLink className="size-3 shrink-0" />
+                      <span className="truncate">{new URL(u).hostname}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
 
           {/* Notities */}
           <Card title="Notities">

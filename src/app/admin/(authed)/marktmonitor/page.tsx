@@ -1,11 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import {
-  Radar, ExternalLink, MapPin, Tag, Building2, User as UserIcon,
+  Radar, MapPin, Tag, Building2, User as UserIcon, Settings, Layers,
 } from 'lucide-react'
 import { getMarketLeads, type MarketLead, type MarketLeadStatus } from '@/lib/admin-db'
 import { formatPrice } from '@/lib/listings'
 import { AddUrlForm } from './add-url-form'
+import { ScanAllButton } from './scan-all-button'
 
 export const metadata = {
   title: 'Admin · Marktmonitor',
@@ -83,10 +84,20 @@ export default async function MarktmonitorPage({
             Marktmonitor <span className="text-[var(--color-mute)] text-xl md:text-2xl">({allLeads.length})</span>
           </h1>
           <p className="mt-2 text-sm text-[var(--color-mute)] max-w-2xl">
-            Houd actieve panden in je streek bij die je interessant vindt voor acquisitie of
-            marktinzicht. Plak URLs van Immoweb / Zimmo / Realo / Hebbes / … en het systeem
-            extraheert prijs, adres en foto.
+            Dagelijks geautomatiseerd overzicht van panden in jouw zones — uit Immoweb, Zimmo,
+            Realo, Immo Vlaanderen, Hebbes en Logic-Immo. Plus manuele URL-toevoeging.
           </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/admin/marktmonitor/regions"
+            className="inline-flex items-center gap-2 px-3 py-2.5 text-xs"
+            style={{ border: '1px solid var(--color-line)' }}
+          >
+            <Settings className="size-3.5" />
+            Mijn zones
+          </Link>
+          <ScanAllButton />
         </div>
       </section>
 
@@ -209,7 +220,17 @@ function LeadCard({ lead }: { lead: MarketLead }) {
         </div>
         <div className="p-3 md:p-4">
           <div className="flex items-center justify-between gap-2 text-[0.6rem] uppercase tracking-[0.1em] text-[var(--color-mute)]">
-            <span>{lead.sourceSite ?? '—'}</span>
+            <span className="inline-flex items-center gap-1">
+              {lead.sourceSite ?? '—'}
+              {lead.extraSourceUrls.length > 0 && (
+                <span className="inline-flex items-center gap-0.5 px-1 py-0.5 normal-case tracking-normal text-[0.55rem]"
+                  style={{ background: 'var(--color-accent)', color: '#fff' }}
+                  title={`Ook gevonden op ${lead.extraSourceUrls.length} ander(e) site(s)`}>
+                  <Layers className="size-2" />
+                  +{lead.extraSourceUrls.length}
+                </span>
+              )}
+            </span>
             <span>{lead.listingType === 'verkoop' ? 'Te koop' : lead.listingType === 'verhuur' ? 'Te huur' : 'Onbekend'}</span>
           </div>
           {lead.price && (

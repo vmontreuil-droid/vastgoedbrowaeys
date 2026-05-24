@@ -314,12 +314,44 @@ export default function HelpPage() {
           een algemene marktbenadering. Beslissing en verantwoordelijkheid blijven bij jou.
         </Tip>
 
-        <h4>Beperkingen (fase 1)</h4>
+        <h4>Automatische scan per zone</h4>
         <p>
-          Op dit moment moet je URLs zelf plakken. In fase 2 kunnen we (tegen betaalde scraper-API)
-          een nachtelijke automatische import opzetten voor een geselecteerde regio. Vraag dat
-          gerust als de tool nuttig blijkt.
+          Naast manuele URL-paste kun je nu <strong>zones</strong> instellen die dagelijks
+          automatisch gescand worden op Immoweb, Zimmo, Realo, Immo Vlaanderen, Hebbes en
+          Logic-Immo. Klik <em>Mijn zones</em> rechtsboven op /admin/marktmonitor of ga
+          rechtstreeks naar{' '}
+          <Link href="/admin/marktmonitor/regions" className="link-underline">/admin/marktmonitor/regions</Link>.
         </p>
+        <ul>
+          <li><strong>Postcodes</strong> (precies) of <strong>gemeenten</strong> (iets ruimer): chip-input, druk Enter om toe te voegen.</li>
+          <li><strong>Verkoop / verhuur / beide</strong>, optioneel min/max prijs, optioneel beperken tot bepaalde pand-types.</li>
+          <li>Standaard wordt elke ingestelde zone <strong>elke ochtend om 6u</strong> automatisch gescand. Klik <em>Scan nu</em> om manueel te triggeren.</li>
+        </ul>
+
+        <h4>Dedup tussen sites</h4>
+        <p>
+          Hetzelfde pand staat vaak op meerdere websites. Onze dedup-logica (postcode + straat +
+          prijsbucket) herkent dit en toont één lead met een
+          {' '}<code className="text-[0.7rem]">+N</code> badge die laat zien op hoeveel andere sites het pand
+          ook gevonden is. Op de detail-pagina staan alle bron-URLs onder &ldquo;Ook gevonden op&rdquo;.
+        </p>
+
+        <h4>Converteer naar eigen aanbod</h4>
+        <p>
+          Eens een lead de status <em>Afspraak gepland</em> of <em>Klant geworden</em> heeft,
+          verschijnt op de detail-pagina de knop <em>Converteer naar mijn aanbod</em>. Klik:
+        </p>
+        <ul>
+          <li>Het pand wordt als <strong>concept</strong> aangemaakt in /admin/aanbod (niet gepubliceerd).</li>
+          <li>Adres, prijs, type en cover-foto worden overgenomen.</li>
+          <li>De lead-status wordt automatisch &ldquo;Klant geworden&rdquo;.</li>
+          <li>Je springt direct naar de bewerkings-pagina van het nieuwe pand.</li>
+        </ul>
+        <Tip>
+          <strong>Belangrijk:</strong> de geïmporteerde foto valt onder het auteursrecht van de
+          vorige makelaar/fotograaf. Vervang ze altijd door eigen foto&apos;s vóór publicatie.
+          Daarom blijft het pand op &ldquo;concept&rdquo; staan.
+        </Tip>
       </Step>
 
       <Step id="zoeken" icon={<Search className="size-4" />} title="10. Zoeken">
