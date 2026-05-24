@@ -8,20 +8,7 @@ import {
 import { addNoteAction } from './event-actions'
 import type { DossierEvent } from '@/lib/admin-db'
 
-const NOTE_TEMPLATES: Array<{ label: string; text: string }> = [
-  { label: 'Gebeld — geen antwoord',     text: 'Klant gebeld, geen antwoord. Voicemail ingesproken.' },
-  { label: 'Gebeld — kort gesproken',    text: 'Kort gesproken aan de telefoon — terugbellen op een rustiger moment.' },
-  { label: 'Bezichtiging bevestigd',     text: 'Bezichtiging bevestigd voor [datum] om [uur].' },
-  { label: 'Bezichtiging — interesse',   text: 'Bezichtiging gedaan — klant toonde duidelijke interesse, vraagt nog bedenktijd.' },
-  { label: 'Bezichtiging — geen match',  text: 'Bezichtiging gedaan — pand past niet bij de zoekfiche.' },
-  { label: 'Bod ontvangen',              text: 'Bod ontvangen van € [bedrag] — voorgelegd aan verkoper.' },
-  { label: 'Bod aanvaard',               text: 'Bod van € [bedrag] aanvaard door verkoper. Compromis in voorbereiding.' },
-  { label: 'Compromis opgemaakt',        text: 'Compromis-document opgemaakt en doorgestuurd voor nazicht.' },
-  { label: 'EPC ontvangen',              text: 'EPC-attest ontvangen en opgeladen in het dossier.' },
-  { label: 'Documenten compleet',        text: 'Alle wettelijk verplichte documenten zijn beschikbaar voor publicatie/akte.' },
-  { label: 'Foto-shoot ingepland',       text: 'Foto-presentatie ingepland voor [datum].' },
-  { label: 'Online gepubliceerd',        text: 'Pand vandaag online gezet op eigen site + Immoweb + Zimmo.' },
-]
+export type NoteTemplateRow = { id: string; label: string; text: string }
 
 const TYPE_COLOR: Record<DossierEvent['eventType'], string> = {
   email_sent:           '#0b4f58',
@@ -47,9 +34,11 @@ function IconFor({ type }: { type: DossierEvent['eventType'] }) {
 export function DossierTimeline({
   dossierId,
   events,
+  templates,
 }: {
   dossierId: string
   events: DossierEvent[]
+  templates: NoteTemplateRow[]
 }) {
   const [note, setNote] = useState('')
   const [pending, startTransition] = useTransition()
@@ -144,8 +133,13 @@ export function DossierTimeline({
                 Klik om bij de notitie te voegen
               </p>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-                {NOTE_TEMPLATES.map((t) => (
-                  <li key={t.label}>
+                {templates.length === 0 && (
+                  <li className="text-[0.65rem] text-[var(--color-mute)] italic px-2 py-2">
+                    Geen sjablonen — maak er aan via Instellingen.
+                  </li>
+                )}
+                {templates.map((t) => (
+                  <li key={t.id}>
                     <button
                       type="button"
                       onClick={() => applyTemplate(t.text)}

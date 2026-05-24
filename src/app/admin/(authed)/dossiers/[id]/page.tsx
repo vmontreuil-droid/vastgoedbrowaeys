@@ -6,7 +6,7 @@ import {
 } from 'lucide-react'
 import {
   getAdminDossier, getAdminAppointments, getAdminClient, getAdminDocumentsForDossier,
-  getDossierEvents, getDossierSteps,
+  getDossierEvents, getDossierSteps, getNoteTemplates,
 } from '@/lib/admin-db'
 import { formatPrice } from '@/lib/listings'
 import { DocumentsPanel, type DocumentRow } from './documents-panel'
@@ -53,12 +53,13 @@ export default async function DossierDetailPage({
   const dossier = await getAdminDossier(id)
   if (!dossier) notFound()
 
-  const [client, { items: allAppointments }, { items: documents }, { items: events }, { items: steps }] = await Promise.all([
+  const [client, { items: allAppointments }, { items: documents }, { items: events }, { items: steps }, { items: templates }] = await Promise.all([
     getAdminClient(dossier.clientId),
     getAdminAppointments(),
     getAdminDocumentsForDossier(dossier.id),
     getDossierEvents(dossier.id),
     getDossierSteps(dossier.id, dossier.type),
+    getNoteTemplates(),
   ])
   const appointments = allAppointments
     .filter((a) => a.dossierId === dossier.id)
@@ -264,7 +265,11 @@ export default async function DossierDetailPage({
 
           <DocumentsPanel dossierId={dossier.id} initialDocuments={documentRows} />
 
-          <DossierTimeline dossierId={dossier.id} events={events} />
+          <DossierTimeline
+            dossierId={dossier.id}
+            events={events}
+            templates={templates.map((t) => ({ id: t.id, label: t.label, text: t.text }))}
+          />
 
           {dossier.notes && (
             <section>

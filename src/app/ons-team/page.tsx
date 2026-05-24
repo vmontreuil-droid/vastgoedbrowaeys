@@ -21,6 +21,28 @@ const TEAM = [
   },
 ]
 
+const SUPPORT_TEAM = [
+  {
+    name: 'Kimberly Van Gansbeke',
+    role: 'Administratief medewerker',
+    phone: '055/59 50 10',
+    email: 'kimberly@vastgoedbrowaeys.be',
+  },
+  {
+    name: 'Flore Vanlierde',
+    role: 'Stagiair vastgoedmakelaar',
+    biv: 'BIV 519.829',
+    phone: '055/59 50 10',
+    email: 'flore@vastgoedbrowaeys.be',
+  },
+  {
+    name: 'Thomas Lemmens',
+    role: 'Administratief medewerker',
+    phone: '055/59 50 10',
+    email: 'thomas@vastgoedbrowaeys.be',
+  },
+]
+
 export default function OnsTeamPage() {
   return (
     <>
@@ -85,6 +107,53 @@ export default function OnsTeamPage() {
                       {member.email}
                     </a>
                   </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* Support team */}
+        <section
+          className="container-px mx-auto max-w-screen-2xl py-16 md:py-20"
+          style={{ borderTop: '1px solid var(--color-line)' }}
+        >
+          <div className="mb-10 max-w-2xl">
+            <p className="eyebrow mb-3">Met steun van</p>
+            <h2 className="text-2xl md:text-3xl">
+              Het kantoor-team{' '}
+              <span className="italic" style={{ color: 'var(--color-accent)' }}>achter de schermen</span>.
+            </h2>
+            <p className="mt-4 text-[var(--color-mute)]">
+              Stefanie wordt elke dag bijgestaan door een team dat zorgt voor de
+              dossiers, de afspraken en de communicatie — zodat alles vlot loopt.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {SUPPORT_TEAM.map((m) => (
+              <article key={m.name}
+                className="p-6 transition-all hover:shadow-sm"
+                style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}>
+                <h3 className="text-xl" style={{ fontFamily: 'var(--font-display)' }}>{m.name}</h3>
+                <p className="mt-1.5 text-sm italic" style={{ color: 'var(--color-accent)' }}>
+                  {m.role}
+                </p>
+                {'biv' in m && m.biv && (
+                  <p className="mt-2 eyebrow text-[0.55rem]" style={{ color: 'var(--color-clay-dark)' }}>
+                    {m.biv}
+                  </p>
+                )}
+                <div className="mt-5 flex flex-col gap-2 text-xs">
+                  <a href={`tel:${m.phone.replace(/\s|\//g, '')}`}
+                    className="inline-flex items-center gap-1.5 link-underline">
+                    <Phone className="size-3" />
+                    {m.phone}
+                  </a>
+                  <a href={`mailto:${m.email}`}
+                    className="inline-flex items-center gap-1.5 link-underline">
+                    <Mail className="size-3" />
+                    {m.email}
+                  </a>
                 </div>
               </article>
             ))}

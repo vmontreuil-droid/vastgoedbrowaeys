@@ -5,10 +5,11 @@ import {
   Users, Plus, Hash,
 } from 'lucide-react'
 import {
-  getAdminClient, getAdminDossiers, getAdminAppointments,
+  getAdminClient, getAdminDossiers, getAdminAppointments, getClientActivity,
 } from '@/lib/admin-db'
 import { formatPrice } from '@/lib/listings'
 import { InviteButton } from './invite-button'
+import { ClientActivityFeed } from './activity-feed'
 
 export const metadata = {
   title: 'Admin · Klant',
@@ -45,9 +46,10 @@ export default async function ClientDetailPage({
   const client = await getAdminClient(id)
   if (!client) notFound()
 
-  const [{ items: allDossiers }, { items: allAppointments }] = await Promise.all([
+  const [{ items: allDossiers }, { items: allAppointments }, { items: activity }] = await Promise.all([
     getAdminDossiers(),
     getAdminAppointments(),
+    getClientActivity(client.id, 50),
   ])
 
   const dossiers = allDossiers.filter((d) => d.clientId === client.id)
@@ -306,6 +308,8 @@ export default async function ClientDetailPage({
               </div>
             </section>
           )}
+
+          <ClientActivityFeed events={activity} />
         </div>
       </div>
     </div>

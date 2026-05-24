@@ -412,6 +412,36 @@ export type AdminSearchHit = {
   createdAt: string
 }
 
+export type NoteTemplate = {
+  id: string
+  label: string
+  text: string
+  orderIndex: number
+  createdAt: string
+  updatedAt: string
+}
+
+export async function getNoteTemplates(): Promise<FetchResult<NoteTemplate>> {
+  const admin = createAdminClient()
+  const { data, error } = await admin
+    .from('note_templates')
+    .select('*')
+    .order('order_index', { ascending: true })
+  if (error) return { items: [], error: error.message }
+  const items: NoteTemplate[] = ((data ?? []) as Array<{
+    id: string; label: string; text: string; order_index: number;
+    created_at: string; updated_at: string;
+  }>).map((r) => ({
+    id: r.id,
+    label: r.label,
+    text: r.text,
+    orderIndex: r.order_index,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+  }))
+  return { items }
+}
+
 /**
  * Full-text zoeken doorheen alle vrije-tekst velden van het admin systeem:
  * dossier notities, dossier events, commissie notities, klant notities.
@@ -514,6 +544,57 @@ function snippet(text: string, q: string, contextChars = 80): string {
   const prefix = start > 0 ? '…' : ''
   const suffix = end < text.length ? '…' : ''
   return prefix + text.slice(start, end) + suffix
+}
+
+export type ClientActivityEvent = DossierEvent & {
+  dossierRef: string | null
+  dossierAddress: string | null
+}
+
+/**
+ * Activity feed voor een klant: aggregeert alle dossier_events van al hun
+ * dossiers. Gesorteerd nieuwste eerst.
+ */
+export async function getClientActivity(clientId: string, limit = 100): Promise<FetchResult<ClientActivityEvent>> {
+  const admin = createAdminClient()
+  const { data: dossiers } = await admin
+    .from('dossiers')
+    .select('id, reference, property_address')
+    .eq('client_id', clientId)
+  const dossierRows = (dossiers ?? []) as Array<{ id: string; reference: string | null; property_address: string | null }>
+  const dossierIds = dossierRows.map((d) => d.id)
+  if (dossierIds.length === 0) return { items: [] }
+
+  const dossierMeta = new Map(dossierRows.map((d) => [d.id, { ref: d.reference, address: d.property_address }]))
+
+  const { data, error } = await admin
+    .from('dossier_events')
+    .select('*')
+    .in('dossier_id', dossierIds)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  if (error) return { items: [], error: error.message }
+
+  const items: ClientActivityEvent[] = ((data ?? []) as Array<{
+    id: string; dossier_id: string; event_type: DossierEvent['eventType'];
+    title: string; body: string | null; metadata: Record<string, unknown>;
+    created_by: string | null; created_at: string;
+  }>).map((r) => {
+    const meta = dossierMeta.get(r.dossier_id)
+    return {
+      id: r.id,
+      dossierId: r.dossier_id,
+      eventType: r.event_type,
+      title: r.title,
+      body: r.body,
+      metadata: r.metadata ?? {},
+      createdBy: r.created_by,
+      createdAt: r.created_at,
+      dossierRef: meta?.ref ?? null,
+      dossierAddress: meta?.address ?? null,
+    }
+  })
+  return { items }
 }
 
 export async function getDossierEvents(dossierId: string, limit = 50): Promise<FetchResult<DossierEvent>> {
