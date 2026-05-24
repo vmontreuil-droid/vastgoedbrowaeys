@@ -109,6 +109,11 @@ function mapToScraped(raw: RawListing, pageUrl: string): ScrapedListing | null {
       return null
     }
   }
+  // Skip ADs: titles zoals "Gesponsord", "Sponsored", "Publicité"
+  const titleLower = (raw.title ?? '').toLowerCase().trim()
+  if (/^(gesponsord|sponsored|publicit[eé]|advertentie|promoted|reclame)$/.test(titleLower)) return null
+  // Skip ADs in URL
+  if (/publicit|advertorial|promoted|sponsoring/.test(raw.url)) return null
 
   const sourceSite = deriveSourceSite(raw.url)
   const addr = parseAddressLine(raw.addressLine)

@@ -143,8 +143,8 @@ export function MarketLeadsBulkGrid({ leads }: { leads: MarketLead[] }) {
         )}
       </div>
 
-      {/* Kaarten-grid */}
-      <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Kaarten-grid — compacter, meer kolommen */}
+      <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-3">
         {leads.map((lead) => (
           <LeadCard
             key={lead.id}
@@ -181,7 +181,7 @@ function LeadCard({ lead, selected, onToggle }: { lead: MarketLead; selected: bo
       <button
         type="button"
         onClick={onToggle}
-        className="absolute top-2 left-2 z-10 size-7 grid place-items-center"
+        className="absolute top-1 left-1 z-10 size-6 grid place-items-center"
         style={{
           background: selected ? 'var(--color-accent)' : 'rgba(255,255,255,0.9)',
           color: selected ? '#fff' : 'var(--color-mute)',
@@ -189,7 +189,7 @@ function LeadCard({ lead, selected, onToggle }: { lead: MarketLead; selected: bo
         }}
         aria-label={selected ? 'Deselecteer' : 'Selecteer'}
       >
-        {selected ? <CheckSquare className="size-4" /> : <Square className="size-4" />}
+        {selected ? <CheckSquare className="size-3" /> : <Square className="size-3" />}
       </button>
 
       <Link
@@ -200,67 +200,62 @@ function LeadCard({ lead, selected, onToggle }: { lead: MarketLead; selected: bo
           border: selected ? '2px solid var(--color-accent)' : '1px solid var(--color-line)',
         }}
       >
-        <div className="relative aspect-[4/3]" style={{ background: 'var(--color-paper-2)' }}>
+        <div className="relative aspect-square" style={{ background: 'var(--color-paper-2)' }}>
           {lead.imageUrl ? (
             <Image
               src={lead.imageUrl}
               alt={titleText}
               fill
-              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+              sizes="(min-width: 1280px) 16vw, (min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
               className="object-cover"
               unoptimized
             />
           ) : (
             <div className="absolute inset-0 grid place-items-center">
-              <Building2 className="size-10 text-[var(--color-mute)]" />
+              <Building2 className="size-6 text-[var(--color-mute)]" />
             </div>
           )}
+          {/* Mini-status-pill */}
           <span
-            className="absolute top-2 right-2 inline-block px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.1em] font-medium"
+            className="absolute top-1 right-1 inline-block px-1.5 py-0.5 text-[0.5rem] uppercase tracking-[0.08em] font-medium"
             style={{ background: statusColor.bg, color: statusColor.fg, backdropFilter: 'blur(8px)' }}
           >
-            {STATUS_LABEL[lead.status]}
+            {STATUS_LABEL[lead.status].slice(0, 8)}
           </span>
           {lead.isParticulier && (
             <span
-              className="absolute bottom-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.1em] font-medium"
+              className="absolute bottom-1 left-1 inline-flex items-center gap-0.5 px-1 py-0.5 text-[0.5rem] uppercase tracking-[0.08em] font-medium"
               style={{ background: '#16a34a', color: '#fff' }}
+              title="Particuliere verkoper"
             >
-              <UserIcon className="size-2.5" />
-              Particulier
+              <UserIcon className="size-2" />
+              Part.
+            </span>
+          )}
+          {lead.extraSourceUrls.length > 0 && (
+            <span
+              className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 px-1 py-0.5 text-[0.5rem]"
+              style={{ background: 'var(--color-accent)', color: '#fff' }}
+              title={`Ook op ${lead.extraSourceUrls.length} ander(e) site(s)`}>
+              <Layers className="size-2" />
+              +{lead.extraSourceUrls.length}
             </span>
           )}
         </div>
-        <div className="p-3 md:p-4">
-          <div className="flex items-center justify-between gap-2 text-[0.6rem] uppercase tracking-[0.1em] text-[var(--color-mute)]">
-            <span className="inline-flex items-center gap-1">
-              {lead.sourceSite ?? '—'}
-              {lead.extraSourceUrls.length > 0 && (
-                <span className="inline-flex items-center gap-0.5 px-1 py-0.5 normal-case tracking-normal text-[0.55rem]"
-                  style={{ background: 'var(--color-accent)', color: '#fff' }}
-                  title={`Ook gevonden op ${lead.extraSourceUrls.length} ander(e) site(s)`}>
-                  <Layers className="size-2" />
-                  +{lead.extraSourceUrls.length}
-                </span>
-              )}
-            </span>
-            <span>{lead.listingType === 'verkoop' ? 'Te koop' : lead.listingType === 'verhuur' ? 'Te huur' : 'Onbekend'}</span>
-          </div>
-          {lead.price && (
-            <p className="mt-1 text-base md:text-lg italic" style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-display)' }}>
+        <div className="p-2">
+          {lead.price ? (
+            <p className="text-sm italic truncate" style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-display)' }}>
               {formatPrice(lead.price)}
-              {lead.listingType === 'verhuur' && <span className="text-xs text-[var(--color-mute)]"> / maand</span>}
+              {lead.listingType === 'verhuur' && <span className="text-[0.6rem] text-[var(--color-mute)]">/m</span>}
             </p>
+          ) : (
+            <p className="text-[0.65rem] italic text-[var(--color-mute)]">Geen prijs</p>
           )}
-          <p className="mt-1 text-sm truncate">{titleText}</p>
-          <div className="mt-2 flex items-center justify-between text-[0.65rem] text-[var(--color-mute)]">
-            <span className="inline-flex items-center gap-1 truncate">
-              {lead.propertyType && <><Tag className="size-3" />{lead.propertyType}</>}
-            </span>
-            {lead.agentName && (
-              <span className="truncate text-right max-w-[60%]" title={lead.agentName}>{lead.agentName}</span>
-            )}
-          </div>
+          <p className="text-[0.7rem] truncate leading-tight">{titleText}</p>
+          <p className="text-[0.55rem] uppercase tracking-[0.08em] text-[var(--color-mute)] truncate mt-0.5">
+            {lead.sourceSite ?? '—'}
+            {lead.propertyType && <> · {lead.propertyType}</>}
+          </p>
         </div>
       </Link>
     </li>

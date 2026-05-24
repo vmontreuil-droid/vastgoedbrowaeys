@@ -54,6 +54,15 @@ export function BookmarkletSimple({
           seen[u]=1;
           if(!/\\d{4,}/.test(u))continue;
           var card=a.closest('article,li,[class*=card],[class*=result],[class*=listing]')||a.parentElement;
+          // Skip ADs / gesponsorde listings
+          if(card){
+            var cardText=(card.innerText||card.textContent||'').toLowerCase();
+            var cls=(card.className||'').toLowerCase();
+            if(/gesponsord|sponsored|publicit[eé]|advertentie|premium-ad|^ad$/i.test(cardText.split(/\\n/)[0]||''))continue;
+            if(/\\b(sponsored|advert|promo-card|premium-card)\\b/.test(cls))continue;
+            // URL met /publicite/ of /advertorial/
+            if(/publicit|advertorial|promoted/.test(u))continue;
+          }
           // Image: probeer src, data-src, data-original, srcset (eerste url)
           var img=card&&card.querySelector('img');
           var imgUrl=null;
