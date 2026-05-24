@@ -84,8 +84,14 @@ export function BookmarkletSimple({
         });
         var bodyText=doc.body?doc.body.textContent:'';
         var pm=(bodyText||'').match(/\\u20AC\\s*([\\d]{1,3}(?:[.\\s]\\d{3})+)/);
-        var price=pm?parseInt(pm[1].replace(/[^\\d]/g,'')):null;
-        if(price&&(price<100||price>50000000))price=null;
+        var price=null;
+        if(pm){
+          var rawP=pm[1].replace(/[^\\d]/g,'');
+          for(var LB=rawP.length;LB>=3;LB--){
+            var vB=parseInt(rawP.slice(0,LB));
+            if(vB>=100&&vB<=30000000){price=vB;break;}
+          }
+        }
         var am=(bodyText||'').match(/\\b([1-9]\\d{3})\\s+([A-Za-z\\u00C0-\\u017F][A-Za-z\\u00C0-\\u017F\\s\\-']{1,40})/);
         return{images:imgs.slice(0,30),description:desc,features:features,price:price,addressLine:am?am[0].trim():null};
       }
@@ -166,12 +172,20 @@ export function BookmarkletSimple({
           }
           // Text: gebruik innerText (respecteert display:none) waar mogelijk
           var t=(card&&(card.innerText||card.textContent))||a.innerText||a.textContent||'';
-          // Prijs: pak alleen het EERSTE prijs-blok, stop bij niet-cijfer-of-punt
+          // Prijs: pak match, dan probeer steeds kortere prefix tot we een
+          // plausibele prijs (50k-30M voor woning, 100-15k voor huur) krijgen.
+          // Dit lost het "375.000.375"-probleem op (matched 3 segmenten,
+          // we knippen tot 2 die wel klopt).
           var pm=t.match(/\\u20AC\\s*([\\d]{1,3}(?:[.\\s]\\d{3})+)/);
           if(!pm)pm=t.match(/\\u20AC\\s*([\\d]{3,7})/);
-          var p=pm?parseInt(pm[1].replace(/[^\\d]/g,'')):null;
-          // Sanity-check: prijzen tussen 100 en 50.000.000
-          if(p!==null&&(p<100||p>50000000))p=null;
+          var p=null;
+          if(pm){
+            var raw=pm[1].replace(/[^\\d]/g,'');
+            for(var L=raw.length;L>=3;L--){
+              var v=parseInt(raw.slice(0,L));
+              if(v>=100&&v<=30000000){p=v;break;}
+            }
+          }
           // Adres
           var am=t.match(/\\b([1-9]\\d{3})\\s+([A-Za-z\\u00C0-\\u017F][A-Za-z\\u00C0-\\u017F\\s\\-']{1,40})/);
           var addressLine=am?(am[0].trim()):null;
@@ -259,22 +273,37 @@ export function BookmarkletSimple({
           });
         });
 
-        // Basisinfo van de current page (1 listing)
-        var c2=extract(document);
-        var single=c2[0]||{url:location.href.split('#')[0],title:document.title,imageUrl:imgs[0]||null,price:null,addressLine:null};
-        // Probeer beter prijs/adres uit detail-content
+        // Basisinfo van de current page (1 listing). Bij detail-page negeren
+        // we extract() (die pakt rommel) en bouwen we zelf.
         var bodyText=document.body.innerText||'';
-        if(!single.price){
-          var pm2=bodyText.match(/\\u20AC\\s*([\\d]{1,3}(?:[.\\s]\\d{3})+)/);
-          if(pm2)single.price=parseInt(pm2[1].replace(/[^\\d]/g,''));
+        // Title: h1 op de pagina, of <title>, of address-line
+        var h1=document.querySelector('h1');
+        var titleText=(h1&&h1.innerText.trim())||document.title||'';
+        // Strip ' - Immoweb' / ' | Zimmo' suffixen
+        titleText=titleText.replace(/\\s*[\\-|·]\\s*(Immoweb|Zimmo|Realo|Immo Vlaanderen|Hebbes|Logic[-_]Immo).*$/i,'').trim().slice(0,200);
+        // Prijs uit body met plausibility-check
+        var detailPrice=null;
+        var pm2=bodyText.match(/\\u20AC\\s*([\\d]{1,3}(?:[.\\s]\\d{3})+)/);
+        if(pm2){
+          var raw2=pm2[1].replace(/[^\\d]/g,'');
+          for(var L2=raw2.length;L2>=3;L2--){
+            var v2=parseInt(raw2.slice(0,L2));
+            if(v2>=100&&v2<=30000000){detailPrice=v2;break;}
+          }
         }
-        if(!single.addressLine){
-          var am2=bodyText.match(/\\b([1-9]\\d{3})\\s+([A-Za-z\\u00C0-\\u017F][A-Za-z\\u00C0-\\u017F\\s\\-']{1,40})/);
-          if(am2)single.addressLine=am2[0].trim();
-        }
-        single.images=imgs.slice(0,30);
-        single.description=description;
-        single.features=features;
+        // Adres
+        var am2=bodyText.match(/\\b([1-9]\\d{3})\\s+([A-Za-z\\u00C0-\\u017F][A-Za-z\\u00C0-\\u017F\\s\\-']{1,40})/);
+        var detailAddress=am2?am2[0].trim():null;
+        var single={
+          url:location.href.split('#')[0],
+          title:titleText,
+          imageUrl:imgs[0]||null,
+          price:detailPrice,
+          addressLine:detailAddress,
+          images:imgs.slice(0,30),
+          description:description,
+          features:features,
+        };
 
         var r=await fetch(${JSON.stringify(apiUrl)},{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer ${token}'},body:JSON.stringify({url:location.href,listings:[single],detail:true})});
         var d=await r.json();

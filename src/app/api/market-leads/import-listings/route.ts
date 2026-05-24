@@ -236,7 +236,12 @@ export async function POST(request: Request) {
         enriched_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }
-      if (enrich.images.length > 0) updates.images = enrich.images
+      if (enrich.images.length > 0) {
+        updates.images = enrich.images
+        // Sync de hoofdfoto met de eerste gallery-foto bij detail-import
+        // (anders blijft de oude lijst-thumbnail of null staan)
+        updates.image_url = enrich.images[0]
+      }
       if (enrich.description) updates.description = enrich.description
       if (Object.keys(enrich.features).length > 0) updates.features = enrich.features
       await admin.from('market_leads').update(updates).eq('source_url', url)
