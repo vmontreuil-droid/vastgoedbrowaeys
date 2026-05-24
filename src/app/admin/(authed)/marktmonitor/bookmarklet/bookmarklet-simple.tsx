@@ -2,8 +2,18 @@
 
 import { useMemo, useState, useTransition } from 'react'
 import Link from 'next/link'
-import { Bookmark, MoveRight, RefreshCw, Settings2, Copy, Check } from 'lucide-react'
+import { MoveRight, RefreshCw, Settings2, Copy, Check } from 'lucide-react'
 import { regenerateMarketImportTokenAction } from './actions'
+
+/** Escape voor inside HTML attribute (alleen wat nodig is voor href). */
+function escapeHtmlAttr(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+}
 
 export function BookmarkletSimple({
   token: initialToken,
@@ -55,17 +65,19 @@ export function BookmarkletSimple({
         </p>
 
         <div className="flex items-center justify-center gap-4 my-6">
-          <a
-            href={bookmarkletJs}
-            draggable
-            onClick={(e) => e.preventDefault()}
-            className="inline-flex items-center gap-2 px-6 py-3 text-base cursor-grab active:cursor-grabbing select-none"
-            style={{ background: 'var(--color-accent)', color: '#fff' }}
-            title="Sleep mij naar je favorieten-balk"
-          >
-            <Bookmark className="size-5" />
-            Import naar Browaeys
-          </a>
+          {/* React 19 blokkeert javascript: URLs in JSX. We renderen het anchor
+              daarom via dangerouslySetInnerHTML zodat de echte URL meeslepbaar is. */}
+          <div
+            dangerouslySetInnerHTML={{
+              __html: `<a
+                href="${escapeHtmlAttr(bookmarkletJs)}"
+                draggable="true"
+                onclick="event.preventDefault();alert('Sleep deze knop naar je favorieten-balk in plaats van te klikken.');return false;"
+                title="Sleep mij naar je favorieten-balk"
+                style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;font-size:1rem;background:var(--color-accent);color:#fff;cursor:grab;user-select:none;text-decoration:none;font-family:inherit;"
+              ><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>Import naar Browaeys</a>`
+            }}
+          />
           <MoveRight className="size-6 hidden sm:block text-[var(--color-mute)]" />
         </div>
 
