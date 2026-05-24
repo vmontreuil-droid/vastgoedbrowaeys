@@ -15,6 +15,7 @@ import {
 } from '@/lib/admin-db'
 import { hasFullAccess, getEffectiveTeamRole, TEAM_ROLE_LABEL, TEAM_ROLE_COLOR } from '@/lib/permissions'
 import { formatPrice } from '@/lib/listings'
+import { ProductivityPanel } from '../productivity-panel'
 
 export const metadata = {
   title: 'Admin · Werknemer',
@@ -165,6 +166,20 @@ export default async function TeamMemberDetailPage({
             </p>
           )}
         </div>
+      </section>
+
+      {/* Productivity: target + afwezigheid */}
+      <section className="mb-8">
+        <ProductivityPanel
+          userId={member.id}
+          initialTarget={member.targetYearlyDossiers ?? null}
+          initialFrom={member.outOfOfficeFrom ?? null}
+          initialUntil={member.outOfOfficeUntil ?? null}
+          initialReason={member.outOfOfficeReason ?? null}
+          closedYtd={closedDossiers.filter((d) => d.closedAt && new Date(d.closedAt).getTime() >= yearStart).length}
+          canEditTarget={canManageTeam}
+          canEditOOO={canManageTeam || currentUser?.id === member.id}
+        />
       </section>
 
       {/* Stats */}

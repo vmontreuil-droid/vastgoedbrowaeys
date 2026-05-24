@@ -459,6 +459,10 @@ export type TeamMember = {
   photoUrl?: string
   teamRole: 'zaakvoerder' | 'webbeheerder' | 'makelaar' | 'assistent'
   active: boolean
+  targetYearlyDossiers?: number | null
+  outOfOfficeFrom?: string | null
+  outOfOfficeUntil?: string | null
+  outOfOfficeReason?: string | null
 }
 
 function metadataToTeamMember(
@@ -477,6 +481,10 @@ function metadataToTeamMember(
     photoUrl: (md?.photo_url as string | undefined) || undefined,
     teamRole: getEffectiveTeamRole(md, email),
     active: md?.active !== false,
+    targetYearlyDossiers: typeof md?.target_yearly_dossiers === 'number' ? md.target_yearly_dossiers : null,
+    outOfOfficeFrom: typeof md?.out_of_office_from === 'string' ? md.out_of_office_from : null,
+    outOfOfficeUntil: typeof md?.out_of_office_until === 'string' ? md.out_of_office_until : null,
+    outOfOfficeReason: typeof md?.out_of_office_reason === 'string' ? md.out_of_office_reason : null,
   }
 }
 
@@ -494,6 +502,15 @@ function sortTeam(team: TeamMember[]): TeamMember[] {
  * Bij totale fail wordt minstens `fallbackUserId` (de ingelogde admin)
  * via getUserById opgehaald zodat de pagina niet leeg is.
  */
+/** True als 'now' binnen de afwezigheidsperiode van een teamlid valt. */
+export function isOutOfOfficeNow(m: TeamMember, now = new Date()): boolean {
+  if (!m.outOfOfficeFrom || !m.outOfOfficeUntil) return false
+  const f = new Date(m.outOfOfficeFrom).getTime()
+  const u = new Date(m.outOfOfficeUntil).getTime()
+  const t = now.getTime()
+  return t >= f && t <= u
+}
+
 export async function getTeamMembers(fallbackUserId?: string): Promise<FetchResult<TeamMember>> {
   const admin = createAdminClient()
 

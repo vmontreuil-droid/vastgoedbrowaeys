@@ -3,6 +3,7 @@ import {
   HelpCircle, Users, FolderOpen, Home, Calendar, MessageSquare, Bell, Send,
   Calculator, Image as ImageIcon, Search, Settings, Lock,
   UserCog, Tag, Zap, Sparkles, LayoutDashboard, Stethoscope, AlertTriangle,
+  Target, CalendarOff,
 } from 'lucide-react'
 
 export const metadata = {
@@ -329,6 +330,42 @@ export default function HelpPage() {
         </ul>
       </Step>
 
+      <Step id="targets" icon={<Target className="size-4" />} title="11b. Jaardoelen (targets)">
+        <p>
+          Stefanie (of de Webbeheerder) kan per werknemer een jaardoel zetten — bv. 24 dossiers per
+          jaar. Op de werknemer-detailpagina (klik op &ldquo;X lopend&rdquo; vanaf /admin/team) staat
+          bovenaan een &ldquo;Jaardoel&rdquo;-kaart:
+        </p>
+        <ul>
+          <li>Klik <em>Stel in</em> of <em>Wijzig</em> om het doel te bepalen (0–1000).</li>
+          <li>De kaart toont voortgang: <code>X / Y</code> + progressbar.</li>
+          <li>Kleurcode: groen = op schema (gewogen voor maand), oranje = achter.</li>
+          <li>Berekening gebaseerd op aantal &ldquo;verkocht&rdquo;/&ldquo;verhuurd&rdquo; dossiers in het lopende kalenderjaar.</li>
+        </ul>
+        <Tip>
+          Leeg laten = doel uitschakelen. Alleen Zaakvoerder/Webbeheerder kan doelen
+          instellen of wijzigen.
+        </Tip>
+      </Step>
+
+      <Step id="afwezigheid" icon={<CalendarOff className="size-4" />} title="11c. Afwezigheidsplanning">
+        <p>
+          Werknemers kunnen een afwezigheidsperiode plannen (vakantie, ziekte, opleiding). Op de
+          werknemer-detailpagina, onder &ldquo;Afwezigheid&rdquo;:
+        </p>
+        <ul>
+          <li>Vul startdatum + einddatum + optionele reden in.</li>
+          <li><strong>Iedereen mag zijn eigen afwezigheid instellen.</strong> Zaakvoerder/Webbeheerder kan dit ook voor anderen doen.</li>
+          <li>Tijdens de periode verschijnt een oranje <strong>Afwezig</strong>-badge bovenaan de werknemer-kaart op /admin/team.</li>
+          <li>De afwezige werknemer wordt in dropdowns (bv. dossier-toewijzing) gemarkeerd als &ldquo;(afwezig)&rdquo;.</li>
+          <li>Bij toewijzing van een dossier aan een afwezig persoon: oranje waarschuwing met suggestie om aan iemand anders toe te wijzen.</li>
+        </ul>
+        <Tip>
+          Klik <em>Wis</em> om een geplande afwezigheid weg te halen voor de einddatum. Handig
+          bij vroegtijdige terugkeer.
+        </Tip>
+      </Step>
+
       <Step id="dossier-toewijzen" icon={<UserCog className="size-4" />} title="12. Dossiers toewijzen & overdragen">
         <p>Elk dossier kan worden toegewezen aan een werknemer (eigenaar). Iedereen kan toewijzen — geen Zaakvoerder-recht nodig.</p>
 
@@ -521,6 +558,8 @@ function Toc() {
     { id: 'nieuwsbrief',         label: '9. Nieuwsbrief',      icon: <Send className="size-3.5" /> },
     { id: 'zoeken',              label: '10. Zoeken',          icon: <Search className="size-3.5" /> },
     { id: 'team',                label: '11. Team',            icon: <UserCog className="size-3.5" /> },
+    { id: 'targets',             label: '11b. Targets',        icon: <Target className="size-3.5" /> },
+    { id: 'afwezigheid',         label: '11c. Afwezigheid',    icon: <CalendarOff className="size-3.5" /> },
     { id: 'dossier-toewijzen',   label: '12. Toewijzen',       icon: <UserCog className="size-3.5" /> },
     { id: 'sjablonen',           label: '13. Sjablonen',       icon: <Zap className="size-3.5" /> },
     { id: 'tags',                label: '14. Tags',            icon: <Tag className="size-3.5" /> },

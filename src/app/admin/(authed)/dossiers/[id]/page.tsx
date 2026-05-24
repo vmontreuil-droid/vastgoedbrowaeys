@@ -206,7 +206,14 @@ export default async function DossierDetailPage({
               dossierId={dossier.id}
               initialAssigneeId={dossier.assignedTo}
               currentUserId={currentUser.id}
-              options={team.map((m) => ({ id: m.id, name: `${m.firstName} ${m.lastName}`.trim() || m.email, email: m.email, active: m.active }))}
+              options={team.map((m) => ({
+                id: m.id,
+                name: `${m.firstName} ${m.lastName}`.trim() || m.email,
+                email: m.email,
+                active: m.active,
+                outOfOfficeUntil: m.outOfOfficeUntil,
+                outOfOfficeReason: m.outOfOfficeReason,
+              }))}
             />
           )}
 

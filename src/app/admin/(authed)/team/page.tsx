@@ -1,7 +1,7 @@
 import Link from 'next/link'
-import { UserCog, FolderOpen, Award, AlertCircle } from 'lucide-react'
+import { UserCog, FolderOpen, Award, AlertCircle, CalendarOff } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { getAdminDossiers, getTeamMembers } from '@/lib/admin-db'
+import { getAdminDossiers, getTeamMembers, isOutOfOfficeNow } from '@/lib/admin-db'
 import { getEffectiveTeamRole, hasFullAccess } from '@/lib/permissions'
 import { TeamMemberCard } from '../instellingen/team-member-card'
 import { AddTeamMemberForm } from '../instellingen/add-team-member-form'
@@ -111,6 +111,16 @@ export default async function TeamPage() {
           return (
             <div key={m.id} className="relative flex flex-col h-full">
               <RoleBadge userId={m.id} initialRole={m.teamRole} canEdit={canEditRole} />
+              {isOutOfOfficeNow(m) && (
+                <span
+                  className="absolute -top-2 right-3 inline-flex items-center gap-1 px-2 py-0.5 text-[0.55rem] uppercase tracking-[0.12em] font-medium z-10"
+                  style={{ background: '#c98c4f', color: '#fff' }}
+                  title={`${m.outOfOfficeReason ?? 'Afwezig'} tot ${new Date(m.outOfOfficeUntil!).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short' })}`}
+                >
+                  <CalendarOff className="size-2.5" />
+                  Afwezig
+                </span>
+              )}
               <div className="flex-1 flex flex-col">
                 <TeamMemberCard
                   member={m}

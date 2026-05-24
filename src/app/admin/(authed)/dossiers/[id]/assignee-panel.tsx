@@ -1,14 +1,22 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { UserCog, Check, AlertCircle } from 'lucide-react'
+import { UserCog, Check, AlertCircle, CalendarOff } from 'lucide-react'
 import { setDossierAssigneeAction } from './assignee-actions'
+
+function isOOO(opt: AssigneeOption, now = Date.now()): boolean {
+  if (!opt.outOfOfficeUntil) return false
+  const u = new Date(opt.outOfOfficeUntil).getTime()
+  return !isNaN(u) && now <= u
+}
 
 export type AssigneeOption = {
   id: string
   name: string
   email: string
   active: boolean
+  outOfOfficeUntil?: string | null
+  outOfOfficeReason?: string | null
 }
 
 export function AssigneePanel({
@@ -67,12 +75,36 @@ export function AssigneePanel({
         style={{ border: '1px solid var(--color-line)' }}
       >
         <option value="">— Niemand —</option>
-        {options.map((o) => (
-          <option key={o.id} value={o.id} disabled={!o.active}>
-            {o.name}{!o.active ? ' (inactief)' : ''}{o.id === currentUserId ? ' (jij)' : ''}
-          </option>
-        ))}
+        {options.map((o) => {
+          const ooo = isOOO(o)
+          return (
+            <option key={o.id} value={o.id} disabled={!o.active}>
+              {o.name}
+              {!o.active ? ' (inactief)' : ''}
+              {ooo ? ' (afwezig)' : ''}
+              {o.id === currentUserId ? ' (jij)' : ''}
+            </option>
+          )
+        })}
       </select>
+
+      {(() => {
+        const selected = options.find((o) => o.id === assigneeId)
+        if (selected && isOOO(selected) && selected.id !== currentUserId) {
+          return (
+            <div className="mt-2 flex items-start gap-1.5 p-2 text-[0.65rem]"
+              style={{ background: 'rgba(201,140,79,0.10)', color: '#92400e' }}>
+              <CalendarOff className="size-3 mt-0.5 shrink-0" />
+              <span>
+                {selected.name.split(' ')[0]} is afwezig{selected.outOfOfficeReason ? ` (${selected.outOfOfficeReason})` : ''}
+                {selected.outOfOfficeUntil && ` tot ${new Date(selected.outOfOfficeUntil).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short' })}`}.
+                Overweeg om aan iemand anders toe te wijzen.
+              </span>
+            </div>
+          )
+        }
+        return null
+      })()}
 
       {!isMine && hasAssignee && (
         <button
