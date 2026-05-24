@@ -4,7 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { slugify } from '@/lib/listings-db'
+import { slugify, getDbListing } from '@/lib/listings-db'
+import { findMatchingZoekfiches, persistMatchNotifications } from '@/lib/matching'
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -107,8 +108,23 @@ export async function createListingAction(formData: FormData): Promise<ListingAc
     return { ok: false, error: `Aanmaken mislukt: ${error?.message ?? 'onbekende fout'}` }
   }
 
+  const newId = (data as { id: string }).id ?? ''
+
+  // Matchengine: zoek open zoekfiches die passen + sla op als notification
+  if (newId) {
+    try {
+      const fresh = await getDbListing(newId)
+      if (fresh) {
+        const matches = await findMatchingZoekfiches(fresh)
+        await persistMatchNotifications(fresh, matches)
+      }
+    } catch (e) {
+      console.warn('[createListingAction] matching skipped:', e)
+    }
+  }
+
   revalidatePath('/admin/aanbod')
-  return { ok: true, id: (data as { id: string }).id ?? '', message: 'Pand aangemaakt.' }
+  return { ok: true, id: newId, message: 'Pand aangemaakt.' }
 }
 
 export async function updateListingAction(

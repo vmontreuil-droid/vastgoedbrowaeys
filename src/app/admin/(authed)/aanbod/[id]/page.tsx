@@ -2,7 +2,10 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, ExternalLink, Home } from 'lucide-react'
 import { getDbListing } from '@/lib/listings-db'
+import { findMatchingZoekfiches } from '@/lib/matching'
+import { formatPrice } from '@/lib/listings'
 import { ListingForm } from '../listing-form'
+import { MatchesPanel } from './matches-panel'
 
 export const metadata = {
   title: 'Admin · Pand bewerken',
@@ -16,6 +19,10 @@ export default async function EditListingPage({
   const { id } = await params
   const listing = await getDbListing(id)
   if (!listing) notFound()
+
+  const matches = await findMatchingZoekfiches(listing)
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://vastgoedbrowaeys.vercel.app'
+  const publicHref = `${siteUrl}/aanbod/${listing.id}`
 
   return (
     <div className="container-px mx-auto max-w-screen-2xl py-8 md:py-10">
@@ -49,6 +56,17 @@ export default async function EditListingPage({
           </Link>
         )}
       </section>
+
+      <div className="mb-8">
+        <MatchesPanel
+          matches={matches}
+          listingTitle={listing.title}
+          listingCity={listing.city}
+          listingZip={listing.zip}
+          listingPriceLabel={listing.price_label || formatPrice(listing.price)}
+          listingHref={publicHref}
+        />
+      </div>
 
       <ListingForm mode="edit" listing={listing} />
     </div>
