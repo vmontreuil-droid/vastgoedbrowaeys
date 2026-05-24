@@ -13,6 +13,7 @@ import { DocumentsPanel, type DocumentRow } from './documents-panel'
 import { EmailComposer } from './email-composer'
 import { DossierTimeline } from './dossier-timeline'
 import { StepsPanel, type StepRow } from './steps-panel'
+import { CommissionPanel } from './commission-panel'
 
 export const metadata = {
   title: 'Admin · Dossier',
@@ -191,6 +192,18 @@ export default async function DossierDetailPage({
               )}
             </Card>
           )}
+
+          <CommissionPanel
+            initial={{
+              dossierId: dossier.id,
+              type: dossier.commissionType,
+              rate: dossier.commissionRate,
+              fixed: dossier.commissionFixed,
+              vatIncluded: dossier.commissionVatIncluded,
+              notes: dossier.commissionNotes,
+              askingPrice: dossier.askingPrice,
+            }}
+          />
         </aside>
 
         <div className="lg:col-span-2 space-y-6">

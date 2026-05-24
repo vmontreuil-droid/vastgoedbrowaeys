@@ -41,6 +41,28 @@ export type AdminDossier = {
   notes: string | null
   appointmentsCount: number
   documentsCount: number
+  commissionType: 'percentage' | 'fixed' | 'none'
+  commissionRate: number | null
+  commissionFixed: number | null
+  commissionVatIncluded: boolean
+  commissionNotes: string | null
+}
+
+/**
+ * Berekent verwachte commissie op basis van type + tarieven.
+ * Returnt het netto (excl. BTW) bedrag. Roep computeVatAmount() apart
+ * om de BTW (21%) te krijgen.
+ */
+export function computeCommission(d: Pick<AdminDossier, 'commissionType' | 'commissionRate' | 'commissionFixed' | 'askingPrice'>): number {
+  if (d.commissionType === 'none') return 0
+  if (d.commissionType === 'percentage') {
+    if (!d.askingPrice || !d.commissionRate) return 0
+    return Math.round(d.askingPrice * (d.commissionRate / 100))
+  }
+  if (d.commissionType === 'fixed') {
+    return d.commissionFixed ?? 0
+  }
+  return 0
 }
 
 export type AdminAppointment = {
@@ -150,6 +172,11 @@ export async function getAdminDossiers(): Promise<FetchResult<AdminDossier>> {
     property_address: string | null; property_city: string | null; property_type: string | null;
     asking_price: number | null; reference: string | null; opened_at: string;
     closed_at: string | null; notes: string | null;
+    commission_type?: AdminDossier['commissionType'] | null;
+    commission_rate?: number | null;
+    commission_fixed?: number | null;
+    commission_vat_included?: boolean | null;
+    commission_notes?: string | null;
   }>
 
   // Resolve clientName lazy via profiles + auth in één keer
@@ -190,6 +217,11 @@ export async function getAdminDossiers(): Promise<FetchResult<AdminDossier>> {
     notes: d.notes,
     appointmentsCount: apptByDossier.get(d.id) ?? 0,
     documentsCount: docByDossier.get(d.id) ?? 0,
+    commissionType: (d.commission_type as AdminDossier['commissionType']) ?? 'percentage',
+    commissionRate: d.commission_rate ?? null,
+    commissionFixed: d.commission_fixed ?? null,
+    commissionVatIncluded: d.commission_vat_included === true,
+    commissionNotes: d.commission_notes ?? null,
   }))
 
   return { items }
@@ -551,6 +583,76 @@ export type AdminMetrics = {
   appointmentsThisWeek: number
   leadsUnread: number
   leadsTotal: number
+}
+
+export type StorageStats = {
+  documentsCount: number
+  documentsBytes: number
+  photosCount: number
+  photosBytes: number
+  listingsWithPhotos: number
+  totalBytes: number
+}
+
+/**
+ * Telt documents (via public.documents rows met size_bytes) en
+ * listing-photos (via storage.objects listing in 'listing-photos' bucket).
+ */
+export async function getStorageStats(): Promise<StorageStats> {
+  const admin = createAdminClient()
+
+  // Documenten — uit DB-rijen (snelste, size_bytes staat erin)
+  let documentsCount = 0
+  let documentsBytes = 0
+  const { data: docs } = await admin.from('documents').select('size_bytes')
+  if (docs) {
+    documentsCount = docs.length
+    documentsBytes = (docs as Array<{ size_bytes: number | null }>)
+      .reduce((sum, r) => sum + (r.size_bytes ?? 0), 0)
+  }
+
+  // Foto's — uit listings.gallery counts + storage listing voor sizes
+  let photosCount = 0
+  let listingsWithPhotos = 0
+  let photosBytes = 0
+  const { data: listings } = await admin.from('listings').select('gallery')
+  if (listings) {
+    for (const l of (listings as Array<{ gallery: string[] | null }>)) {
+      const g = l.gallery ?? []
+      if (g.length > 0) listingsWithPhotos++
+      photosCount += g.length
+    }
+  }
+
+  // Foto-bytes: list bucket via Storage API (één call per top-level folder)
+  // Optioneel — kan duur zijn bij veel folders; lazy-evaluate door enkel root te listen
+  try {
+    const { data: rootFolders } = await admin.storage.from('listing-photos').list('', { limit: 1000 })
+    if (rootFolders) {
+      // Per folder een quick list voor sizes
+      const folderListings = await Promise.all(
+        rootFolders.slice(0, 50).map((f) =>
+          admin.storage.from('listing-photos').list(f.name, { limit: 100 })
+        ),
+      )
+      for (const fl of folderListings) {
+        for (const obj of (fl.data ?? [])) {
+          photosBytes += obj.metadata?.size ?? 0
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('[getStorageStats] photo size scan skipped:', e)
+  }
+
+  return {
+    documentsCount,
+    documentsBytes,
+    photosCount,
+    photosBytes,
+    listingsWithPhotos,
+    totalBytes: documentsBytes + photosBytes,
+  }
 }
 
 export async function getAdminMetrics(): Promise<AdminMetrics> {

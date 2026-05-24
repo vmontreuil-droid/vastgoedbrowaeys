@@ -1,13 +1,14 @@
 import Link from 'next/link'
 import {
   ArrowRight, Users, FolderOpen, Calendar, MessageSquare, Plus, Home,
-  ArrowUpRight, TrendingUp,
+  ArrowUpRight, HardDrive, Calculator, FileText, Image as ImageIcon,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import {
   getAdminClients, getAdminDossiers, getAdminAppointments, getAdminLeads, getAdminTrends,
+  getStorageStats, computeCommission,
 } from '@/lib/admin-db'
-import { getListings } from '@/lib/listings'
+import { getListings, formatPrice } from '@/lib/listings'
 import { DonutChart, TrendArea, StackedBars } from '@/components/admin/charts'
 
 export const metadata = {
@@ -53,15 +54,28 @@ export default async function AdminDashboardPage() {
     { items: allAppointments },
     { items: allLeads },
     trends,
+    storage,
   ] = await Promise.all([
     getAdminClients(),
     getAdminDossiers(),
     getAdminAppointments(),
     getAdminLeads(),
     getAdminTrends(),
+    getStorageStats(),
   ])
 
+
   const openDossiers = allDossiers.filter((d) => ['open', 'in_behandeling', 'onder_optie'].includes(d.status))
+
+  // Commissie-pipeline: som verwachte commissies (excl. BTW) van lopende dossiers
+  const commissionPipeline = openDossiers.reduce((sum, d) => sum + computeCommission(d), 0)
+  const commissionRealised = allDossiers
+    .filter((d) => d.status === 'verkocht' || d.status === 'verhuurd')
+    .reduce((sum, d) => sum + computeCommission(d), 0)
+  const commissionUnderOption = allDossiers
+    .filter((d) => d.status === 'onder_optie')
+    .reduce((sum, d) => sum + computeCommission(d), 0)
+
   const onlineListings = getListings({ status: ['te-koop', 'te-huur', 'optie'] })
   const allListings = getListings()
   const now = Date.now()
@@ -266,8 +280,158 @@ export default async function AdminDashboardPage() {
           </div>
         </ChartCard>
       </section>
+
+      {/* === Commissie-pipeline + Storage === */}
+      <section className="grid lg:grid-cols-3 gap-6 mt-10">
+        <ChartCard
+          title="Commissie-pijplijn"
+          subtitle="Verwachte commissies (excl. BTW)"
+          actionHref="/admin/dossiers"
+          actionLabel="Alle dossiers"
+        >
+          <div className="space-y-4">
+            <CommissionLine
+              label="Lopende dossiers"
+              value={commissionPipeline}
+              accent="#0b4f58"
+            />
+            <CommissionLine
+              label="Onder optie"
+              value={commissionUnderOption}
+              accent="#c98c4f"
+            />
+            <CommissionLine
+              label="Gerealiseerd"
+              value={commissionRealised}
+              accent="#16a34a"
+              hint="verkocht + verhuurd dossiers"
+            />
+            <p className="text-[0.65rem] text-[var(--color-mute)] pt-3 border-t"
+              style={{ borderColor: 'var(--color-line)' }}>
+              Berekend op basis van de commissie ingesteld per dossier.
+              Bedragen zijn excl. 21% BTW.
+            </p>
+          </div>
+        </ChartCard>
+
+        <ChartCard
+          title="Opslag"
+          subtitle="Documenten + pand-foto's"
+          actionHref="/admin/aanbod"
+          actionLabel="Aanbod →"
+        >
+          <div className="space-y-4">
+            <StorageLine
+              icon={<FileText className="size-4" />}
+              label="Documenten"
+              count={storage.documentsCount}
+              bytes={storage.documentsBytes}
+              hint={`bij dossiers`}
+            />
+            <StorageLine
+              icon={<ImageIcon className="size-4" />}
+              label="Pand-foto's"
+              count={storage.photosCount}
+              bytes={storage.photosBytes}
+              hint={`${storage.listingsWithPhotos} panden met foto's`}
+            />
+            <div className="pt-3 border-t flex items-baseline justify-between"
+              style={{ borderColor: 'var(--color-line)' }}>
+              <span className="text-xs uppercase tracking-[0.12em]">Totaal gebruikt</span>
+              <span className="text-lg" style={{ fontFamily: 'var(--font-display)' }}>
+                {formatBytes(storage.totalBytes)}
+              </span>
+            </div>
+            <p className="text-[0.65rem] text-[var(--color-mute)]">
+              Supabase Free: 1 GB · Pro: 100 GB. Geen zorgen voorlopig.
+            </p>
+          </div>
+        </ChartCard>
+
+        <ChartCard
+          title="Snelle stats"
+          subtitle="Overzicht in cijfers"
+        >
+          <div className="grid grid-cols-2 gap-3 text-center">
+            <MiniBlock
+              icon={<HardDrive className="size-4" />}
+              value={storage.documentsCount + storage.photosCount}
+              label="bestanden"
+            />
+            <MiniBlock
+              icon={<Calculator className="size-4" />}
+              value={openDossiers.filter((d) => d.commissionType !== 'none').length}
+              label="dossiers met commissie"
+            />
+            <MiniBlock
+              icon={<FolderOpen className="size-4" />}
+              value={openDossiers.length}
+              label="lopende dossiers"
+            />
+            <MiniBlock
+              icon={<Users className="size-4" />}
+              value={allClients.length}
+              label="klanten in DB"
+            />
+          </div>
+        </ChartCard>
+      </section>
     </div>
   )
+}
+
+function CommissionLine({ label, value, accent, hint }: { label: string; value: number; accent: string; hint?: string }) {
+  return (
+    <div>
+      <div className="flex items-baseline justify-between">
+        <span className="text-sm flex items-center gap-2">
+          <span className="size-2 rounded-full" style={{ background: accent }} />
+          {label}
+        </span>
+        <span className="text-lg" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-accent)' }}>
+          {formatPrice(value)}
+        </span>
+      </div>
+      {hint && <p className="text-[0.65rem] text-[var(--color-mute)] mt-0.5 pl-4">{hint}</p>}
+    </div>
+  )
+}
+
+function StorageLine({ icon, label, count, bytes, hint }: { icon: React.ReactNode; label: string; count: number; bytes: number; hint?: string }) {
+  return (
+    <div>
+      <div className="flex items-baseline justify-between">
+        <span className="text-sm flex items-center gap-2">
+          <span style={{ color: 'var(--color-accent)' }}>{icon}</span>
+          {label}
+        </span>
+        <span className="text-sm">
+          {count} · <span className="text-[var(--color-mute)]">{formatBytes(bytes)}</span>
+        </span>
+      </div>
+      {hint && <p className="text-[0.65rem] text-[var(--color-mute)] mt-0.5 pl-6">{hint}</p>}
+    </div>
+  )
+}
+
+function MiniBlock({ icon, value, label }: { icon: React.ReactNode; value: number; label: string }) {
+  return (
+    <div className="p-3" style={{ background: 'var(--color-paper-2)' }}>
+      <div className="flex items-center justify-center mb-1" style={{ color: 'var(--color-accent)' }}>
+        {icon}
+      </div>
+      <p className="text-2xl leading-none" style={{ fontFamily: 'var(--font-display)' }}>{value}</p>
+      <p className="text-[0.6rem] text-[var(--color-mute)] mt-1">{label}</p>
+    </div>
+  )
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 B'
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+  return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`
 }
 
 function KpiCard({
