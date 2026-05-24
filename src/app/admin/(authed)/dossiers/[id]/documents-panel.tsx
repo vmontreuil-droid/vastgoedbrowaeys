@@ -2,13 +2,14 @@
 
 import { useRef, useState, useTransition } from 'react'
 import {
-  Upload, FileText, Image as ImageIcon, Download, Trash2, AlertCircle,
-  CheckCircle2, Loader2, FileSpreadsheet, FileType, FileImage,
+  Upload, FileText, Download, Trash2, AlertCircle,
+  Loader2, FileSpreadsheet, FileType, FileImage, Eye, EyeOff,
 } from 'lucide-react'
 import {
   uploadDocumentAction,
   deleteDocumentAction,
   getDocumentDownloadUrlAction,
+  toggleDocumentShareAction,
   type DocCategory,
 } from './document-actions'
 
@@ -20,6 +21,7 @@ export type DocumentRow = {
   sizeBytes: number | null
   mimeType: string | null
   uploadedAt: string
+  sharedWithClient: boolean
 }
 
 const CATEGORIES: { value: DocCategory; label: string }[] = [
@@ -102,6 +104,7 @@ export function DocumentsPanel({
               sizeBytes: file.size,
               mimeType: file.type || null,
               uploadedAt: new Date().toISOString(),
+              sharedWithClient: false,
             },
             ...prev,
           ])
@@ -110,6 +113,19 @@ export function DocumentsPanel({
         }
       }),
     ).finally(() => setUploading(false))
+  }
+
+  function toggleShare(doc: DocumentRow) {
+    const next = !doc.sharedWithClient
+    setDocs((prev) => prev.map((d) => d.id === doc.id ? { ...d, sharedWithClient: next } : d))
+    startTransition(async () => {
+      const res = await toggleDocumentShareAction(doc.id, next)
+      if (!res.ok) {
+        setError(res.error ?? 'Delen toggelen mislukt')
+        // Rollback optimistic update
+        setDocs((prev) => prev.map((d) => d.id === doc.id ? { ...d, sharedWithClient: !next } : d))
+      }
+    })
   }
 
   function handleDelete(id: string) {
@@ -252,6 +268,13 @@ export function DocumentsPanel({
                       >
                         {catLabel}
                       </span>
+                      {doc.sharedWithClient && (
+                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[0.55rem] uppercase tracking-[0.1em] font-medium"
+                          style={{ background: 'rgba(34,197,94,0.18)', color: '#166534' }}>
+                          <Eye className="size-2.5" />
+                          Gedeeld
+                        </span>
+                      )}
                     </div>
                     <p className="text-xs text-[var(--color-mute)] mt-0.5">
                       {formatSize(doc.sizeBytes)} · {new Date(doc.uploadedAt).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -279,6 +302,15 @@ export function DocumentsPanel({
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleShare(doc)}
+                        title={doc.sharedWithClient ? 'Niet meer delen met klant' : 'Delen met klant'}
+                        className="p-1.5"
+                        style={{ color: doc.sharedWithClient ? 'var(--color-accent)' : 'var(--color-mute)' }}
+                      >
+                        {doc.sharedWithClient ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
+                      </button>
                       <button
                         type="button"
                         onClick={() => handleOpen(doc.id)}

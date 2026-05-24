@@ -266,6 +266,7 @@ export type AdminDocument = {
   mimeType: string | null
   uploadedBy: string | null
   createdAt: string
+  sharedWithClient: boolean
 }
 
 export async function getAdminDocumentsForDossier(dossierId: string): Promise<FetchResult<AdminDocument>> {
@@ -280,7 +281,7 @@ export async function getAdminDocumentsForDossier(dossierId: string): Promise<Fe
   const items: AdminDocument[] = ((data ?? []) as Array<{
     id: string; dossier_id: string; name: string; category: AdminDocument['category'];
     storage_path: string; size_bytes: number | null; mime_type: string | null;
-    uploaded_by: string | null; created_at: string;
+    uploaded_by: string | null; created_at: string; shared_with_client: boolean | null;
   }>).map((r) => ({
     id: r.id,
     dossierId: r.dossier_id,
@@ -290,6 +291,44 @@ export async function getAdminDocumentsForDossier(dossierId: string): Promise<Fe
     sizeBytes: r.size_bytes,
     mimeType: r.mime_type,
     uploadedBy: r.uploaded_by,
+    createdAt: r.created_at,
+    sharedWithClient: r.shared_with_client === true,
+  }))
+  return { items }
+}
+
+export type DossierEvent = {
+  id: string
+  dossierId: string
+  eventType: 'email_sent' | 'note_added' | 'status_changed' | 'document_uploaded' | 'document_shared' | 'appointment_created' | 'appointment_completed' | 'other'
+  title: string
+  body: string | null
+  metadata: Record<string, unknown>
+  createdBy: string | null
+  createdAt: string
+}
+
+export async function getDossierEvents(dossierId: string, limit = 50): Promise<FetchResult<DossierEvent>> {
+  const admin = createAdminClient()
+  const { data, error } = await admin
+    .from('dossier_events')
+    .select('*')
+    .eq('dossier_id', dossierId)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  if (error) return { items: [], error: error.message }
+  const items: DossierEvent[] = ((data ?? []) as Array<{
+    id: string; dossier_id: string; event_type: DossierEvent['eventType'];
+    title: string; body: string | null; metadata: Record<string, unknown>;
+    created_by: string | null; created_at: string;
+  }>).map((r) => ({
+    id: r.id,
+    dossierId: r.dossier_id,
+    eventType: r.event_type,
+    title: r.title,
+    body: r.body,
+    metadata: r.metadata ?? {},
+    createdBy: r.created_by,
     createdAt: r.created_at,
   }))
   return { items }

@@ -6,9 +6,12 @@ import {
 } from 'lucide-react'
 import {
   getAdminDossier, getAdminAppointments, getAdminClient, getAdminDocumentsForDossier,
+  getDossierEvents,
 } from '@/lib/admin-db'
 import { formatPrice } from '@/lib/listings'
 import { DocumentsPanel, type DocumentRow } from './documents-panel'
+import { EmailComposer } from './email-composer'
+import { DossierTimeline } from './dossier-timeline'
 
 export const metadata = {
   title: 'Admin · Dossier',
@@ -64,10 +67,11 @@ export default async function DossierDetailPage({
   const dossier = await getAdminDossier(id)
   if (!dossier) notFound()
 
-  const [client, { items: allAppointments }, { items: documents }] = await Promise.all([
+  const [client, { items: allAppointments }, { items: documents }, { items: events }] = await Promise.all([
     getAdminClient(dossier.clientId),
     getAdminAppointments(),
     getAdminDocumentsForDossier(dossier.id),
+    getDossierEvents(dossier.id),
   ])
   const appointments = allAppointments
     .filter((a) => a.dossierId === dossier.id)
@@ -81,6 +85,7 @@ export default async function DossierDetailPage({
     sizeBytes: d.sizeBytes,
     mimeType: d.mimeType,
     uploadedAt: d.createdAt,
+    sharedWithClient: d.sharedWithClient,
   }))
 
   const statusBadge = STATUS_BADGE[dossier.status] ?? { bg: 'rgba(115,115,115,0.18)', fg: '#525252' }
@@ -122,7 +127,15 @@ export default async function DossierDetailPage({
             </p>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {client?.email && (
+            <EmailComposer
+              dossierId={dossier.id}
+              clientEmail={client.email}
+              clientName={(client.firstName + ' ' + client.lastName).trim() || client.email}
+              defaultSubject={`${dossier.ref ?? 'Dossier'} — ${dossier.propertyAddress ?? 'update'}`}
+            />
+          )}
           <Link
             href={`/admin/afspraken/nieuw?dossier_id=${dossier.id}`}
             className="inline-flex items-center gap-2 px-3.5 py-2 text-xs"
@@ -264,6 +277,8 @@ export default async function DossierDetailPage({
           </section>
 
           <DocumentsPanel dossierId={dossier.id} initialDocuments={documentRows} />
+
+          <DossierTimeline dossierId={dossier.id} events={events} />
 
           {dossier.notes && (
             <section>

@@ -94,6 +94,42 @@ export async function uploadDocumentAction(
 
 export type DeleteDocResult = { ok: boolean; error?: string }
 
+export type ShareDocResult = { ok: boolean; error?: string }
+
+export async function toggleDocumentShareAction(documentId: string, share: boolean): Promise<ShareDocResult> {
+  try { await requireAdmin() } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : 'Geen toegang' }
+  }
+
+  const admin = createAdminClient()
+  const { data: doc, error: getErr } = await admin
+    .from('documents')
+    .select('id, dossier_id, name')
+    .eq('id', documentId)
+    .single()
+  if (getErr || !doc) return { ok: false, error: getErr?.message ?? 'Document niet gevonden' }
+  const d = doc as { id: string; dossier_id: string; name: string }
+
+  const { error: updErr } = await admin
+    .from('documents')
+    .update({ shared_with_client: share })
+    .eq('id', documentId)
+  if (updErr) return { ok: false, error: updErr.message }
+
+  // Log in dossier-events
+  await admin.from('dossier_events').insert({
+    dossier_id: d.dossier_id,
+    event_type: 'document_shared',
+    title: share
+      ? `Document gedeeld met klant: ${d.name}`
+      : `Document niet meer gedeeld met klant: ${d.name}`,
+    metadata: { document_id: d.id, shared: share },
+  })
+
+  revalidatePath(`/admin/dossiers/${d.dossier_id}`)
+  return { ok: true }
+}
+
 export async function deleteDocumentAction(documentId: string): Promise<DeleteDocResult> {
   try {
     await requireAdmin()
