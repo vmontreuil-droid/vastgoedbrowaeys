@@ -1,7 +1,8 @@
 import Link from 'next/link'
-import { ArrowRight, FolderOpen, BellRing, Calendar, FileText, Home } from 'lucide-react'
+import { ArrowRight, FolderOpen, BellRing, Calendar, FileText, Home, Bell, Target } from 'lucide-react'
 import { getListings, formatPrice } from '@/lib/listings'
 import { createClient } from '@/lib/supabase/server'
+import { getNotificationsForUser } from '@/lib/admin-db'
 
 export const metadata = {
   title: 'Mijn portaal',
@@ -22,6 +23,11 @@ export default async function PortalDashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
   const firstName = user?.user_metadata?.first_name as string | undefined
   const displayName = deriveDisplayName(firstName, user?.email ?? null)
+
+  const { items: myNotifs } = user
+    ? await getNotificationsForUser(user.id, 8)
+    : { items: [] }
+  const unreadCount = myNotifs.filter((n) => !n.readAt).length
 
   // Demo-data — komt later uit Supabase, gekoppeld aan de ingelogde klant.
   const myListings = getListings({ status: ['te-koop'], limit: 2 })
@@ -56,12 +62,64 @@ export default async function PortalDashboardPage() {
       </section>
 
       {/* === Snelle stats === */}
-      <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-14">
+      <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <StatCard icon={<FolderOpen className="size-5" />} label="Lopende dossiers" value="1" hint="Verkoopdossier" />
         <StatCard icon={<BellRing className="size-5" />} label="Zoekcriteria actief" value="1" hint="3 matches deze maand" />
         <StatCard icon={<Calendar className="size-5" />} label="Geplande afspraken" value="1" hint="Volgende: 26 mei" />
         <StatCard icon={<FileText className="size-5" />} label="Documenten" value="2" hint="Voor u beschikbaar" />
       </section>
+
+      {/* === Meldingen voor mij === */}
+      {myNotifs.length > 0 && (
+        <section className="mb-14">
+          <div className="flex items-end justify-between mb-5">
+            <h2 className="text-2xl flex items-center gap-3" style={{ fontFamily: 'var(--font-display)' }}>
+              <Bell className="size-5" style={{ color: 'var(--color-accent)' }} />
+              Meldingen
+              {unreadCount > 0 && (
+                <span className="text-[0.6rem] uppercase tracking-[0.12em] font-medium px-2 py-0.5"
+                  style={{ background: 'var(--color-accent)', color: 'var(--color-paper)' }}>
+                  {unreadCount} nieuw
+                </span>
+              )}
+            </h2>
+          </div>
+          <ul className="divide-y"
+            style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)', borderColor: 'var(--color-line)' }}>
+            {myNotifs.slice(0, 5).map((n) => (
+              <li key={n.id}
+                className="flex items-start gap-3 px-4 py-3"
+                style={{ background: n.readAt ? 'transparent' : 'var(--color-paper-2)' }}>
+                <span className="inline-flex items-center justify-center size-7 shrink-0 mt-0.5"
+                  style={{ background: 'var(--color-accent)', color: 'var(--color-paper)' }}>
+                  {n.type === 'new_match' ? <Target className="size-3" /> : <Bell className="size-3" />}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm ${n.readAt ? '' : 'font-medium'}`}>{n.title}</p>
+                  {n.body && (
+                    <p className="text-xs text-[var(--color-mute)] mt-0.5">{n.body}</p>
+                  )}
+                  <p className="text-[0.65rem] text-[var(--color-mute)] mt-1">
+                    {new Date(n.createdAt).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+                {n.link && (
+                  <Link href={n.link}
+                    className="text-xs link-underline self-center shrink-0"
+                    style={{ color: 'var(--color-accent)' }}>
+                    Bekijken →
+                  </Link>
+                )}
+              </li>
+            ))}
+          </ul>
+          {myNotifs.length > 5 && (
+            <p className="text-xs text-[var(--color-mute)] mt-2 text-right">
+              + {myNotifs.length - 5} oudere meldingen
+            </p>
+          )}
+        </section>
+      )}
 
       <section className="grid lg:grid-cols-3 gap-8">
         {/* === Lopend dossier === */}

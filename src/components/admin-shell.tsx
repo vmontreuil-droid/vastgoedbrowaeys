@@ -17,6 +17,7 @@ import {
   X,
   ChevronsLeft,
   ChevronsRight,
+  Bell,
 } from 'lucide-react'
 import { BrandLogo } from './brand-logo'
 import { signOutAction } from '@/lib/auth/actions'
@@ -27,6 +28,7 @@ export type AdminNavBadges = {
   aanbod?: number
   afspraken?: number
   berichten?: { total: number; unread: number }
+  notificaties?: { total: number; unread: number }
 }
 
 const NAV: Array<{
@@ -41,6 +43,7 @@ const NAV: Array<{
   { href: '/admin/aanbod',       label: 'Aanbod',       icon: Home,           badgeKey: 'aanbod' },
   { href: '/admin/afspraken',    label: 'Afspraken',    icon: Calendar,       badgeKey: 'afspraken' },
   { href: '/admin/berichten',    label: 'Berichten',    icon: MessageSquare,  badgeKey: 'berichten' },
+  { href: '/admin/notificaties', label: 'Meldingen',    icon: Bell,           badgeKey: 'notificaties' },
   { href: '/admin/instellingen', label: 'Instellingen', icon: Settings },
 ]
 

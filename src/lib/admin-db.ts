@@ -348,6 +348,104 @@ export async function getAdminLead(id: string): Promise<AdminLead | null> {
   return list.items.find((l) => l.id === id) ?? null
 }
 
+export type NotificationType = 'new_match' | 'new_document' | 'appointment_reminder' | 'dossier_update' | 'message'
+
+export type AdminNotification = {
+  id: string
+  userId: string
+  userName: string
+  userEmail: string
+  type: NotificationType
+  title: string
+  body: string | null
+  link: string | null
+  readAt: string | null
+  createdAt: string
+}
+
+export async function getAdminNotifications(limit = 200): Promise<FetchResult<AdminNotification>> {
+  const admin = createAdminClient()
+  const { data, error } = await admin
+    .from('notifications')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  if (error) return { items: [], error: error.message }
+
+  const rows = (data ?? []) as Array<{
+    id: string; user_id: string; type: NotificationType; title: string;
+    body: string | null; link: string | null; read_at: string | null; created_at: string;
+  }>
+
+  const userIds = Array.from(new Set(rows.map((r) => r.user_id)))
+  const userById = new Map<string, { name: string; email: string }>()
+  if (userIds.length > 0) {
+    const { data: profs } = await admin
+      .from('profiles')
+      .select('id, first_name, last_name, email')
+      .in('id', userIds)
+    for (const p of (profs ?? []) as Array<{ id: string; first_name: string | null; last_name: string | null; email: string }>) {
+      userById.set(p.id, {
+        name: [p.first_name, p.last_name].filter(Boolean).join(' ') || p.email,
+        email: p.email,
+      })
+    }
+  }
+
+  const items: AdminNotification[] = rows.map((r) => {
+    const u = userById.get(r.user_id) ?? { name: '(onbekende klant)', email: '' }
+    return {
+      id: r.id,
+      userId: r.user_id,
+      userName: u.name,
+      userEmail: u.email,
+      type: r.type,
+      title: r.title,
+      body: r.body,
+      link: r.link,
+      readAt: r.read_at,
+      createdAt: r.created_at,
+    }
+  })
+  return { items }
+}
+
+export async function getAdminUnreadNotificationCount(): Promise<number> {
+  const admin = createAdminClient()
+  const { count, error } = await admin
+    .from('notifications')
+    .select('id', { count: 'exact', head: true })
+    .is('read_at', null)
+  if (error) return 0
+  return count ?? 0
+}
+
+export type PortalNotification = Omit<AdminNotification, 'userId' | 'userName' | 'userEmail'>
+
+export async function getNotificationsForUser(userId: string, limit = 30): Promise<FetchResult<PortalNotification>> {
+  const admin = createAdminClient()
+  const { data, error } = await admin
+    .from('notifications')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  if (error) return { items: [], error: error.message }
+  const items: PortalNotification[] = ((data ?? []) as Array<{
+    id: string; type: NotificationType; title: string; body: string | null;
+    link: string | null; read_at: string | null; created_at: string;
+  }>).map((r) => ({
+    id: r.id,
+    type: r.type,
+    title: r.title,
+    body: r.body,
+    link: r.link,
+    readAt: r.read_at,
+    createdAt: r.created_at,
+  }))
+  return { items }
+}
+
 export type AdminMetrics = {
   clientsTotal: number
   clientsActive: number

@@ -7,7 +7,10 @@ export const revalidate = 0
 
 import { AdminShell, type AdminNavBadges } from '@/components/admin-shell'
 import { getListings } from '@/lib/listings'
-import { getAdminClients, getAdminDossiers, getAdminAppointments, getAdminLeads } from '@/lib/admin-db'
+import {
+  getAdminClients, getAdminDossiers, getAdminAppointments, getAdminLeads,
+  getAdminNotifications,
+} from '@/lib/admin-db'
 
 const DEMO_AGENT = {
   name: 'Stefanie Browaeys',
@@ -23,11 +26,13 @@ async function computeBadges(): Promise<AdminNavBadges> {
     { items: dossiers },
     { items: appointments },
     { items: leads },
+    { items: notifications },
   ] = await Promise.all([
     getAdminClients(),
     getAdminDossiers(),
     getAdminAppointments(),
     getAdminLeads(),
+    getAdminNotifications(500),
   ])
 
   const openDossiers = dossiers.filter((d) =>
@@ -42,6 +47,7 @@ async function computeBadges(): Promise<AdminNavBadges> {
   }).length
 
   const unread = leads.filter((l) => !l.readAt).length
+  const notifUnread = notifications.filter((n) => !n.readAt).length
 
   return {
     klanten: clients.length,
@@ -49,6 +55,7 @@ async function computeBadges(): Promise<AdminNavBadges> {
     aanbod: onlineListings,
     afspraken: upcomingThisWeek,
     berichten: { total: leads.length, unread },
+    notificaties: { total: notifications.length, unread: notifUnread },
   }
 }
 
