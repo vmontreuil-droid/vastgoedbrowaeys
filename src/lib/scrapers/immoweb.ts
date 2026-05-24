@@ -69,33 +69,78 @@ type RawImmowebListing = {
   publication?: { publisher?: { name?: string; type?: string } }
 }
 
+/** Recursief door object zoeken naar een array die op Immoweb-listings lijkt. */
+function findImmowebListingsDeep(obj: unknown, depth = 0): RawImmowebListing[] | null {
+  if (depth > 8 || !obj || typeof obj !== 'object') return null
+  if (Array.isArray(obj)) {
+    // Array met objecten die een 'property' + 'transaction' (of 'id') hebben → listings
+    if (obj.length > 0) {
+      const sample = obj[0]
+      if (sample && typeof sample === 'object') {
+        const s = sample as Record<string, unknown>
+        const looksLikeListing = ('property' in s && typeof s.property === 'object')
+          || ('id' in s && 'transaction' in s)
+          || ('id' in s && 'price' in s && 'location' in s)
+        if (looksLikeListing) return obj as RawImmowebListing[]
+      }
+    }
+    // Anders: in elk item zoeken
+    for (const item of obj) {
+      const r = findImmowebListingsDeep(item, depth + 1)
+      if (r) return r
+    }
+    return null
+  }
+  for (const key of Object.keys(obj)) {
+    const r = findImmowebListingsDeep((obj as Record<string, unknown>)[key], depth + 1)
+    if (r) return r
+  }
+  return null
+}
+
 function extractInitialState(html: string): { results?: RawImmowebListing[] } | null {
-  // Probeer eerst window.__INITIAL_STATE__ patroon
+  // 1) window.__INITIAL_STATE__
   const stateMatch = html.match(/window\.__INITIAL_STATE__\s*=\s*({[\s\S]+?});?\s*<\/script>/)
   if (stateMatch) {
     try {
-      const parsed = JSON.parse(stateMatch[1]) as Record<string, unknown>
-      // Navigeer naar results — kan variëren tussen react releases
-      const candidates = [
-        (parsed as { results?: RawImmowebListing[] }).results,
-        ((parsed as { initialResults?: { results?: RawImmowebListing[] } }).initialResults)?.results,
-        ((parsed as { search?: { results?: RawImmowebListing[] } }).search)?.results,
-      ]
-      const results = candidates.find((c) => Array.isArray(c)) as RawImmowebListing[] | undefined
-      if (results) return { results }
+      const parsed = JSON.parse(stateMatch[1])
+      const found = findImmowebListingsDeep(parsed)
+      if (found && found.length > 0) return { results: found }
     } catch {
       // ignore parse failure
     }
   }
 
-  // Next.js fallback: __NEXT_DATA__
+  // 2) <script id="__NEXT_DATA__">
   const nextMatch = html.match(/<script\s+id=["']__NEXT_DATA__["'][^>]*>([\s\S]+?)<\/script>/)
   if (nextMatch) {
     try {
-      const parsed = JSON.parse(nextMatch[1]) as Record<string, unknown>
-      const props = (parsed as { props?: { pageProps?: { searchResult?: { results?: RawImmowebListing[] } } } })
-        .props?.pageProps?.searchResult?.results
-      if (Array.isArray(props)) return { results: props }
+      const parsed = JSON.parse(nextMatch[1])
+      const found = findImmowebListingsDeep(parsed)
+      if (found && found.length > 0) return { results: found }
+    } catch {
+      // ignore
+    }
+  }
+
+  // 3) Andere inline JSON in <script>-tags (bv. self.__next_f.push(...))
+  // Zoek alle script-tags die JSON-achtige content bevatten en probeer ze te parsen
+  const scriptRegex = /<script[^>]*>([\s\S]{200,}?)<\/script>/g
+  let m: RegExpExecArray | null
+  while ((m = scriptRegex.exec(html)) !== null) {
+    const content = m[1]
+    // Snelle filter: moet 'property' EN 'transaction' bevatten om het proberen waard te zijn
+    if (!content.includes('"property"') || !content.includes('"transaction"')) continue
+    // Probeer alle JSON-objecten in de string te extracten
+    const jsonStart = content.indexOf('{')
+    if (jsonStart < 0) continue
+    const candidate = content.slice(jsonStart)
+    try {
+      // Probeer tot een geldig JSON-object te parsen — niet perfect maar best-effort
+      // Sommige scripts hebben 'self.__next_f.push([1, "..."])' formaat — daarbij is de JSON een geëncoded string
+      const parsed = JSON.parse(candidate)
+      const found = findImmowebListingsDeep(parsed)
+      if (found && found.length > 0) return { results: found }
     } catch {
       // ignore
     }

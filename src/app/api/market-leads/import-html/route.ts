@@ -98,14 +98,24 @@ export async function POST(request: Request) {
   // Parse listings
   const listings = extractListingsFromHtml(url, html)
   if (listings.length === 0) {
+    // Geef wat hints over wat we wel/niet in de HTML vonden — helpt bij debuggen
+    const hints: string[] = []
+    if (html.includes('__NEXT_DATA__')) hints.push('__NEXT_DATA__ gevonden')
+    if (html.includes('__INITIAL_STATE__')) hints.push('__INITIAL_STATE__ gevonden')
+    if (html.includes('application/ld+json')) hints.push('JSON-LD gevonden')
+    if (html.includes('"property"') && html.includes('"transaction"')) hints.push('property/transaction velden aanwezig')
+    let host = ''
+    try { host = new URL(url).hostname } catch {}
+    const hintText = hints.length > 0 ? ` (${hints.join(', ')})` : ''
     return NextResponse.json(
       {
         ok: true,
-        message: 'Geen listings herkend in deze pagina. Misschien een detail-pagina of een onbekende site?',
+        message: `Geen panden herkend op ${host}${hintText}. Probeer een zoek-resultatenpagina i.p.v. detail- of homepage.`,
         parsed: 0,
         new: 0,
         merged: 0,
         skipped: 0,
+        debug: { host, htmlSize: html.length, hints },
       },
       { status: 200, headers: CORS_HEADERS },
     )
