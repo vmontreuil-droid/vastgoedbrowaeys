@@ -3,13 +3,35 @@ import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { ContactForm } from './contact-form'
 import { ContactMapWrapper } from '@/components/contact-map-wrapper'
+import { getListings } from '@/lib/listings'
 
 export const metadata = {
   title: 'Contact',
   description: 'Contacteer Vastgoed Browaeys — kantoor Horebeke, Vlaamse Ardennen.',
 }
 
-export default function ContactPage() {
+type SearchParams = { [k: string]: string | string[] | undefined }
+
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>
+}) {
+  const params = await searchParams
+  const ref = (params.ref as string | undefined)?.trim()
+
+  // Als er een ?ref=... in de URL staat (komt vanaf "Vraag info aan" op pand-detail),
+  // zoek dan de bijhorende pand-titel om mee te geven als context.
+  let relatedListing: string | null = null
+  let prefillSubject: string | null = null
+  if (ref) {
+    const all = getListings()
+    const found = all.find((l) => l.id === ref || l.ref === ref)
+    if (found) {
+      relatedListing = `${found.title} — ${found.zip ?? ''} ${found.city}`.trim()
+      prefillSubject = `Vraag over: ${found.title}`
+    }
+  }
   return (
     <>
       <SiteHeader />
@@ -83,7 +105,7 @@ export default function ContactPage() {
             <h2 className="text-2xl md:text-3xl mb-6">
               Of laat hier een bericht na
             </h2>
-            <ContactForm />
+            <ContactForm prefillSubject={prefillSubject} relatedListing={relatedListing} />
           </div>
         </section>
 

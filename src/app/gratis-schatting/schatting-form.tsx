@@ -1,18 +1,73 @@
 'use client'
 
-import { useState } from 'react'
-import { ArrowRight, Check } from 'lucide-react'
+import { useState, useTransition } from 'react'
+import { ArrowRight, Check, AlertCircle } from 'lucide-react'
+import { createLead } from '@/lib/leads'
 
 const TYPES = ['Woning', 'Appartement', 'Bouwgrond', 'Handelspand', 'Andere'] as const
 const REASONS = ['Verkoop', 'Verhuur', 'Erfenis / schenking', 'Persoonlijke info', 'Andere'] as const
 
 export function SchattingForm() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle')
+  const [error, setError] = useState<string | null>(null)
+  const [, startTransition] = useTransition()
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    setError(null)
     setStatus('sending')
-    setTimeout(() => setStatus('sent'), 900)
+
+    const fd = new FormData(e.currentTarget)
+    const get = (k: string) => String(fd.get(k) ?? '').trim()
+
+    const firstname = get('firstname')
+    const lastname  = get('lastname')
+    const email     = get('email')
+    const phone     = get('phone')
+    const type      = get('type')
+    const street    = get('street')
+    const zip       = get('zip')
+    const city      = get('city')
+    const year      = get('year')
+    const surface   = get('surface')
+    const bedrooms  = get('bedrooms')
+    const reason    = get('reason')
+    const notes     = get('notes')
+
+    const body = [
+      `Schatting aangevraagd via /gratis-schatting`,
+      ``,
+      `--- Pand ---`,
+      `Type: ${type}`,
+      `Adres: ${street}, ${zip} ${city}`,
+      year && `Bouwjaar: ${year}`,
+      surface && `Bewoonbaar: ${surface} m²`,
+      bedrooms && `Slaapkamers: ${bedrooms}`,
+      ``,
+      `--- Reden ---`,
+      reason || '(niet opgegeven)',
+      notes && ``,
+      notes && `--- Bijkomende info ---`,
+      notes,
+    ].filter(Boolean).join('\n')
+
+    startTransition(async () => {
+      const res = await createLead({
+        fromName: `${firstname} ${lastname}`.trim(),
+        fromEmail: email,
+        fromPhone: phone,
+        subject: `Schatting: ${type || 'pand'} in ${city || zip || '?'}`,
+        body,
+        type: 'schatting',
+        source: 'gratis-schatting',
+      })
+      if (res.ok) {
+        setStatus('sent')
+      } else {
+        setStatus('idle')
+        setError(res.error)
+      }
+    })
   }
 
   if (status === 'sent') {
@@ -87,6 +142,17 @@ export function SchattingForm() {
           .
         </span>
       </label>
+
+      {error && (
+        <div
+          className="flex items-start gap-3 p-3 text-sm"
+          style={{ background: 'rgba(239,68,68,0.08)', color: '#b91c1c' }}
+          role="alert"
+        >
+          <AlertCircle className="size-4 mt-0.5 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
       <div>
         <button type="submit" disabled={status === 'sending'} className="btn btn-solid">

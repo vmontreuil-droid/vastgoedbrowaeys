@@ -1,16 +1,51 @@
 'use client'
 
-import { useState } from 'react'
-import { Send, Check } from 'lucide-react'
+import { useState, useTransition } from 'react'
+import { Send, Check, AlertCircle } from 'lucide-react'
+import { createLead } from '@/lib/leads'
 
-export function ContactForm() {
+export function ContactForm({
+  prefillSubject,
+  relatedListing,
+}: {
+  prefillSubject?: string | null
+  relatedListing?: string | null
+}) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle')
+  const [error, setError] = useState<string | null>(null)
+  const [, startTransition] = useTransition()
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    setError(null)
     setStatus('sending')
-    // Placeholder — server action / Supabase komt later
-    setTimeout(() => setStatus('sent'), 800)
+
+    const fd = new FormData(e.currentTarget)
+    const get = (k: string) => String(fd.get(k) ?? '').trim()
+    const name = `${get('name')} ${get('surname')}`.trim()
+    const email = get('email')
+    const phone = get('phone')
+    const subject = get('subject') || (relatedListing ? `Vraag over: ${relatedListing}` : 'Bericht via contactformulier')
+    const message = get('message')
+
+    startTransition(async () => {
+      const res = await createLead({
+        fromName: name,
+        fromEmail: email,
+        fromPhone: phone,
+        subject,
+        body: message,
+        type: relatedListing ? 'visit_request' : (get('subject') ? 'vraag' : 'algemeen'),
+        relatedListing: relatedListing ?? null,
+        source: relatedListing ? 'pand-detail' : 'contact',
+      })
+      if (res.ok) {
+        setStatus('sent')
+      } else {
+        setStatus('idle')
+        setError(res.error)
+      }
+    })
   }
 
   if (status === 'sent') {
@@ -42,7 +77,16 @@ export function ContactForm() {
         <FormField label="E-mail" name="email" type="email" required />
         <FormField label="Telefoon" name="phone" type="tel" />
       </div>
-      <FormField label="Onderwerp" name="subject" />
+      {relatedListing && (
+        <div
+          className="p-3 text-sm"
+          style={{ background: 'var(--color-paper-2)', border: '1px solid var(--color-line)' }}
+        >
+          <p className="eyebrow text-[0.55rem] mb-1">Over pand</p>
+          <p>{relatedListing}</p>
+        </div>
+      )}
+      <FormField label="Onderwerp" name="subject" defaultValue={prefillSubject ?? ''} />
       <FormField label="Uw bericht" name="message" textarea rows={5} required />
 
       <label className="flex items-start gap-3 text-sm text-[var(--color-mute)] pt-2">
@@ -55,6 +99,17 @@ export function ContactForm() {
           .
         </span>
       </label>
+
+      {error && (
+        <div
+          className="flex items-start gap-3 p-3 text-sm"
+          style={{ background: 'rgba(239,68,68,0.08)', color: '#b91c1c' }}
+          role="alert"
+        >
+          <AlertCircle className="size-4 mt-0.5 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
       <div>
         <button
@@ -77,6 +132,7 @@ function FormField({
   required,
   textarea,
   rows,
+  defaultValue,
 }: {
   label: string
   name: string
@@ -84,6 +140,7 @@ function FormField({
   required?: boolean
   textarea?: boolean
   rows?: number
+  defaultValue?: string
 }) {
   const base =
     'w-full px-4 py-3 bg-transparent text-base transition-colors focus:outline-none focus:border-[var(--color-accent)] placeholder:text-[var(--color-mute)]'
@@ -93,9 +150,9 @@ function FormField({
     <label className="block">
       <span className="eyebrow text-[0.6rem] mb-2 block">{label}{required && ' *'}</span>
       {textarea ? (
-        <textarea name={name} required={required} rows={rows ?? 4} className={base} style={style} />
+        <textarea name={name} required={required} rows={rows ?? 4} className={base} style={style} defaultValue={defaultValue} />
       ) : (
-        <input name={name} type={type} required={required} className={base} style={style} />
+        <input name={name} type={type} required={required} className={base} style={style} defaultValue={defaultValue} />
       )}
     </label>
   )

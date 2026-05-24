@@ -1,17 +1,20 @@
 'use client'
 
-import { useState } from 'react'
-import { ArrowRight, Check } from 'lucide-react'
+import { useState, useTransition } from 'react'
+import { ArrowRight, Check, AlertCircle } from 'lucide-react'
 import { TYPE_BADGE, type ListingType } from '@/lib/listings'
+import { createLead } from '@/lib/leads'
 
 const TYPES: ListingType[] = ['woning', 'appartement', 'bouwgrond', 'handelspand']
 const STATUSES = ['Te koop', 'Te huur', 'Beide'] as const
 const REGIONS = ['Zwalm', 'Horebeke', 'Kluisbergen', 'Brakel', 'Geraardsbergen', 'Herzele', 'Zottegem', 'Andere'] as const
 
 export function SubscribeForm() {
-  const [status, setStatus] = useState<'idle' | 'sent'>('idle')
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle')
+  const [error, setError] = useState<string | null>(null)
   const [types, setTypes] = useState<Set<ListingType>>(new Set())
   const [regions, setRegions] = useState<Set<string>>(new Set())
+  const [, startTransition] = useTransition()
 
   function toggleType(t: ListingType) {
     setTypes((prev) => {
@@ -24,9 +27,52 @@ export function SubscribeForm() {
     })
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    setTimeout(() => setStatus('sent'), 700)
+    setError(null)
+    setStatus('sending')
+
+    const fd = new FormData(e.currentTarget)
+    const get = (k: string) => String(fd.get(k) ?? '').trim()
+
+    const name    = get('name')
+    const email   = get('email')
+    const phone   = get('phone')
+    const koopHuur = get('status') || 'Te koop'
+    const budget  = get('budget')
+    const beds    = get('bedrooms')
+
+    const typeList   = Array.from(types).map((t) => TYPE_BADGE[t]?.label ?? t).join(', ') || '(alle types)'
+    const regionList = Array.from(regions).join(', ') || '(alle regio\'s)'
+
+    const body = [
+      `Inschrijving via /hou-me-op-de-hoogte`,
+      ``,
+      `Koop of huur: ${koopHuur}`,
+      `Type(s): ${typeList}`,
+      `Regio('s): ${regionList}`,
+      budget && `Budget max: € ${budget}`,
+      beds && `Min. slaapkamers: ${beds}`,
+      phone && `Telefoon: ${phone}`,
+    ].filter(Boolean).join('\n')
+
+    startTransition(async () => {
+      const res = await createLead({
+        fromName: name,
+        fromEmail: email,
+        fromPhone: phone,
+        subject: `Nieuwe zoekfiche-inschrijving — ${koopHuur} in ${regionList}`,
+        body,
+        type: 'lead',
+        source: 'hou-me-op-de-hoogte',
+      })
+      if (res.ok) {
+        setStatus('sent')
+      } else {
+        setStatus('idle')
+        setError(res.error)
+      }
+    })
   }
 
   if (status === 'sent') {
@@ -144,8 +190,19 @@ export function SubscribeForm() {
         </span>
       </label>
 
-      <button type="submit" className="btn btn-solid">
-        Schrijf me in
+      {error && (
+        <div
+          className="flex items-start gap-3 p-3 text-sm"
+          style={{ background: 'rgba(239,68,68,0.08)', color: '#b91c1c' }}
+          role="alert"
+        >
+          <AlertCircle className="size-4 mt-0.5 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      <button type="submit" disabled={status === 'sending'} className="btn btn-solid">
+        {status === 'sending' ? 'Versturen…' : 'Schrijf me in'}
         <ArrowRight className="size-4" />
       </button>
     </form>
