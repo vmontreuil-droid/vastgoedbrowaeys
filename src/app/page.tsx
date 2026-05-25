@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { HeroSlider, type HeroSlide } from '@/components/hero-slider'
+import { StefanieReel } from '@/components/stefanie-reel'
 import { ListingCard } from '@/components/listing-card'
 import { getListings, formatPrice, listingHref } from '@/lib/listings'
 
@@ -38,6 +39,9 @@ export default function HomePage() {
       <main>
         {/* === HERO SLIDER === */}
         <HeroSlider slides={heroSlides} />
+
+        {/* === REEL — Maak kennis met Stefanie === */}
+        <StefanieReel />
 
         {/* === IN DE KIJKER — uitgelicht aanbod === */}
         <section className="container-px mx-auto max-w-screen-2xl py-20 md:py-28">
