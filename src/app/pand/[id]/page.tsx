@@ -23,6 +23,7 @@ import { PandLogin } from './pand-login'
 import { PandQR } from './pand-qr'
 import { PandDocuments } from './pand-documents'
 import { PandMapWrapper } from './pand-map-wrapper'
+import { PandHeroScroll } from './pand-hero-scroll'
 
 export function generateStaticParams() {
   return LISTINGS.flatMap((l) => [
@@ -140,39 +141,55 @@ export default async function PandMicrosite({ params }: { params: Params }) {
             </span>
           </div>
 
-          {/* Onderaan: titel + adres + prijs */}
-          <div className="absolute bottom-0 inset-x-0 pb-10 md:pb-16">
-            <div className="container-px mx-auto max-w-screen-2xl">
-              <p
-                className="eyebrow mb-2 md:mb-3 flex items-center gap-2"
-                style={{ color: 'color-mix(in srgb, #faf8f4 85%, transparent)' }}
-              >
-                <MapPin className="size-3.5" />
-                {listing.zip} {listing.city}
-              </p>
-              <h1
-                className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl max-w-4xl"
+          {/* Glass-card onderaan met titel + adres + prijs */}
+          <div className="absolute inset-x-0 bottom-0 px-6 md:px-10 lg:px-16 pb-12 md:pb-16 pointer-events-none">
+            <div className="flex justify-start">
+              <div
+                className="relative w-[92%] max-w-2xl p-5 md:p-10 pointer-events-auto overflow-hidden"
                 style={{
-                  color: 'var(--color-paper)',
-                  fontFamily: 'var(--font-display)',
+                  background: 'color-mix(in srgb, #faf8f4 62%, transparent)',
+                  backdropFilter: 'blur(8px) saturate(130%)',
+                  WebkitBackdropFilter: 'blur(8px) saturate(130%)',
+                  border: '1px solid color-mix(in srgb, #ffffff 35%, transparent)',
+                  boxShadow: '0 24px 48px -20px rgba(0,0,0,0.25)',
                 }}
               >
-                {listing.title}
-              </h1>
-              <p
-                className="mt-4 md:mt-6 text-2xl md:text-4xl italic"
-                style={{
-                  color: 'var(--color-paper)',
-                  fontFamily: 'var(--font-display)',
-                }}
-              >
-                {formatPrice(listing.price)}
-                {listing.priceLabel && (
-                  <span className="text-base md:text-xl ml-2 opacity-80">{listing.priceLabel}</span>
-                )}
-              </p>
+                <p
+                  className="eyebrow mb-2 md:mb-3 flex items-center gap-2"
+                  style={{ color: 'var(--color-clay-dark)' }}
+                >
+                  <MapPin className="size-3.5" />
+                  {listing.zip} {listing.city}
+                </p>
+                <h1
+                  className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl"
+                  style={{
+                    color: 'var(--color-ink)',
+                    fontFamily: 'var(--font-display)',
+                  }}
+                >
+                  {listing.title}
+                </h1>
+                <p
+                  className="mt-3 md:mt-5 text-xl md:text-3xl italic"
+                  style={{
+                    color: 'var(--color-accent)',
+                    fontFamily: 'var(--font-display)',
+                  }}
+                >
+                  {formatPrice(listing.price)}
+                  {listing.priceLabel && (
+                    <span className="text-sm md:text-base ml-2" style={{ color: 'var(--color-mute)' }}>
+                      {listing.priceLabel}
+                    </span>
+                  )}
+                </p>
+              </div>
             </div>
           </div>
+
+          {/* Scroll-cue onderaan midden */}
+          <PandHeroScroll />
         </section>
 
         {/* === KERNGEGEVENS — strip onder hero === */}
