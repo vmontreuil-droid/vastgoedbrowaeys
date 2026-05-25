@@ -375,21 +375,19 @@ export default async function PandMicrosite({ params }: { params: Params }) {
           </div>
         </section>
 
-        {/* === Minimal footer === */}
-        <footer
-          className="container-px mx-auto max-w-screen-2xl py-8 flex flex-wrap items-center justify-between gap-3 text-xs text-[var(--color-mute)]"
+        {/* Pand-ref strook tussen content en SiteFooter */}
+        <div
+          className="container-px mx-auto max-w-screen-2xl py-6 flex flex-wrap items-center justify-between gap-3 text-xs text-[var(--color-mute)]"
+          style={{ borderTop: '1px solid var(--color-line)' }}
         >
-          <span>
-            Aangeboden door <Link href="/" className="link-underline text-[var(--color-ink)]">Vastgoed Browaeys</Link>{' '}
-            · BIV 504.553 · {listing.ref}
-          </span>
-          <div className="flex gap-5">
-            <Link href={listingHref(listing)} className="link-underline">Klassieke weergave</Link>
-            <Link href="/privacy-verklaring" className="link-underline">Privacy</Link>
-          </div>
-        </footer>
+          <span>Referentie · {listing.ref}</span>
+          <Link href={listingHref(listing)} className="link-underline">
+            Klassieke weergave →
+          </Link>
+        </div>
       </main>
-    </div>
+      <SiteFooter />
+    </>
   )
 }
 
