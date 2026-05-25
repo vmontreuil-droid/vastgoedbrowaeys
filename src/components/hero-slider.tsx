@@ -253,7 +253,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                 </Link>
                 <Link
                   href="/gratis-schatting"
-                  className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 md:py-3 text-xs md:text-sm font-medium transition-colors"
+                  className="hidden md:inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 md:py-3 text-xs md:text-sm font-medium transition-colors"
                   style={{ border: '1px solid var(--color-ink)', color: 'var(--color-ink)' }}
                 >
                   <MessageCircle className="size-3.5 md:size-4" />
