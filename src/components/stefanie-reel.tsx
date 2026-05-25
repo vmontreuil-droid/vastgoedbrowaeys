@@ -97,7 +97,7 @@ export function StefanieReel({
         <div className="order-1 lg:order-2 flex justify-center">
           <div
             ref={containerRef}
-            className="relative w-full sm:max-w-sm aspect-[9/16] overflow-hidden"
+            className="relative w-full sm:max-w-sm lg:max-w-md aspect-[9/16] overflow-hidden"
             style={{ background: 'var(--color-paper-2)' }}
           >
             <video
