@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { ChevronLeft, ChevronRight, X, Expand } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 
+/**
+ * Masonry-layout: alle foto's tegelijk zichtbaar in een CSS-column-grid
+ * (Pinterest-stijl). Klik op een foto opent een lightbox met keyboard-
+ * navigatie. Eerste foto krijgt een extra 'span' om wat hiërarchie te
+ * geven.
+ */
 export function PandGallery({ images, alt }: { images: string[]; alt: string }) {
   const [idx, setIdx] = useState(0)
   const [lightbox, setLightbox] = useState(false)
@@ -30,57 +36,51 @@ export function PandGallery({ images, alt }: { images: string[]; alt: string }) 
 
   return (
     <>
-      {/* Grid van eerste 6 foto's; klik opent lightbox */}
       <div className="container-px mx-auto max-w-screen-2xl">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
-          {images.slice(0, 6).map((src, i) => (
+        {/* CSS Masonry: variabele rij-hoogtes door columns + break-inside */}
+        <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-3 md:gap-4 [column-fill:_balance]">
+          {images.map((src, i) => (
             <button
-              key={i}
+              key={`${src}-${i}`}
               onClick={() => { setIdx(i); setLightbox(true) }}
-              className={`relative overflow-hidden cursor-zoom-in transition-opacity hover:opacity-95 ${
-                i === 0 ? 'col-span-2 row-span-2 aspect-[4/3]' : 'aspect-square'
-              }`}
+              className="relative w-full mb-3 md:mb-4 overflow-hidden block cursor-zoom-in group break-inside-avoid"
               style={{ background: 'var(--color-paper-2)' }}
+              aria-label={`Open foto ${i + 1}`}
             >
               <Image
                 src={src}
                 alt={`${alt} — foto ${i + 1}`}
-                fill
-                sizes={i === 0 ? '(min-width: 768px) 50vw, 100vw' : '(min-width: 768px) 25vw, 50vw'}
-                className="object-cover transition-transform duration-700 hover:scale-[1.02]"
+                width={800}
+                height={i % 3 === 0 ? 1000 : i % 3 === 1 ? 600 : 800}
+                sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.02]"
               />
-              {i === 5 && images.length > 6 && (
-                <div className="absolute inset-0 grid place-items-center"
-                  style={{ background: 'rgba(26,26,26,0.55)', backdropFilter: 'blur(2px)' }}>
-                  <span className="text-white text-lg md:text-2xl" style={{ fontFamily: 'var(--font-display)' }}>
-                    + {images.length - 6} foto&apos;s
-                  </span>
-                </div>
-              )}
+              {/* Subtle gradient om de cursor-zoom in te geven */}
+              <span
+                className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{
+                  background: 'linear-gradient(to bottom, transparent 70%, rgba(26,26,26,0.25))',
+                }}
+              />
             </button>
           ))}
         </div>
-        {images.length > 6 && (
-          <button
-            onClick={() => { setIdx(0); setLightbox(true) }}
-            className="mt-4 inline-flex items-center gap-2 text-sm link-underline"
-          >
-            <Expand className="size-4" />
-            Toon alle {images.length} foto&apos;s
-          </button>
-        )}
       </div>
 
-      {/* Lightbox */}
+      {/* Lightbox met blur-backdrop */}
       {lightbox && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ background: 'rgba(26, 26, 26, 0.94)' }}
+          style={{
+            background: 'rgba(26, 26, 26, 0.85)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+          }}
           onClick={() => setLightbox(false)}
         >
           <button
             onClick={(e) => { e.stopPropagation(); setLightbox(false) }}
-            className="absolute top-6 right-6 size-12 grid place-items-center"
+            className="absolute top-6 right-6 size-12 grid place-items-center transition-colors"
             style={{ color: 'var(--color-paper)' }}
             aria-label="Sluit"
           >
@@ -90,7 +90,7 @@ export function PandGallery({ images, alt }: { images: string[]; alt: string }) 
             <>
               <button
                 onClick={(e) => { e.stopPropagation(); prev() }}
-                className="absolute left-6 size-12 grid place-items-center"
+                className="absolute left-6 size-12 grid place-items-center transition-colors"
                 style={{ color: 'var(--color-paper)' }}
                 aria-label="Vorige"
               >
@@ -98,7 +98,7 @@ export function PandGallery({ images, alt }: { images: string[]; alt: string }) 
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); next() }}
-                className="absolute right-6 size-12 grid place-items-center"
+                className="absolute right-6 size-12 grid place-items-center transition-colors"
                 style={{ color: 'var(--color-paper)' }}
                 aria-label="Volgende"
               >

@@ -13,9 +13,12 @@ import {
   TYPE_BADGE,
   listingHref,
 } from '@/lib/listings'
+import { headers } from 'next/headers'
 import { BrandLogo } from '@/components/brand-logo'
 import { PandGallery } from './pand-gallery'
 import { PandLogin } from './pand-login'
+import { PandQR } from './pand-qr'
+import { PandDocuments } from './pand-documents'
 
 export function generateStaticParams() {
   return LISTINGS.flatMap((l) => [
@@ -59,6 +62,12 @@ export default async function PandMicrosite({ params }: { params: Params }) {
   const { id } = await params
   const listing = findListing(id)
   if (!listing) notFound()
+
+  // Bereken absolute URL voor de QR-code
+  const hdr = await headers()
+  const host = hdr.get('host') ?? 'vastgoedbrowaeys.be'
+  const proto = hdr.get('x-forwarded-proto') ?? 'https'
+  const pandUrl = `${proto}://${host}/pand/${listing.id}-${listing.slug.replace(/^\d+-/, '')}`
 
   const badge = TYPE_BADGE[listing.type]
   const statusLabel = listing.status === 'te-koop' ? 'Te koop' :
@@ -126,20 +135,26 @@ export default async function PandMicrosite({ params }: { params: Params }) {
             style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.7) 100%)' }}
           />
 
-          {/* Linksboven: type + status badges */}
+          {/* Linksboven: type + status badges met glass-blur */}
           <div className="absolute top-6 left-6 md:top-8 md:left-8 flex flex-wrap gap-2">
             <span
               className="inline-block px-3 py-1.5 text-[0.65rem] uppercase tracking-[0.16em] font-medium"
-              style={{ background: badge.bg, color: badge.text }}
+              style={{
+                background: `color-mix(in srgb, ${badge.bg} 80%, transparent)`,
+                color: badge.text,
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+              }}
             >
               {badge.label}
             </span>
             <span
               className="inline-block px-3 py-1.5 text-[0.65rem] uppercase tracking-[0.16em] font-medium"
               style={{
-                background: 'color-mix(in srgb, #faf8f4 90%, transparent)',
+                background: 'color-mix(in srgb, #faf8f4 70%, transparent)',
                 color: 'var(--color-ink)',
-                backdropFilter: 'blur(8px)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
               }}
             >
               {statusLabel}
@@ -202,14 +217,16 @@ export default async function PandMicrosite({ params }: { params: Params }) {
           </div>
         </section>
 
-        {/* === GALERIJ === */}
+        {/* === GALERIJ — masonry, alle foto's direct zichtbaar === */}
         {listing.gallery.length > 1 && (
           <section className="py-12 md:py-20">
             <div className="container-px mx-auto max-w-screen-2xl mb-6 md:mb-8">
               <p className="eyebrow mb-3">In beeld</p>
               <h2 className="text-3xl md:text-5xl">
-                Galerij{' '}
-                <span className="text-[var(--color-mute)] text-2xl md:text-3xl">({listing.gallery.length})</span>
+                Alle{' '}
+                <span className="italic" style={{ color: 'var(--color-accent)' }}>
+                  {listing.gallery.length} foto&apos;s.
+                </span>
               </h2>
             </div>
             <PandGallery images={listing.gallery} alt={listing.title} />
@@ -263,8 +280,12 @@ export default async function PandMicrosite({ params }: { params: Params }) {
           </section>
         )}
 
+        {/* === DOCUMENTEN === */}
+        <PandDocuments listingId={listing.id} />
+
         {/* === LOCATIE === */}
-        <section className="container-px mx-auto max-w-screen-2xl py-12 md:py-20">
+        <section className="container-px mx-auto max-w-screen-2xl py-12 md:py-20"
+          style={{ borderTop: '1px solid var(--color-line)' }}>
           <p className="eyebrow mb-3">Locatie</p>
           <h2 className="text-3xl md:text-5xl mb-6 md:mb-8">
             {listing.zip}{' '}
@@ -286,7 +307,7 @@ export default async function PandMicrosite({ params }: { params: Params }) {
           </a>
         </section>
 
-        {/* === CONTACT-CTA === */}
+        {/* === CONTACT-CTA + QR === */}
         <section
           className="py-16 md:py-24"
           style={{
@@ -294,44 +315,59 @@ export default async function PandMicrosite({ params }: { params: Params }) {
             color: 'var(--color-paper)',
           }}
         >
-          <div className="container-px mx-auto max-w-3xl text-center">
-            <p className="eyebrow mb-3" style={{ color: 'rgba(250,248,244,0.85)' }}>
-              Geïnteresseerd?
-            </p>
-            <h2 className="text-3xl md:text-5xl mb-5">
-              Plan een{' '}
-              <span className="italic">vrijblijvend bezoek</span>.
-            </h2>
-            <p className="text-lg mb-10 max-w-xl mx-auto" style={{ color: 'rgba(250,248,244,0.85)' }}>
-              Persoonlijke begeleiding door Stefanie Browaeys — geen call-center, geen
-              tussenpersonen.
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <Link
-                href={`/contact?ref=${listing.ref}`}
-                className="inline-flex items-center gap-2 px-6 py-3.5 text-sm font-medium"
-                style={{ background: 'var(--color-paper)', color: 'var(--color-accent)' }}
-              >
-                <Calendar className="size-4" />
-                Bezoek plannen
-                <ArrowRight className="size-4" />
-              </Link>
-              <a
-                href="tel:+3255595010"
-                className="inline-flex items-center gap-2 px-6 py-3.5 text-sm"
-                style={{ border: '1px solid rgba(250,248,244,0.4)', color: 'var(--color-paper)' }}
-              >
-                <Phone className="size-4" />
-                +32 (0)55 59 50 10
-              </a>
-              <a
-                href="mailto:info@vastgoedbrowaeys.be"
-                className="inline-flex items-center gap-2 px-6 py-3.5 text-sm"
-                style={{ border: '1px solid rgba(250,248,244,0.4)', color: 'var(--color-paper)' }}
-              >
-                <Mail className="size-4" />
-                Mail
-              </a>
+          <div className="container-px mx-auto max-w-screen-2xl grid lg:grid-cols-[1fr_auto] gap-10 lg:gap-16 items-center">
+            <div>
+              <p className="eyebrow mb-3" style={{ color: 'rgba(250,248,244,0.85)' }}>
+                Geïnteresseerd?
+              </p>
+              <h2 className="text-3xl md:text-5xl mb-5">
+                Plan een{' '}
+                <span className="italic">vrijblijvend bezoek</span>.
+              </h2>
+              <p className="text-lg mb-10 max-w-xl" style={{ color: 'rgba(250,248,244,0.85)' }}>
+                Persoonlijke begeleiding door Stefanie Browaeys — geen call-center, geen
+                tussenpersonen.
+              </p>
+              <div className="flex flex-wrap items-center gap-4">
+                <Link
+                  href={`/contact?ref=${listing.ref}`}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 text-sm font-medium"
+                  style={{ background: 'var(--color-paper)', color: 'var(--color-accent)' }}
+                >
+                  <Calendar className="size-4" />
+                  Bezoek plannen
+                  <ArrowRight className="size-4" />
+                </Link>
+                <a
+                  href="tel:+3255595010"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 text-sm"
+                  style={{
+                    background: 'color-mix(in srgb, #faf8f4 15%, transparent)',
+                    color: 'var(--color-paper)',
+                    backdropFilter: 'blur(8px)',
+                  }}
+                >
+                  <Phone className="size-4" />
+                  +32 (0)55 59 50 10
+                </a>
+                <a
+                  href="mailto:info@vastgoedbrowaeys.be"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 text-sm"
+                  style={{
+                    background: 'color-mix(in srgb, #faf8f4 15%, transparent)',
+                    color: 'var(--color-paper)',
+                    backdropFilter: 'blur(8px)',
+                  }}
+                >
+                  <Mail className="size-4" />
+                  Mail
+                </a>
+              </div>
+            </div>
+
+            {/* QR-code */}
+            <div className="lg:justify-self-end">
+              <PandQR url={pandUrl} />
             </div>
           </div>
         </section>
