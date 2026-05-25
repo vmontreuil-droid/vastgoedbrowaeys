@@ -223,7 +223,9 @@ export function formatPrice(value: number): string {
 }
 
 export function listingHref(listing: Pick<Listing, 'id' | 'slug'>): string {
-  return `/aanbod/${listing.id}-${listing.slug.replace(/^\d+-/, '')}`
+  // Standaard naar de premium pand-microsite. Klassieke weergave blijft
+  // beschikbaar via /aanbod/[id] (te bereiken via footer-link op /pand/).
+  return `/pand/${listing.id}-${listing.slug.replace(/^\d+-/, '')}`
 }
 
 export function getListings(opts: {
