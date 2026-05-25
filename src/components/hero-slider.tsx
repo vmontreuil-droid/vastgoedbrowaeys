@@ -208,25 +208,24 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
         <div className="absolute inset-x-0 bottom-0 px-6 md:px-10 lg:px-16 pb-10 md:pb-14 pointer-events-none">
           <div className="flex justify-start">
             <div
-              className="relative max-w-2xl p-8 md:p-12 pointer-events-auto overflow-hidden"
+              className="relative w-[85%] max-w-2xl p-5 md:p-12 pointer-events-auto overflow-hidden min-h-[180px] md:min-h-[320px]"
               style={{
                 background: 'color-mix(in srgb, #faf8f4 62%, transparent)',
                 backdropFilter: 'blur(8px) saturate(130%)',
                 WebkitBackdropFilter: 'blur(8px) saturate(130%)',
                 border: '1px solid color-mix(in srgb, #ffffff 35%, transparent)',
                 boxShadow: '0 24px 48px -20px rgba(0,0,0,0.25)',
-                minHeight: '320px',
               }}
             >
               <div key={tagIdx} style={{ animation: 'vb-tag-fade 900ms ease-out' }}>
                 <p
-                  className="text-[0.65rem] uppercase tracking-[0.28em] font-medium mb-5"
+                  className="text-[0.55rem] md:text-[0.65rem] uppercase tracking-[0.22em] md:tracking-[0.28em] font-medium mb-3 md:mb-5"
                   style={{ color: 'var(--color-clay-dark)' }}
                 >
                   {TAGLINES[tagIdx].eyebrow}
                 </p>
                 <h1
-                  className="text-3xl md:text-5xl lg:text-6xl leading-[1.05] tracking-tight"
+                  className="text-xl md:text-5xl lg:text-6xl leading-[1.1] md:leading-[1.05] tracking-tight"
                   style={{ fontFamily: 'var(--font-display)' }}
                 >
                   {TAGLINES[tagIdx].head}
@@ -236,34 +235,34 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                   </span>
                 </h1>
                 <p
-                  className="mt-6 text-base md:text-lg leading-relaxed max-w-lg"
+                  className="mt-3 md:mt-6 text-xs md:text-lg leading-relaxed max-w-lg"
                   style={{ color: 'var(--color-mute)' }}
                 >
                   {TAGLINES[tagIdx].sub}
                 </p>
               </div>
 
-              <div className="mt-8 flex flex-wrap gap-3 relative">
+              <div className="mt-4 md:mt-8 flex flex-wrap gap-2 md:gap-3 relative">
                 <Link
                   href="/te-koop"
-                  className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium transition-colors"
+                  className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 md:py-3 text-xs md:text-sm font-medium transition-colors"
                   style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
                 >
-                  <LayoutGrid className="size-4" />
+                  <LayoutGrid className="size-3.5 md:size-4" />
                   Bekijk aanbod
                 </Link>
                 <Link
                   href="/gratis-schatting"
-                  className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium transition-colors"
+                  className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 md:py-3 text-xs md:text-sm font-medium transition-colors"
                   style={{ border: '1px solid var(--color-ink)', color: 'var(--color-ink)' }}
                 >
-                  <MessageCircle className="size-4" />
+                  <MessageCircle className="size-3.5 md:size-4" />
                   Plan een gesprek
                 </Link>
               </div>
 
               {/* Slagzin-indicator: 6 dunne streepjes */}
-              <div className="mt-6 flex gap-1.5 pointer-events-none relative">
+              <div className="mt-3 md:mt-6 flex gap-1 md:gap-1.5 pointer-events-none relative">
                 {TAGLINES.map((_, i) => (
                   <span
                     key={i}
