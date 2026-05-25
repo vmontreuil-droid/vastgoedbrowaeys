@@ -281,10 +281,59 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
           </div>
         </div>
 
+        {/* === Scroll-indicator (muiswieltje) onderaan midden === */}
+        <button
+          type="button"
+          onClick={() => window.scrollBy({ top: window.innerHeight * 0.85, behavior: 'smooth' })}
+          aria-label="Scroll naar volgende sectie"
+          className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 grid place-items-center pointer-events-auto cursor-pointer p-2"
+          style={{ color: 'var(--color-paper)' }}
+        >
+          <div className="vb-mouse">
+            <span className="vb-wheel" />
+          </div>
+        </button>
+
         <style>{`
           @keyframes vb-tag-fade {
             from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
+          }
+          .vb-mouse {
+            width: 22px;
+            height: 34px;
+            border: 1.5px solid color-mix(in srgb, #faf8f4 75%, transparent);
+            border-radius: 12px;
+            position: relative;
+            transition: border-color 0.2s ease;
+          }
+          .vb-mouse:hover {
+            border-color: var(--color-paper);
+          }
+          .vb-wheel {
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            width: 2px;
+            height: 6px;
+            border-radius: 2px;
+            background: color-mix(in srgb, #faf8f4 85%, transparent);
+            transform: translateX(-50%);
+            animation: vb-scroll-wheel 1.8s ease-in-out infinite;
+          }
+          @keyframes vb-scroll-wheel {
+            0%   { transform: translate(-50%, 0);    opacity: 1;   }
+            50%  { transform: translate(-50%, 10px); opacity: 0.2; }
+            100% { transform: translate(-50%, 0);    opacity: 1;   }
+          }
+          @media (min-width: 768px) {
+            .vb-mouse { width: 26px; height: 42px; border-width: 2px; }
+            .vb-wheel { height: 8px; top: 8px; }
+            @keyframes vb-scroll-wheel {
+              0%   { transform: translate(-50%, 0);    opacity: 1;   }
+              50%  { transform: translate(-50%, 14px); opacity: 0.2; }
+              100% { transform: translate(-50%, 0);    opacity: 1;   }
+            }
           }
         `}</style>
 
