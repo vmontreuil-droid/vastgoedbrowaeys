@@ -139,7 +139,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
 
         {/* === LAAG 2a: KLEINE PAND-INFO-CARD RECHTSONDER (synced met huidige foto-slide) === */}
         <div className="absolute inset-x-0 bottom-0 px-6 md:px-10 lg:px-16 pb-8 md:pb-12 pointer-events-none hidden lg:block">
-          <div className="mx-auto max-w-screen-2xl flex justify-end">
+          <div className="flex justify-end">
             <div className="relative w-full max-w-xs">
               {slides.map((s, i) => {
                 const sBadge = typeBadge[s.type]
@@ -206,7 +206,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
 
         {/* === LAAG 2: GROTE STATEMENT-CARD LINKSONDER (slagzin rouleert asynchroon) === */}
         <div className="absolute inset-x-0 bottom-0 px-6 md:px-10 lg:px-16 pb-10 md:pb-14 pointer-events-none">
-          <div className="mx-auto max-w-screen-2xl">
+          <div className="flex justify-start">
             <div
               className="relative max-w-2xl p-8 md:p-12 pointer-events-auto overflow-hidden"
               style={{
