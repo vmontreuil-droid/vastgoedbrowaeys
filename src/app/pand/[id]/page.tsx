@@ -16,24 +16,13 @@ import {
   listingHref,
 } from '@/lib/listings'
 import { headers } from 'next/headers'
-import dynamic from 'next/dynamic'
 import { BrandLogo } from '@/components/brand-logo'
 import { LISTING_COORDS } from '@/data/listing-coords'
 import { PandGallery } from './pand-gallery'
 import { PandLogin } from './pand-login'
 import { PandQR } from './pand-qr'
 import { PandDocuments } from './pand-documents'
-
-// react-leaflet vereist window — dynamisch laden zonder SSR.
-const PandMap = dynamic(() => import('./pand-map').then((m) => m.PandMap), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-[400px] md:h-[500px] lg:h-[600px] grid place-items-center"
-      style={{ background: 'var(--color-paper-2)' }}>
-      <p className="text-sm text-[var(--color-mute)]">Kaart laden…</p>
-    </div>
-  ),
-})
+import { PandMapWrapper } from './pand-map-wrapper'
 
 export function generateStaticParams() {
   return LISTINGS.flatMap((l) => [
@@ -300,7 +289,7 @@ export default async function PandMicrosite({ params }: { params: Params }) {
 
           {/* Full-width Leaflet kaart */}
           {LISTING_COORDS[listing.id] && (
-            <PandMap
+            <PandMapWrapper
               lat={LISTING_COORDS[listing.id].lat}
               lng={LISTING_COORDS[listing.id].lng}
               title={listing.title}
