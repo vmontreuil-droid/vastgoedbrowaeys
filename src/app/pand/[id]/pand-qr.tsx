@@ -23,21 +23,29 @@ export async function PandQR({ url, label }: { url: string; label?: string }) {
     return null
   }
 
+  // Zorg dat de SVG-afmetingen worden vervangen door responsive width/height
+  // (qrcode geeft default 'width=280 height=280' attributen, wat overflow geeft)
+  const responsiveSvg = svg.replace(
+    /<svg([^>]+)>/,
+    '<svg$1 style="width:100%;height:auto;display:block;">',
+  )
+
   return (
     <div
-      className="p-5 md:p-6 flex flex-col items-center text-center"
+      className="p-5 md:p-6 flex flex-col items-center text-center w-full max-w-[260px]"
       style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
     >
-      <p className="eyebrow text-[0.6rem] mb-3 inline-flex items-center gap-1.5">
+      <p className="eyebrow text-[0.6rem] mb-4 inline-flex items-center gap-1.5"
+        style={{ color: 'var(--color-accent)' }}>
         <QrCode className="size-3" />
         Scan & deel
       </p>
       <div
-        className="w-full max-w-[200px] aspect-square"
+        className="w-full"
         // Server-side SVG-output is veilig om in te voegen
-        dangerouslySetInnerHTML={{ __html: svg }}
+        dangerouslySetInnerHTML={{ __html: responsiveSvg }}
       />
-      <p className="mt-3 text-xs text-[var(--color-mute)] max-w-[200px] leading-relaxed">
+      <p className="mt-4 text-[0.65rem] text-[var(--color-mute)] leading-relaxed">
         {label ?? 'Scan om deze pagina te openen op je telefoon, of print voor in het raam.'}
       </p>
     </div>

@@ -2,9 +2,11 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
-  ArrowLeft, ArrowRight, MapPin, Phone, Mail, BedDouble, Bath, Square,
-  Leaf, Calendar, ExternalLink, User as UserIcon,
+  ArrowRight, MapPin, Phone, Mail, BedDouble, Bath, Square,
+  Leaf, Calendar, ExternalLink,
 } from 'lucide-react'
+import { SiteHeader } from '@/components/site-header'
+import { SiteFooter } from '@/components/site-footer'
 import {
   LISTINGS,
   formatPrice,
@@ -14,11 +16,24 @@ import {
   listingHref,
 } from '@/lib/listings'
 import { headers } from 'next/headers'
+import dynamic from 'next/dynamic'
 import { BrandLogo } from '@/components/brand-logo'
+import { LISTING_COORDS } from '@/data/listing-coords'
 import { PandGallery } from './pand-gallery'
 import { PandLogin } from './pand-login'
 import { PandQR } from './pand-qr'
 import { PandDocuments } from './pand-documents'
+
+// react-leaflet vereist window — dynamisch laden zonder SSR.
+const PandMap = dynamic(() => import('./pand-map').then((m) => m.PandMap), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[400px] md:h-[500px] lg:h-[600px] grid place-items-center"
+      style={{ background: 'var(--color-paper-2)' }}>
+      <p className="text-sm text-[var(--color-mute)]">Kaart laden…</p>
+    </div>
+  ),
+})
 
 export function generateStaticParams() {
   return LISTINGS.flatMap((l) => [
@@ -87,40 +102,15 @@ export default async function PandMicrosite({ params }: { params: Params }) {
     .filter((p) => p.length > 0)
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--color-paper)' }}>
-      {/* === Minimale top-bar === */}
-      <header
-        className="sticky top-0 z-30"
-        style={{
-          background: 'color-mix(in srgb, var(--color-paper) 92%, transparent)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid var(--color-line)',
-        }}
-      >
-        <div className="container-px mx-auto max-w-screen-2xl h-14 md:h-16 flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-3 min-w-0">
-            <BrandLogo height={28} textHeight={28} />
-            <span className="hidden sm:inline text-xs uppercase tracking-[0.16em] text-[var(--color-mute)]">
-              aangeboden door
-            </span>
-          </Link>
-
-          <div className="flex items-center gap-3 md:gap-5">
-            <Link
-              href="/te-koop"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs link-underline text-[var(--color-mute)]"
-            >
-              <ArrowLeft className="size-3" />
-              Volledig aanbod
-            </Link>
-            <PandLogin listingId={listing.id} />
-          </div>
-        </div>
-      </header>
-
+    <>
+      <SiteHeader />
       <main>
         {/* === HERO — full-bleed foto met overlay-info === */}
         <section className="relative h-[88vh] min-h-[600px] overflow-hidden">
+          {/* Floating PandLogin rechtsboven met glass-blur */}
+          <div className="absolute top-6 right-6 md:top-8 md:right-8 z-10">
+            <PandLogin listingId={listing.id} />
+          </div>
           <Image
             src={listing.image}
             alt={listing.title}
@@ -284,27 +274,40 @@ export default async function PandMicrosite({ params }: { params: Params }) {
         <PandDocuments listingId={listing.id} />
 
         {/* === LOCATIE === */}
-        <section className="container-px mx-auto max-w-screen-2xl py-12 md:py-20"
+        <section className="py-12 md:py-20"
           style={{ borderTop: '1px solid var(--color-line)' }}>
-          <p className="eyebrow mb-3">Locatie</p>
-          <h2 className="text-3xl md:text-5xl mb-6 md:mb-8">
-            {listing.zip}{' '}
-            <span className="italic" style={{ color: 'var(--color-accent)' }}>
-              {listing.city}.
-            </span>
-          </h2>
-          <p className="text-lg text-[var(--color-mute)] max-w-2xl mb-6">
-            {listing.street}
-          </p>
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${listing.street} ${listing.zip} ${listing.city}`)}`}
-            target="_blank"
-            rel="noopener"
-            className="inline-flex items-center gap-2 link-underline text-sm"
-          >
-            <ExternalLink className="size-4" />
-            Bekijk op Google Maps
-          </a>
+          <div className="container-px mx-auto max-w-screen-2xl mb-6 md:mb-10">
+            <p className="eyebrow mb-3">Locatie</p>
+            <h2 className="text-3xl md:text-5xl mb-4 md:mb-6">
+              {listing.zip}{' '}
+              <span className="italic" style={{ color: 'var(--color-accent)' }}>
+                {listing.city}.
+              </span>
+            </h2>
+            <p className="text-lg text-[var(--color-mute)] mb-4">
+              {listing.street}
+            </p>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${listing.street} ${listing.zip} ${listing.city}`)}`}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-2 link-underline text-sm"
+            >
+              <ExternalLink className="size-4" />
+              Open in Google Maps
+            </a>
+          </div>
+
+          {/* Full-width Leaflet kaart */}
+          {LISTING_COORDS[listing.id] && (
+            <PandMap
+              lat={LISTING_COORDS[listing.id].lat}
+              lng={LISTING_COORDS[listing.id].lng}
+              title={listing.title}
+              address={`${listing.street}, ${listing.zip} ${listing.city}`}
+              typeColor={badge.bg}
+            />
+          )}
         </section>
 
         {/* === CONTACT-CTA + QR === */}

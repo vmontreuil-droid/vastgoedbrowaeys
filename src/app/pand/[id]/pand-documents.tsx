@@ -20,7 +20,6 @@ function CategoryIcon({ category }: { category: ListingDocumentCategory }) {
 
 export async function PandDocuments({ listingId }: { listingId: string }) {
   const docs = await getPublicListingDocuments(listingId)
-  if (docs.length === 0) return null
 
   return (
     <section className="container-px mx-auto max-w-screen-2xl py-12 md:py-20"
@@ -32,41 +31,53 @@ export async function PandDocuments({ listingId }: { listingId: string }) {
           documenten.
         </span>
       </h2>
-      <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-        {docs.map((doc) => (
-          <li key={doc.id}>
-            <Link
-              href={doc.fileUrl}
-              target="_blank"
-              rel="noopener"
-              className="block p-4 md:p-5 transition-shadow hover:shadow-sm h-full"
-              style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
-            >
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <span
-                  className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[0.6rem] uppercase tracking-[0.1em]"
-                  style={{ background: 'var(--color-paper-2)', color: 'var(--color-accent)' }}
-                >
-                  <CategoryIcon category={doc.category} />
-                  {LISTING_DOC_CATEGORY_LABEL[doc.category]}
-                </span>
-                <Download className="size-4 shrink-0 text-[var(--color-mute)]" />
-              </div>
-              <p className="text-base mt-2" style={{ fontFamily: 'var(--font-display)' }}>
-                {doc.name}
-              </p>
-              {doc.description && (
-                <p className="mt-1 text-xs text-[var(--color-mute)]">{doc.description}</p>
-              )}
-              {doc.sizeBytes && (
-                <p className="mt-2 text-[0.65rem] text-[var(--color-mute)] uppercase tracking-[0.1em]">
-                  {formatDocSize(doc.sizeBytes)}
+
+      {docs.length === 0 ? (
+        <div className="p-8 md:p-10 text-center"
+          style={{ background: 'var(--color-paper)', border: '1px dashed var(--color-line)' }}>
+          <FileText className="size-8 mx-auto mb-3 text-[var(--color-mute)]" />
+          <p className="text-sm text-[var(--color-mute)] max-w-md mx-auto">
+            EPC-certificaat, plattegrond, technische fiche en andere documenten worden hier
+            beschikbaar zodra ze worden toegevoegd door de makelaar.
+          </p>
+        </div>
+      ) : (
+        <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+          {docs.map((doc) => (
+            <li key={doc.id}>
+              <Link
+                href={doc.fileUrl}
+                target="_blank"
+                rel="noopener"
+                className="block p-4 md:p-5 transition-shadow hover:shadow-sm h-full"
+                style={{ background: 'var(--color-paper)', border: '1px solid var(--color-line)' }}
+              >
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <span
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[0.6rem] uppercase tracking-[0.1em]"
+                    style={{ background: 'var(--color-paper-2)', color: 'var(--color-accent)' }}
+                  >
+                    <CategoryIcon category={doc.category} />
+                    {LISTING_DOC_CATEGORY_LABEL[doc.category]}
+                  </span>
+                  <Download className="size-4 shrink-0 text-[var(--color-mute)]" />
+                </div>
+                <p className="text-base mt-2" style={{ fontFamily: 'var(--font-display)' }}>
+                  {doc.name}
                 </p>
-              )}
-            </Link>
-          </li>
-        ))}
-      </ul>
+                {doc.description && (
+                  <p className="mt-1 text-xs text-[var(--color-mute)]">{doc.description}</p>
+                )}
+                {doc.sizeBytes && (
+                  <p className="mt-2 text-[0.65rem] text-[var(--color-mute)] uppercase tracking-[0.1em]">
+                    {formatDocSize(doc.sizeBytes)}
+                  </p>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   )
 }
